@@ -45,7 +45,7 @@ function RouteComponent() {
             e.preventDefault()
             form.handleSubmit()
           }}
-          className="space-y-8 w-3/5"
+          className="space-y-8 w-full lg:w-3/5"
         >
           <div className="flex flex-row space-x-4">
             <form.Field
@@ -64,7 +64,7 @@ function RouteComponent() {
                     value={field.state.value}
                     onChange={(e) => field.handleChange(e.target.value)}
                     onBlur={field.handleBlur}
-                    className="bg-white shadow-none"
+                    className="bg-white shadow-none placeholder:text-sm"
                   />
                   {field.state.meta.errors.map((err, i) => (
                     <p key={i} className="text-sm text-destructive">
@@ -91,7 +91,7 @@ function RouteComponent() {
                     value={field.state.value}
                     onChange={(e) => field.handleChange(e.target.value)}
                     onBlur={field.handleBlur}
-                    className="bg-white shadow-none"
+                    className="bg-white shadow-none placeholder:text-sm"
                   />
                   {field.state.meta.errors.map((err, i) => (
                     <p key={i} className="text-sm text-destructive">
@@ -120,7 +120,7 @@ function RouteComponent() {
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
-                  className="bg-white shadow-none"
+                  className="bg-white shadow-none placeholder:text-sm"
                 />
                 {field.state.meta.errors.map((err, i) => (
                   <p key={i} className="text-sm text-destructive">
@@ -131,11 +131,14 @@ function RouteComponent() {
             )}
           />
 
-          <div className="py-3 px-4 bg-white rounded-md flex flex-row justify-between items-center gap-4 border">
-            <p className="font-sans text-[12px] text-muted-foreground">
+          <div className="py-3 px-4 flex-col-reverse md:flex-row bg-white rounded-md flex  justify-between items-center gap-4 border">
+            <p className="font-sans text-[12px] text-muted-foreground text-center md:text-left">
               Co-Pilot will match your Pilot Profile to this exact role.
             </p>
-            <Button type="submit" className="text-[12px] cursor-pointer">
+            <Button
+              type="submit"
+              className="text-[12px] cursor-pointer w-full md:w-auto"
+            >
               <SparklesIcon /> GENERATE DOCUMENTS
             </Button>
           </div>
