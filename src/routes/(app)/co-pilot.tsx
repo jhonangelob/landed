@@ -18,6 +18,7 @@ const schema = z.object({
   jobDescription: z.string().min(1, 'Job description is required'),
 })
 
+type FormValues = z.infer<typeof schema>
 
 function RouteComponent() {
   const form = useForm({
@@ -69,7 +70,7 @@ function RouteComponent() {
                   />
                   {field.state.meta.errors.map((err, i) => (
                     <p key={i} className="text-sm text-destructive">
-                      {String(err)}
+                      {err?.message as string}
                     </p>
                   ))}
                 </div>
@@ -96,7 +97,7 @@ function RouteComponent() {
                   />
                   {field.state.meta.errors.map((err, i) => (
                     <p key={i} className="text-sm text-destructive">
-                      {String(err)}
+                      {err?.message as string}
                     </p>
                   ))}
                 </div>
@@ -125,7 +126,7 @@ function RouteComponent() {
                 />
                 {field.state.meta.errors.map((err, i) => (
                   <p key={i} className="text-sm text-destructive">
-                    {String(err)}
+                    {err?.message as string}
                   </p>
                 ))}
               </div>
