@@ -10,7 +10,7 @@ function AppLayout() {
   return (
     <div className="bg-background min-h-screen">
       <Header />
-      <main>
+      <main className="max-w-7xl mx-auto p-4 md:p-12">
         <Outlet />
       </main>
       <Footer />

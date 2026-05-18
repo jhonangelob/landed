@@ -1,3 +1,4 @@
+import SectionHeader from '#/components/layout/SectionHeader'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/(app)/profile')({
@@ -5,5 +6,13 @@ export const Route = createFileRoute('/(app)/profile')({
 })
 
 function RouteComponent() {
-  return <div>Hello "/(app)/profile"!</div>
+  return (
+    <div className="section">
+      <SectionHeader
+        title="Pilot Profile"
+        description="Optimize your flight data for precise AI tailoring and career progression."
+      />
+      Hello "/(app)/profile"!
+    </div>
+  )
 }

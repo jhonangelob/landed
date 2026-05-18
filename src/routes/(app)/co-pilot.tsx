@@ -1,3 +1,4 @@
+import SectionHeader from '#/components/layout/SectionHeader'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/(app)/co-pilot')({
@@ -5,5 +6,13 @@ export const Route = createFileRoute('/(app)/co-pilot')({
 })
 
 function RouteComponent() {
-  return <div>Hello "/(app)/co-pilot"!</div>
+  return (
+    <div className="section">
+      <SectionHeader
+        title="Co-Pilot"
+        description="Automated document crafting for your next career ascent."
+      />
+      Hello "/(app)/co-pilot"!
+    </div>
+  )
 }
