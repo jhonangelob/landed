@@ -18,8 +18,6 @@ const schema = z.object({
   jobDescription: z.string().min(1, 'Job description is required'),
 })
 
-type FormValues = z.infer<typeof schema>
-
 function RouteComponent() {
   const form = useForm({
     defaultValues: {
