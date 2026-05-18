@@ -9,13 +9,42 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as appRouteRouteImport } from './routes/(app)/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as appProfileRouteImport } from './routes/(app)/profile'
+import { Route as appHangarRouteImport } from './routes/(app)/hangar'
+import { Route as appFlightDeckRouteImport } from './routes/(app)/flight-deck'
+import { Route as appCoPilotRouteImport } from './routes/(app)/co-pilot'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
+const appRouteRoute = appRouteRouteImport.update({
+  id: '/(app)',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const appProfileRoute = appProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appHangarRoute = appHangarRouteImport.update({
+  id: '/hangar',
+  path: '/hangar',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appFlightDeckRoute = appFlightDeckRouteImport.update({
+  id: '/flight-deck',
+  path: '/flight-deck',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appCoPilotRoute = appCoPilotRouteImport.update({
+  id: '/co-pilot',
+  path: '/co-pilot',
+  getParentRoute: () => appRouteRoute,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
@@ -25,38 +54,107 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/co-pilot': typeof appCoPilotRoute
+  '/flight-deck': typeof appFlightDeckRoute
+  '/hangar': typeof appHangarRoute
+  '/profile': typeof appProfileRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/co-pilot': typeof appCoPilotRoute
+  '/flight-deck': typeof appFlightDeckRoute
+  '/hangar': typeof appHangarRoute
+  '/profile': typeof appProfileRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/(app)': typeof appRouteRouteWithChildren
+  '/(app)/co-pilot': typeof appCoPilotRoute
+  '/(app)/flight-deck': typeof appFlightDeckRoute
+  '/(app)/hangar': typeof appHangarRoute
+  '/(app)/profile': typeof appProfileRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/auth/$'
+  fullPaths:
+    | '/'
+    | '/co-pilot'
+    | '/flight-deck'
+    | '/hangar'
+    | '/profile'
+    | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/auth/$'
-  id: '__root__' | '/' | '/api/auth/$'
+  to:
+    | '/'
+    | '/co-pilot'
+    | '/flight-deck'
+    | '/hangar'
+    | '/profile'
+    | '/api/auth/$'
+  id:
+    | '__root__'
+    | '/'
+    | '/(app)'
+    | '/(app)/co-pilot'
+    | '/(app)/flight-deck'
+    | '/(app)/hangar'
+    | '/(app)/profile'
+    | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  appRouteRoute: typeof appRouteRouteWithChildren
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/(app)': {
+      id: '/(app)'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof appRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/(app)/profile': {
+      id: '/(app)/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof appProfileRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/hangar': {
+      id: '/(app)/hangar'
+      path: '/hangar'
+      fullPath: '/hangar'
+      preLoaderRoute: typeof appHangarRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/flight-deck': {
+      id: '/(app)/flight-deck'
+      path: '/flight-deck'
+      fullPath: '/flight-deck'
+      preLoaderRoute: typeof appFlightDeckRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/co-pilot': {
+      id: '/(app)/co-pilot'
+      path: '/co-pilot'
+      fullPath: '/co-pilot'
+      preLoaderRoute: typeof appCoPilotRouteImport
+      parentRoute: typeof appRouteRoute
     }
     '/api/auth/$': {
       id: '/api/auth/$'
@@ -68,8 +166,27 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface appRouteRouteChildren {
+  appCoPilotRoute: typeof appCoPilotRoute
+  appFlightDeckRoute: typeof appFlightDeckRoute
+  appHangarRoute: typeof appHangarRoute
+  appProfileRoute: typeof appProfileRoute
+}
+
+const appRouteRouteChildren: appRouteRouteChildren = {
+  appCoPilotRoute: appCoPilotRoute,
+  appFlightDeckRoute: appFlightDeckRoute,
+  appHangarRoute: appHangarRoute,
+  appProfileRoute: appProfileRoute,
+}
+
+const appRouteRouteWithChildren = appRouteRoute._addFileChildren(
+  appRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  appRouteRoute: appRouteRouteWithChildren,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport
