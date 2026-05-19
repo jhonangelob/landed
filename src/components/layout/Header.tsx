@@ -1,7 +1,6 @@
 import { NAVIGATION } from '#/constant/navigations'
 import { cn } from '#/lib/utils'
 import { Link, useLocation } from '@tanstack/react-router'
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import {
   BellIcon,
   CircleQuestionMarkIcon,
@@ -54,7 +53,6 @@ export default function Header() {
           </p>
         </div>
 
-        {/* Desktop nav */}
         <div className="flex-row gap-6 hidden md:flex">
           {NAVIGATION.map((item) => (
             <Link
@@ -72,7 +70,6 @@ export default function Header() {
           ))}
         </div>
 
-        {/* Desktop actions */}
         <div className="lg:ml-auto flex-row items-center gap-2 hidden md:flex">
           <div className="relative lg:block hidden">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -95,22 +92,16 @@ export default function Header() {
 
           <Button
             variant="ghost"
-            className="p-0 rounded-md cursor-pointer group hover:bg-white"
+            className="p-0 rounded-md cursor-pointer group hover:bg-white border border-white hover:border-destructive"
             onClick={handleClickLogout}
           >
             <LogOutIcon className="text-foreground-soft stroke-2.5 shrink-0 group-hover:text-red-500 transition-colors duration-300" />
-            <span className="text-muted-foreground font-sans overflow-hidden  group-hover:max-w-20 group-hover:opacity-100 group-hover:text-red-500">
+            <span className="text-muted-foreground font-sans overflow-hidden group-hover:max-w-20 group-hover:opacity-100 group-hover:text-red-500">
               Logout
             </span>
           </Button>
-
-          <Avatar className="rounded-md">
-            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
         </div>
 
-        {/* Mobile burger */}
         <Sheet>
           <SheetTrigger asChild>
             <MenuIcon className="h-5.5 w-5.5 cursor-pointer md:hidden text-primary" />
@@ -140,13 +131,6 @@ export default function Header() {
             </nav>
 
             <div className="px-4 py-4 border-t border-border flex items-center gap-3">
-              <Avatar className="rounded-md">
-                <AvatarImage
-                  src="https://github.com/shadcn.png"
-                  alt="@shadcn"
-                />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
               <div className="flex gap-1 ml-auto">
                 <Button variant="ghost" size="icon" onClick={handleClickLogout}>
                   <BellIcon className="text-foreground-soft" />
