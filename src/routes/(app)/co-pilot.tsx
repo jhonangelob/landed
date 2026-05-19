@@ -1,21 +1,15 @@
 import SectionHeader from '#/components/layout/SectionHeader'
 import { createFileRoute } from '@tanstack/react-router'
 import { useForm } from '@tanstack/react-form'
-import z from 'zod'
 import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
 import { Label } from '#/components/ui/label'
 import { Textarea } from '#/components/ui/textarea'
 import { SparklesIcon } from 'lucide-react'
+import { createApplicationSchema } from '#/validators/application'
 
 export const Route = createFileRoute('/(app)/co-pilot')({
   component: RouteComponent,
-})
-
-const schema = z.object({
-  companyName: z.string().min(1, 'Company name is required'),
-  jobTitle: z.string().min(1, 'Job title is required'),
-  jobDescription: z.string().min(1, 'Job description is required'),
 })
 
 function RouteComponent() {
@@ -26,7 +20,7 @@ function RouteComponent() {
       jobDescription: '',
     },
     validators: {
-      onSubmit: schema,
+      onSubmit: createApplicationSchema,
     },
     onSubmit: async ({ value }) => {
       console.log(value)

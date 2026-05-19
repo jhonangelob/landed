@@ -1,4 +1,3 @@
-import { APP } from '#/constant/common'
 import { NAVIGATION } from '#/constant/navigations'
 import { cn } from '#/lib/utils'
 import { Link, useLocation } from '@tanstack/react-router'
@@ -40,15 +39,15 @@ export default function Header() {
   return (
     <header className="bg-white">
       <div className="max-w-7xl h-16 px-4 md:px-8 mx-auto flex flex-row items-center justify-between">
-        <div className="flex flex-row gap-1 items-center lg:mr-14">
+        <div className="flex flex-row gap-0.5 items-center lg:mr-14">
           <img
             src={logo}
             alt="FlightDeck Logo"
             className="min-w-fit h-6 md:h-8"
           />
 
-          <p className="font-sans font-semibold text-[13px] text-foreground-soft2 leading-[19.5px] text-nowrap hidden md:block">
-            {APP.tagline}
+          <p className="font-sans text-[13px] text-foreground-soft2 leading-[19.5px] text-nowrap hidden md:block">
+            Your job search, Navigated
           </p>
         </div>
 
