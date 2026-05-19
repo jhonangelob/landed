@@ -301,7 +301,7 @@ function RouteComponent() {
                       children={(bulletsField) => (
                         <div className="flex flex-col gap-2">
                           <Label className={labelClass}>Bullet Points</Label>
-                          {bulletsField.state.value.map((_, j) => (
+                          {bulletsField.state.value.map((__, j) => (
                             <div key={j} className="flex gap-2 items-center">
                               <form.Field
                                 name={`experience[${i}].bullets[${j}]`}
