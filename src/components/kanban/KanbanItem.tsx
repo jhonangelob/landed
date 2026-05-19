@@ -12,14 +12,7 @@ import {
   SelectValue,
 } from '#/components/ui/select'
 import { Textarea } from '#/components/ui/textarea'
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '../ui/sheet'
+import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet'
 import { updateApplicationSchema } from '#/validators/application'
 
 export interface KanbanItemProps {
@@ -143,7 +136,7 @@ export default function KanbanItem({ data }: KanbanItemProps) {
                     value={field.state.value}
                     onChange={(e) => field.handleChange(e.target.value)}
                     onBlur={field.handleBlur}
-                    className="bg-white shadow-none placeholder:text-xs text-sm"
+                    className="bg-white shadow-none text-sm"
                   />
                   {field.state.meta.errors.map((err, i) => (
                     <p key={i} className="text-sm text-destructive">
@@ -170,7 +163,7 @@ export default function KanbanItem({ data }: KanbanItemProps) {
                     value={field.state.value}
                     onChange={(e) => field.handleChange(e.target.value)}
                     onBlur={field.handleBlur}
-                    className="bg-white shadow-none placeholder:text-xs text-sm"
+                    className="bg-white shadow-none text-sm"
                   />
                   {field.state.meta.errors.map((err, i) => (
                     <p key={i} className="text-sm text-destructive">
@@ -230,7 +223,7 @@ export default function KanbanItem({ data }: KanbanItemProps) {
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
-                  className="bg-white shadow-none placeholder:text-xs text-sm"
+                  className="bg-white shadow-none text-sm"
                 />
               </div>
             )}
@@ -252,7 +245,7 @@ export default function KanbanItem({ data }: KanbanItemProps) {
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
-                  className="bg-white shadow-none placeholder:text-xs text-sm"
+                  className="bg-white shadow-none text-sm"
                 />
               </div>
             )}
@@ -274,7 +267,7 @@ export default function KanbanItem({ data }: KanbanItemProps) {
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
-                  className="bg-white shadow-none placeholder:text-xs text-sm"
+                  className="bg-white shadow-none text-sm"
                 />
                 {field.state.meta.errors.map((err, i) => (
                   <p key={i} className="text-sm text-destructive">
@@ -337,7 +330,7 @@ export default function KanbanItem({ data }: KanbanItemProps) {
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
-                  className="bg-white shadow-none placeholder:text-xs text-sm"
+                  className="bg-white shadow-none text-sm"
                 />
               </div>
             )}
