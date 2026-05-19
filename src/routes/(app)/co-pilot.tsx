@@ -32,7 +32,7 @@ function RouteComponent() {
     <div className="section">
       <SectionHeader
         title="Co-Pilot"
-        description="Automated document crafting for your next career ascent."
+        description="Paste a job posting and we'll tailor your CV and cover letter using your Pilot Profile."
       />
       <div className="flex flex-row gap-3">
         <form

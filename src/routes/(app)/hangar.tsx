@@ -10,7 +10,7 @@ function RouteComponent() {
     <div className="section">
       <SectionHeader
         title="Hangar"
-        description="Manage your flight systems, AI parameters, and security clearance."
+        description="Account settings and preferences."
       />
       Hello "/(app)/hangar"!
     </div>

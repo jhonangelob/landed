@@ -45,7 +45,7 @@ function RouteComponent() {
     <div className="section max-w-3xl">
       <SectionHeader
         title="Pilot Profile"
-        description="Optimize your flight data for precise AI tailoring and career progression."
+        description="Your master CV data. Co-Pilot uses this to tailor every document it generates."
       />
 
       <form

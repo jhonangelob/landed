@@ -388,6 +388,6 @@ header {
   }
 
   .section {
-    @apply flex flex-col gap-8 h-[calc(100vh-160px)];
+    @apply flex flex-col gap-8 min-h-[calc(100vh-160px)]  mt-16 md:mt-12;
   }
 }

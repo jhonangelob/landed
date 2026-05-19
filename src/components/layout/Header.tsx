@@ -37,7 +37,7 @@ export default function Header() {
   }
 
   return (
-    <header className="bg-white">
+    <header className="bg-white fixed border-b z-99 top-0 left-0 w-full">
       <div className="max-w-7xl h-16 px-4 md:px-8 mx-auto flex flex-row items-center justify-between">
         <div className="flex flex-row gap-0.5 items-center lg:mr-14">
           <img
