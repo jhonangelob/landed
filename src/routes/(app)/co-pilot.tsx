@@ -7,6 +7,7 @@ import { Label } from '#/components/ui/label'
 import { Textarea } from '#/components/ui/textarea'
 import { SparklesIcon } from 'lucide-react'
 import { createApplicationSchema } from '#/validators/application'
+import { SectionCard } from '#/components/layout/SectionCard'
 
 export const Route = createFileRoute('/(app)/co-pilot')({
   component: RouteComponent,
@@ -41,20 +42,77 @@ function RouteComponent() {
           }}
           className="space-y-8 w-full lg:w-3/5"
         >
-          <div className="flex flex-row space-x-4">
+          <SectionCard title="Application Information">
+            <div className="flex flex-row space-x-4">
+              <form.Field
+                name="companyName"
+                children={(field) => (
+                  <div className="space-y-1.5 w-full">
+                    <Label
+                      htmlFor="companyName"
+                      className="font-sans font-medium text-[12px] text-muted-foreground"
+                    >
+                      Company Name
+                    </Label>
+                    <Input
+                      id="companyName"
+                      placeholder="e.g. Acme Corp"
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      onBlur={field.handleBlur}
+                      className="bg-white shadow-none placeholder:text-sm"
+                    />
+                    {field.state.meta.errors.map((err, i) => (
+                      <p key={i} className="text-sm text-destructive">
+                        {err?.message as string}
+                      </p>
+                    ))}
+                  </div>
+                )}
+              />
+
+              <form.Field
+                name="jobTitle"
+                children={(field) => (
+                  <div className="space-y-1.5 w-full">
+                    <Label
+                      htmlFor="jobTitle"
+                      className="font-sans font-medium text-[12px] text-muted-foreground"
+                    >
+                      Job Title
+                    </Label>
+                    <Input
+                      id="jobTitle"
+                      placeholder="e.g. Software Engineer"
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      onBlur={field.handleBlur}
+                      className="bg-white shadow-none placeholder:text-sm"
+                    />
+                    {field.state.meta.errors.map((err, i) => (
+                      <p key={i} className="text-sm text-destructive">
+                        {err?.message as string}
+                      </p>
+                    ))}
+                  </div>
+                )}
+              />
+            </div>
+
             <form.Field
-              name="companyName"
+              name="jobDescription"
               children={(field) => (
-                <div className="space-y-1.5 w-full">
+                <div className="space-y-1.5">
                   <Label
-                    htmlFor="companyName"
+                    htmlFor="jobDescription"
                     className="font-sans font-medium text-[12px] text-muted-foreground"
                   >
-                    Company Name
+                    Job Description
                   </Label>
-                  <Input
-                    id="companyName"
-                    placeholder="e.g. Acme Corp"
+                  <Textarea
+                    id="jobDescription"
+                    placeholder="Paste the full job requirements and role description here..."
+                    rows={14}
                     value={field.state.value}
                     onChange={(e) => field.handleChange(e.target.value)}
                     onBlur={field.handleBlur}
@@ -68,62 +126,7 @@ function RouteComponent() {
                 </div>
               )}
             />
-
-            <form.Field
-              name="jobTitle"
-              children={(field) => (
-                <div className="space-y-1.5 w-full">
-                  <Label
-                    htmlFor="jobTitle"
-                    className="font-sans font-medium text-[12px] text-muted-foreground"
-                  >
-                    Job Title
-                  </Label>
-                  <Input
-                    id="jobTitle"
-                    placeholder="e.g. Software Engineer"
-                    value={field.state.value}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    onBlur={field.handleBlur}
-                    className="bg-white shadow-none placeholder:text-sm"
-                  />
-                  {field.state.meta.errors.map((err, i) => (
-                    <p key={i} className="text-sm text-destructive">
-                      {err?.message as string}
-                    </p>
-                  ))}
-                </div>
-              )}
-            />
-          </div>
-
-          <form.Field
-            name="jobDescription"
-            children={(field) => (
-              <div className="space-y-1.5">
-                <Label
-                  htmlFor="jobDescription"
-                  className="font-sans font-medium text-[12px] text-muted-foreground"
-                >
-                  Job Description
-                </Label>
-                <Textarea
-                  id="jobDescription"
-                  placeholder="Paste the full job requirements and role description here..."
-                  rows={14}
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  onBlur={field.handleBlur}
-                  className="bg-white shadow-none placeholder:text-sm"
-                />
-                {field.state.meta.errors.map((err, i) => (
-                  <p key={i} className="text-sm text-destructive">
-                    {err?.message as string}
-                  </p>
-                ))}
-              </div>
-            )}
-          />
+          </SectionCard>
 
           <div className="py-3 px-4 flex-col-reverse md:flex-row bg-white rounded-md flex  justify-between items-center gap-4 border">
             <p className="font-sans text-[12px] text-muted-foreground text-center md:text-left">
