@@ -1,15 +1,4 @@
-// app/lib/validators/hangar.ts
-
 import { z } from 'zod'
-
-// ─────────────────────────────────────────────
-// SUB-SCHEMAS
-// Nested objects within the hangar settings
-// ─────────────────────────────────────────────
-
-// ─────────────────────────────────────────────
-// LOGIN SCHEMA
-// ─────────────────────────────────────────────
 
 export const loginSchema = z.object({
   email: z
@@ -26,10 +15,6 @@ export const loginDefaults: LoginInput = {
   email: '',
   password: '',
 }
-
-// ─────────────────────────────────────────────
-// SIGNUP SCHEMA
-// ─────────────────────────────────────────────
 
 export const signupSchema = z
   .object({
@@ -66,8 +51,6 @@ export const signupDefaults: SignupInput = {
   confirmPassword: '',
 }
 
-// ─────────────────────────────────────────────
-
 export const passwordSchema = z
   .object({
     currentPassword: z.string().min(1, 'Current password is required'),
@@ -92,15 +75,11 @@ export const passwordSchema = z
 
 export type PasswordInput = z.infer<typeof passwordSchema>
 
-// ─────────────────────────────────────────────
-
 export const notificationsSchema = z.object({
   interviewReminders: z.boolean().default(true),
 })
 
 export type NotificationsInput = z.infer<typeof notificationsSchema>
-
-// ─────────────────────────────────────────────
 
 export const socialProviderEnum = z.enum(['google', 'github', 'linkedin'])
 
@@ -116,51 +95,31 @@ export const ssoSchema = z.object({
 
 export type SsoInput = z.infer<typeof ssoSchema>
 
-// ─────────────────────────────────────────────
-// HANGAR SCHEMA
-// ─────────────────────────────────────────────
-
 export const hangarSchema = z.object({
-  // ── Profile
   fullName: z
     .string()
     .min(1, 'Full name is required')
     .max(100, 'Full name must be 100 characters or less'),
-
   email: z
     .string()
     .min(1, 'Email is required')
     .email('Must be a valid email address'),
-
   location: z
     .string()
     .max(100, 'Location must be 100 characters or less')
     .optional()
     .or(z.literal('')),
-
   timezone: z
     .string()
     .max(60, 'Timezone must be 60 characters or less')
     .optional()
     .or(z.literal('')),
-
-  // ── Password
   password: passwordSchema,
-
-  // ── Notifications
   notifications: notificationsSchema,
-
-  // ── SSO
   sso: ssoSchema,
 })
 
 export type HangarInput = z.infer<typeof hangarSchema>
-
-// ─────────────────────────────────────────────
-// PARTIAL UPDATE SCHEMA
-// For saving individual sections without
-// requiring the full form to be complete
-// ─────────────────────────────────────────────
 
 export const updateHangarSchema = hangarSchema
   .partial()
@@ -169,11 +128,6 @@ export const updateHangarSchema = hangarSchema
   })
 
 export type UpdateHangarInput = z.infer<typeof updateHangarSchema>
-
-// ─────────────────────────────────────────────
-// DEFAULT VALUES
-// Use these as initialValues in TanStack Form
-// ─────────────────────────────────────────────
 
 export const hangarDefaults: HangarInput = {
   fullName: '',

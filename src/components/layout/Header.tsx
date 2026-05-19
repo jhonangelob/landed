@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import {
   BellIcon,
   CircleQuestionMarkIcon,
+  LogOutIcon,
   MenuIcon,
   Search,
 } from 'lucide-react'
@@ -20,6 +21,7 @@ import {
 
 import logo from '/landed-logo.svg'
 import { useState } from 'react'
+import { signOut } from '#/lib/auth/client'
 
 export default function Header() {
   const location = useLocation()
@@ -32,8 +34,9 @@ export default function Header() {
     console.log('unimplemented: Notification')
   }
 
-  const handleClickInformation = () => {
-    console.log('unimplemented: Information')
+  const handleClickLogout = async () => {
+    await signOut()
+    window.location.href = '/login'
   }
 
   return (
@@ -85,16 +88,20 @@ export default function Header() {
           <Button
             variant="ghost"
             className="p-0 rounded-full cursor-pointer"
-            onClick={handleClickInformation}
-          >
-            <BellIcon className="text-foreground-soft stroke-2.5" />
-          </Button>
-          <Button
-            variant="ghost"
-            className="p-0 rounded-full cursor-pointer"
             onClick={handleClickNotification}
           >
             <CircleQuestionMarkIcon className="text-foreground-soft stroke-2.5" />
+          </Button>
+
+          <Button
+            variant="ghost"
+            className="p-0 rounded-md cursor-pointer group hover:bg-white"
+            onClick={handleClickLogout}
+          >
+            <LogOutIcon className="text-foreground-soft stroke-2.5 shrink-0 group-hover:text-red-500 transition-colors duration-300" />
+            <span className="text-muted-foreground font-sans overflow-hidden  group-hover:max-w-20 group-hover:opacity-100 group-hover:text-red-500">
+              Logout
+            </span>
           </Button>
 
           <Avatar className="rounded-md">
@@ -141,11 +148,7 @@ export default function Header() {
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
               <div className="flex gap-1 ml-auto">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleClickInformation}
-                >
+                <Button variant="ghost" size="icon" onClick={handleClickLogout}>
                   <BellIcon className="text-foreground-soft" />
                 </Button>
                 <Button

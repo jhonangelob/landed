@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 
 import logo from '/landed.svg'
@@ -8,31 +8,52 @@ import { Label } from '#/components/ui/label'
 import { Input } from '#/components/ui/input'
 import { Button } from '#/components/ui/button'
 import { EyeIcon, EyeOffIcon } from 'lucide-react'
+import { signUp } from '#/lib/auth/client'
+import { getSession } from '#/lib/auth/session'
+import { cn } from '#/lib/utils'
 
 export const Route = createFileRoute('/(auth)/signup')({
+  beforeLoad: async () => {
+    const session = await getSession()
+    if (session) {
+      throw redirect({ to: '/flight-deck' })
+    }
+  },
   component: RouteComponent,
 })
 
 function RouteComponent() {
+  const navigate = useNavigate()
+
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
   const form = useForm({
     defaultValues: signupDefaults,
     validators: {
-      onSubmit: ({ value }) => {
-        const result = signupSchema.safeParse(value)
-        if (!result.success) return result.error.issues[0]?.message
-        return undefined
-      },
+      onSubmit: signupSchema,
     },
     onSubmit: async ({ value }) => {
-      console.log(value)
+      setIsLoading(true)
+      const res = await signUp.email({
+        email: value.email,
+        password: value.password,
+        name: value.fullName,
+        callbackURL: '/login',
+      })
+
+      if (res.error) {
+        setErrorMessage(res.error.message || '')
+      }
+
+      setIsLoading(false)
     },
   })
 
   const handleSignIn = () => {
-    console.log('unimplemented: Sign In')
+    navigate({ to: '/login' })
   }
 
   return (
@@ -48,12 +69,20 @@ function RouteComponent() {
           <p className="font-display text-[24px] font-bold text-primary-text text-center">
             Create an Account
           </p>
-          <p className="font-display text-[12px] text-muted-foreground text-center">
-            Start tracking your job search today
+
+          <p
+            className={cn(
+              'font-display text-[12px] font-medium text-center',
+              errorMessage.length > 0
+                ? 'text-destructive'
+                : 'text-muted-foreground',
+            )}
+          >
+            {errorMessage || 'Start tracking your job search today'}
           </p>
         </div>
 
-        <div className="flex flex-col gap-2">
+        {/* <div className="flex flex-col gap-2">
           <Button
             className="rounded-lg shadow-none cursor-pointer bg-white font-sans"
             variant="outline"
@@ -70,7 +99,7 @@ function RouteComponent() {
 
         <div className="font-mono text-center text-muted-foreground text-[12px]">
           or
-        </div>
+        </div> */}
 
         <form
           onSubmit={(e) => {
@@ -85,7 +114,7 @@ function RouteComponent() {
               <div className="space-y-1.5 w-full">
                 <Label
                   htmlFor="fullName"
-                  className="font-sans font-medium text-[12px] text-muted-foreground"
+                  className="font-sans font-medium text-[13px] text-muted-foreground"
                 >
                   Full Name
                 </Label>
@@ -99,7 +128,7 @@ function RouteComponent() {
                 />
                 {field.state.meta.errors.map((err, i) => (
                   <p key={i} className="text-xs text-destructive">
-                    {err as string}
+                    {err?.message as string}
                   </p>
                 ))}
               </div>
@@ -112,7 +141,7 @@ function RouteComponent() {
               <div className="space-y-1.5 w-full">
                 <Label
                   htmlFor="email"
-                  className="font-sans font-medium text-[12px] text-muted-foreground"
+                  className="font-sans font-medium text-[13px] text-muted-foreground"
                 >
                   Email
                 </Label>
@@ -126,7 +155,7 @@ function RouteComponent() {
                 />
                 {field.state.meta.errors.map((err, i) => (
                   <p key={i} className="text-xs text-destructive">
-                    {err as string}
+                    {err?.message as string}
                   </p>
                 ))}
               </div>
@@ -139,7 +168,7 @@ function RouteComponent() {
               <div className="space-y-1.5 w-full">
                 <Label
                   htmlFor="password"
-                  className="font-sans font-medium text-[12px] text-muted-foreground"
+                  className="font-sans font-medium text-[13px] text-muted-foreground"
                 >
                   Password
                 </Label>
@@ -167,7 +196,7 @@ function RouteComponent() {
                 </div>
                 {field.state.meta.errors.map((err, i) => (
                   <p key={i} className="text-xs text-destructive">
-                    {err as string}
+                    {err?.message as string}
                   </p>
                 ))}
               </div>
@@ -180,7 +209,7 @@ function RouteComponent() {
               <div className="space-y-1.5 w-full">
                 <Label
                   htmlFor="confirmPassword"
-                  className="font-sans font-medium text-[12px] text-muted-foreground"
+                  className="font-sans font-medium text-[13px] text-muted-foreground"
                 >
                   Confirm Password
                 </Label>
@@ -208,22 +237,22 @@ function RouteComponent() {
                 </div>
                 {field.state.meta.errors.map((err, i) => (
                   <p key={i} className="text-xs text-destructive">
-                    {err as string}
+                    {err?.message as string}
                   </p>
                 ))}
               </div>
             )}
           />
 
-          <Button type="submit" className="mt-1">
-            Create Account
+          <Button type="submit" className="mt-1 cursor-pointer">
+            {isLoading ? 'Loading...' : 'Sign in'}
           </Button>
         </form>
 
-        <p className="font-sans text-[12px] text-muted-foreground text-center">
+        <p className="font-sans text-[13px] text-muted-foreground text-center">
           Already have an account?{' '}
           <span
-            className="font-sans font-medium text-[12px] text-primary cursor-pointer"
+            className="font-sans font-medium text-[13px] text-primary cursor-pointer"
             onClick={handleSignIn}
           >
             Sign in.

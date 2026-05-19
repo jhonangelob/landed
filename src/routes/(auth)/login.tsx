@@ -1,31 +1,52 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 
 import logo from '/landed.svg'
 import { useForm } from '@tanstack/react-form'
-import { loginSchema } from '#/validators/account'
+import { loginDefaults, loginSchema } from '#/validators/account'
 import { Label } from '#/components/ui/label'
 import { Input } from '#/components/ui/input'
 import { Button } from '#/components/ui/button'
 import { EyeIcon, EyeOffIcon } from 'lucide-react'
+import { signIn } from '#/lib/auth/client'
+import { getSession } from '#/lib/auth/session'
+import { cn } from '#/lib/utils'
 
 export const Route = createFileRoute('/(auth)/login')({
+  beforeLoad: async () => {
+    const session = await getSession()
+    if (session) {
+      throw redirect({ to: '/flight-deck' })
+    }
+  },
   component: RouteComponent,
 })
 
 function RouteComponent() {
+  const navigate = useNavigate()
+
   const [showPassword, setShowPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
   const form = useForm({
-    defaultValues: {
-      email: '',
-      password: '',
-    },
+    defaultValues: loginDefaults,
     validators: {
       onSubmit: loginSchema,
     },
     onSubmit: async ({ value }) => {
-      console.log(value)
+      setIsLoading(true)
+      const res = await signIn.email({
+        email: value.email,
+        password: value.password,
+        callbackURL: '/flight-deck',
+      })
+
+      if (res.error) {
+        setErrorMessage(res.error.message || '')
+      }
+
+      setIsLoading(false)
     },
   })
 
@@ -34,11 +55,11 @@ function RouteComponent() {
   }
 
   const handleCreateAccount = () => {
-    console.log('unimplemented: Create Account')
+    navigate({ to: '/signup' })
   }
 
   return (
-    <div className="border-2 bg-background border-red-400 h-screen flex flex-col justify-start md:justify-center items-center gap-4 p-12">
+    <div className="bg-background h-screen flex flex-col justify-start md:justify-center items-center gap-4 p-12">
       <img
         src={logo}
         alt="FlightDeck Logo"
@@ -50,12 +71,19 @@ function RouteComponent() {
           <p className="font-display text-[24px] font-bold text-primary-text text-center">
             Welcome Back
           </p>
-          <p className="font-display text-[12px] text-muted-foreground text-center">
-            Sign in to your account to continue
+          <p
+            className={cn(
+              'font-display text-[12px] font-medium text-center',
+              errorMessage.length > 0
+                ? 'text-destructive'
+                : 'text-muted-foreground',
+            )}
+          >
+            {errorMessage || 'Sign in to your account to continue'}
           </p>
         </div>
 
-        <div className="flex flex-col gap-2">
+        {/* <div className="flex flex-col gap-2">
           <Button
             className="rounded-lg shadow-none cursor-pointer bg-white font-sans"
             variant="outline"
@@ -72,7 +100,7 @@ function RouteComponent() {
 
         <div className="font-mono text-center text-muted-foreground text-[12px]">
           or
-        </div>
+        </div> */}
 
         <form
           onSubmit={(e) => {
@@ -87,7 +115,7 @@ function RouteComponent() {
               <div className="space-y-1.5 w-full">
                 <Label
                   htmlFor="email"
-                  className="font-sans font-medium text-[12px] text-muted-foreground"
+                  className="font-sans font-medium text-[13px] text-muted-foreground"
                 >
                   Email
                 </Label>
@@ -100,7 +128,7 @@ function RouteComponent() {
                   className="bg-white shadow-none text-sm"
                 />
                 {field.state.meta.errors.map((err, i) => (
-                  <p key={i} className="text-sm text-destructive">
+                  <p key={i} className="text-[13px] text-destructive">
                     {err?.message as string}
                   </p>
                 ))}
@@ -113,7 +141,7 @@ function RouteComponent() {
               <div className="space-y-1.5 w-full flex flex-col">
                 <Label
                   htmlFor="password"
-                  className="font-sans font-medium text-[12px] text-muted-foreground"
+                  className="font-sans font-medium text-[13px] text-muted-foreground"
                 >
                   Password
                 </Label>
@@ -139,27 +167,32 @@ function RouteComponent() {
                     )}
                   </button>
                 </div>
-                <Label
-                  className="ml-auto text-primary font-normal font-sans text-[12px] cursor-pointer"
-                  onClick={handleForgotPassword}
-                >
-                  Forgot Password?
-                </Label>
-                {field.state.meta.errors.map((err, i) => (
-                  <p key={i} className="text-sm text-destructive">
-                    {err?.message as string}
-                  </p>
-                ))}
+                <div className="flex flex-row justify-between items-center">
+                  {field.state.meta.errors.map((err, i) => (
+                    <p key={i} className="text-[13px] text-destructive">
+                      {err?.message as string}
+                    </p>
+                  ))}
+
+                  <Label
+                    className="ml-auto text-primary font-normal font-sans text-[13px] cursor-pointer"
+                    onClick={handleForgotPassword}
+                  >
+                    Forgot Password?
+                  </Label>
+                </div>
               </div>
             )}
           />
-          <Button type="submit">Sign in</Button>
+          <Button type="submit" className="cursor-pointer">
+            {isLoading ? 'Loading...' : 'Sign in'}
+          </Button>
         </form>
 
-        <p className="font-sans text-[12px] text-muted-foreground text-center">
+        <p className="font-sans text-[13px] text-muted-foreground text-center">
           Don't have an account?{' '}
           <span
-            className="font-sans font-medium text-[12px] text-primary cursor-pointer"
+            className="font-sans font-medium text-[13px] text-primary cursor-pointer"
             onClick={handleCreateAccount}
           >
             Create one.

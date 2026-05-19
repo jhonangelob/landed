@@ -1,5 +1,3 @@
-// app/lib/data/dummy-applications.ts
-//
 // Ready-to-use dummy data for the Flight Deck kanban board.
 // Covers every status so all columns have cards on load.
 //

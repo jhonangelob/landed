@@ -66,7 +66,7 @@ function KanbanItemBadge({ label, variant }: KanbanItemBadgeProps) {
   )
 }
 
-export default function KanbanItem({ data }: KanbanItemProps) {
+export default function KanbanItem({ data, ...rest }: KanbanItemProps) {
   const form = useForm({
     defaultValues: {
       id: data.id,
@@ -101,6 +101,7 @@ export default function KanbanItem({ data }: KanbanItemProps) {
             <KanbanItemBadge
               label="NEW ENTRY"
               variant={data.status as ApplicationStatusEnum}
+              {...rest}
             />
           </div>
           <p className="font-display text-[12px] text-left font-bold text-primary-text">

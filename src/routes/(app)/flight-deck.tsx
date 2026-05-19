@@ -47,9 +47,9 @@ function RouteComponent() {
             </div>
             <div className="flex flex-col gap-3">
               {dummyApplications.map(
-                (application) =>
+                (application, i) =>
                   application.status === status && (
-                    <KanbanItem data={application} />
+                    <KanbanItem data={application} key={i} />
                   ),
               )}
               {status === ApplicationStatusEnum.SPOTTED && (

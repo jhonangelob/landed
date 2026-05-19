@@ -391,3 +391,18 @@ header {
     @apply flex flex-col gap-8 min-h-[calc(100vh-160px)]  mt-16 md:mt-12;
   }
 }
+
+@keyframes progress {
+  0% {
+    transform: scaleX(0) translateX(0);
+    transform-origin: left;
+  }
+  50% {
+    transform: scaleX(0.6) translateX(0);
+    transform-origin: left;
+  }
+  100% {
+    transform: scaleX(0.9) translateX(0);
+    transform-origin: left;
+  }
+}
