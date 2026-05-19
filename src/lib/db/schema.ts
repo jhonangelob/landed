@@ -87,6 +87,8 @@ export const pilotProfiles = pgTable('pilot_profiles', {
   links: jsonb('links'),
   preferences: jsonb('preferences'),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  location: text('location'),
+  timezone: text('timezone'),
 })
 
 export const applications = pgTable('applications', {

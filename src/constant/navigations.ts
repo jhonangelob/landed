@@ -7,12 +7,10 @@ export const NAVIGATION = [
     label: 'Co-Pilot',
     url: '/co-pilot',
   },
-
   {
     label: 'Pilot Profile',
     url: '/profile',
   },
-
   {
     label: 'Hangar',
     url: '/hangar',

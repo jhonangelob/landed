@@ -3,7 +3,7 @@ import { useState } from 'react'
 
 import logo from '/landed.svg'
 import { useForm } from '@tanstack/react-form'
-import { signupSchema, signupDefaults } from '#/validators/account'
+import { signupSchema } from '#/validators/account'
 import { Label } from '#/components/ui/label'
 import { Input } from '#/components/ui/input'
 import { Button } from '#/components/ui/button'
@@ -31,7 +31,12 @@ function RouteComponent() {
   const [errorMessage, setErrorMessage] = useState('')
 
   const form = useForm({
-    defaultValues: signupDefaults,
+    defaultValues: {
+      fullName: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    },
     validators: {
       onSubmit: signupSchema,
     },
@@ -245,7 +250,7 @@ function RouteComponent() {
           />
 
           <Button type="submit" className="mt-1 cursor-pointer">
-            {isLoading ? 'Loading...' : 'Sign in'}
+            {isLoading ? 'Loading...' : 'Submit'}
           </Button>
         </form>
 

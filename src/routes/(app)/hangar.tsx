@@ -3,22 +3,29 @@ import SectionHeader from '#/components/layout/SectionHeader'
 import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
 import { Label } from '#/components/ui/label'
-import { Switch } from '#/components/ui/switch'
-import { hangarDefaults, hangarSchema } from '#/validators/account'
+import { changePassword } from '#/lib/auth/client'
+import { getAccountDetails, updateAccountDetails } from '#/server/account'
+import { updateAccountSchema } from '#/validators/account'
 import { useForm } from '@tanstack/react-form'
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
+import { useState } from 'react'
 
 export const Route = createFileRoute('/(app)/hangar')({
+  loader: ({ context: { queryClient } }) =>
+    queryClient.ensureQueryData({
+      queryKey: ['account_details'],
+      queryFn: () => getAccountDetails(),
+    }),
   component: RouteComponent,
 })
 
 const labelClass = 'font-sans font-medium text-[12px] text-muted-foreground'
 const inputClass = 'bg-white shadow-none placeholder:text-sm text-sm'
-
-function FieldError({ errors }: { errors: unknown[] }) {
-  if (!errors.length) return null
-  return <p className="text-xs text-destructive">{errors[0] as string}</p>
-}
 
 const FEATURES = [
   'Unlimited applications',
@@ -28,17 +35,53 @@ const FEATURES = [
 ]
 
 function RouteComponent() {
-  const form = useForm({
-    defaultValues: hangarDefaults,
-    validators: {
-      onSubmit: ({ value }) => {
-        const result = hangarSchema.safeParse(value)
-        if (!result.success) return result.error.issues[0]?.message
-        return undefined
-      },
+  const queryClient = useQueryClient()
+
+  const [passwordUpdateError, setPasswordUpdateError] = useState('')
+
+  const { data: account } = useSuspenseQuery({
+    queryKey: ['account_details'],
+    queryFn: () => getAccountDetails(),
+  })
+
+  const { mutateAsync: updateProfile } = useMutation({
+    mutationFn: async (value: typeof form.state.values) => {
+      await updateAccountDetails({ data: value })
+
+      if (value.currentPassword) {
+        const { error } = await changePassword({
+          currentPassword: value.currentPassword,
+          newPassword: value.newPassword,
+          revokeOtherSessions: true,
+        })
+
+        if (error) throw new Error(error.message)
+      }
     },
-    onSubmit: async ({ value }) => {
-      console.log(value)
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['account_details'] })
+      setPasswordUpdateError('')
+    },
+    onError: (err) => {
+      setPasswordUpdateError(err.message)
+      form.resetField('currentPassword')
+      form.resetField('newPassword')
+      form.resetField('confirmPassword')
+    },
+  })
+
+  const form = useForm({
+    defaultValues: {
+      fullName: account[0].name,
+      email: account[0].email,
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: '',
+    },
+    validators: { onSubmit: updateAccountSchema },
+    onSubmit: async ({ value, formApi }) => {
+      await updateProfile(value)
+      formApi.reset({ ...value, currentPassword: '', newPassword: '', confirmPassword: '' })
     },
   })
 
@@ -65,7 +108,6 @@ function RouteComponent() {
             }}
             className="flex flex-col gap-6"
           >
-            {/* ── Profile ───────────────────────────────── */}
             <SectionCard title="Profile">
               <div className="flex flex-col lg:flex-row gap-4">
                 <form.Field
@@ -83,7 +125,11 @@ function RouteComponent() {
                         onBlur={field.handleBlur}
                         className={inputClass}
                       />
-                      <FieldError errors={field.state.meta.errors} />
+                      {field.state.meta.errors.map((err, i) => (
+                        <p key={i} className="text-xs text-destructive">
+                          {err?.message as string}
+                        </p>
+                      ))}
                     </div>
                   )}
                 />
@@ -107,58 +153,26 @@ function RouteComponent() {
                       <Label className="font-sans text-[11px] text-foreground-soft2">
                         Contact support to change your email.
                       </Label>
-                      <FieldError errors={field.state.meta.errors} />
-                    </div>
-                  )}
-                />
-              </div>
-
-              <div className="flex flex-col lg:flex-row gap-4">
-                <form.Field
-                  name="location"
-                  children={(field) => (
-                    <div className="space-y-1.5 w-full">
-                      <Label htmlFor="location" className={labelClass}>
-                        Location
-                      </Label>
-                      <Input
-                        id="location"
-                        placeholder="San Francisco, CA"
-                        value={field.state.value}
-                        onChange={(e) => field.handleChange(e.target.value)}
-                        onBlur={field.handleBlur}
-                        className={inputClass}
-                      />
-                      <FieldError errors={field.state.meta.errors} />
-                    </div>
-                  )}
-                />
-                <form.Field
-                  name="timezone"
-                  children={(field) => (
-                    <div className="space-y-1.5 w-full">
-                      <Label htmlFor="timezone" className={labelClass}>
-                        Timezone
-                      </Label>
-                      <Input
-                        id="timezone"
-                        placeholder="America/Los_Angeles"
-                        value={field.state.value}
-                        onChange={(e) => field.handleChange(e.target.value)}
-                        onBlur={field.handleBlur}
-                        className={inputClass}
-                      />
-                      <FieldError errors={field.state.meta.errors} />
+                      {field.state.meta.errors.map((err, i) => (
+                        <p key={i} className="text-xs text-destructive">
+                          {err?.message as string}
+                        </p>
+                      ))}
                     </div>
                   )}
                 />
               </div>
             </SectionCard>
 
-            {/* ── Password ──────────────────────────────── */}
             <SectionCard title="Change Password">
+              {passwordUpdateError && (
+                <p className="font-display text-[12px] font-medium text-destructive">
+                  {passwordUpdateError}
+                </p>
+              )}
+
               <form.Field
-                name="password.currentPassword"
+                name="currentPassword"
                 children={(field) => (
                   <div className="space-y-1.5">
                     <Label htmlFor="currentPassword" className={labelClass}>
@@ -173,14 +187,18 @@ function RouteComponent() {
                       onBlur={field.handleBlur}
                       className={inputClass}
                     />
-                    <FieldError errors={field.state.meta.errors} />
+                    {field.state.meta.errors.map((err, i) => (
+                      <p key={i} className="text-xs text-destructive">
+                        {err?.message as string}
+                      </p>
+                    ))}
                   </div>
                 )}
               />
 
               <div className="flex gap-4">
                 <form.Field
-                  name="password.newPassword"
+                  name="newPassword"
                   children={(field) => (
                     <div className="space-y-1.5 w-full">
                       <Label htmlFor="newPassword" className={labelClass}>
@@ -195,12 +213,16 @@ function RouteComponent() {
                         onBlur={field.handleBlur}
                         className={inputClass}
                       />
-                      <FieldError errors={field.state.meta.errors} />
+                      {field.state.meta.errors.map((err, i) => (
+                        <p key={i} className="text-xs text-destructive">
+                          {err?.message as string}
+                        </p>
+                      ))}
                     </div>
                   )}
                 />
                 <form.Field
-                  name="password.confirmPassword"
+                  name="confirmPassword"
                   children={(field) => (
                     <div className="space-y-1.5 w-full">
                       <Label htmlFor="confirmPassword" className={labelClass}>
@@ -215,15 +237,18 @@ function RouteComponent() {
                         onBlur={field.handleBlur}
                         className={inputClass}
                       />
-                      <FieldError errors={field.state.meta.errors} />
+                      {field.state.meta.errors.map((err, i) => (
+                        <p key={i} className="text-xs text-destructive">
+                          {err?.message as string}
+                        </p>
+                      ))}
                     </div>
                   )}
                 />
               </div>
             </SectionCard>
 
-            {/* ── Notifications ─────────────────────────── */}
-            <SectionCard title="Notifications">
+            {/* <SectionCard title="Notifications">
               <form.Field
                 name="notifications.interviewReminders"
                 children={(field) => (
@@ -243,12 +268,21 @@ function RouteComponent() {
                   </div>
                 )}
               />
-            </SectionCard>
+            </SectionCard> */}
 
             <div className="flex justify-end pb-8">
-              <Button type="submit" className="uppercase text-[12px]">
-                Save Changes
-              </Button>
+              <form.Subscribe
+                selector={(s) => [s.isSubmitting, s.isDirty]}
+                children={([isSubmitting, isDirty]) => (
+                  <Button
+                    type="submit"
+                    className="uppercase text-[12px]"
+                    disabled={isSubmitting || !isDirty}
+                  >
+                    {isSubmitting ? 'Saving...' : 'Save Changes'}
+                  </Button>
+                )}
+              />
             </div>
           </form>
         </div>

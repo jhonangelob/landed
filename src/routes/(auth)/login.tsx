@@ -3,7 +3,7 @@ import { useState } from 'react'
 
 import logo from '/landed.svg'
 import { useForm } from '@tanstack/react-form'
-import { loginDefaults, loginSchema } from '#/validators/account'
+import { loginSchema } from '#/validators/account'
 import { Label } from '#/components/ui/label'
 import { Input } from '#/components/ui/input'
 import { Button } from '#/components/ui/button'
@@ -30,7 +30,7 @@ function RouteComponent() {
   const [errorMessage, setErrorMessage] = useState('')
 
   const form = useForm({
-    defaultValues: loginDefaults,
+    defaultValues: { email: '', password: '' },
     validators: {
       onSubmit: loginSchema,
     },
