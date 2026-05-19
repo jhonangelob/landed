@@ -1,3 +1,4 @@
+import { useIsFetching, useIsMutating } from '@tanstack/react-query'
 import { useRouterState } from '@tanstack/react-router'
 import { useEffect, useRef, useState } from 'react'
 
@@ -5,17 +6,20 @@ export function NavigationProgress() {
   const initialLoadDone = useRef(false)
   const [show, setShow] = useState(false)
 
-  const isLoading = useRouterState({
+  const isRouterLoading = useRouterState({
     select: (s) => s.status === 'pending',
   })
 
+  const isMutating = useIsMutating() > 0
+  const isQuerying = useIsFetching() > 0
+
   useEffect(() => {
     if (!initialLoadDone.current) {
-      if (!isLoading) initialLoadDone.current = true
+      if (!isRouterLoading) initialLoadDone.current = true
       return
     }
-    setShow(isLoading)
-  }, [isLoading])
+    setShow(isRouterLoading || isMutating || isQuerying)
+  }, [isRouterLoading, isMutating, isQuerying])
 
   return (
     <>
