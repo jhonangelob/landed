@@ -320,54 +320,6 @@ function RouteComponent() {
               />
             </div>
           </form>
-        </div>
-        <div className="flex-1 flex flex-col gap-4">
-          <div className="border border-primary/40 bg-primary/10 p-5 rounded-lg w-full flex flex-row justify-between items-center">
-            <div className="text-primary">
-              <p className="font-bold text-[14px] font-display">Free Plan</p>
-              <span className="text-[13px]">
-                3 of 10 AI generations used this month · Resets June 1
-              </span>
-            </div>
-            <div className="px-3 py-1 text-[12px] text-muted-foreground border-foreground-soft2 font-mono font-medium border rounded-full text-nowrap">
-              Current Plan
-            </div>
-          </div>
-          <div className="border bg-white p-5 rounded-lg w-full flex flex-row justify-between items-center">
-            <div className="flex flex-col gap-2">
-              <div className="text-primary-text font-semibold text-[16px]">
-                First Officer
-              </div>
-              <div className="flex flex-col gap-1">
-                {FEATURES.map((item, index) => (
-                  <div
-                    className="text-[12px] text-muted-foreground"
-                    key={index}
-                  >
-                    <span className="text-primary font-bold mr-2">✓</span>
-                    {item}
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="flex flex-col items-end gap-1">
-              <div className="text-primary-text font-display font-bold text-[32px]">
-                $12
-                <span className="text-[16px] font-normal text-muted-foreground">
-                  /mo
-                </span>
-              </div>
-              <div className="text-[12px] text-muted-foreground">
-                or $99/yr — save 30%
-              </div>
-              <Button
-                onClick={handleUpgradePlan}
-                className="cursor-pointer rounded-lg"
-              >
-                Upgrade Now
-              </Button>
-            </div>
-          </div>
           <div className="mt-auto mb-24">
             <p className="font-mono uppercase font-medium text-[12px] text-destructive">
               Danger Zone
@@ -436,6 +388,55 @@ function RouteComponent() {
                   </Button>
                 </DialogContent>
               </Dialog>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex-1 flex flex-col gap-4">
+          <div className="border border-primary/40 bg-primary/10 p-5 rounded-lg w-full flex flex-row justify-between items-center">
+            <div className="text-primary">
+              <p className="font-bold text-[14px] font-display">Free Plan</p>
+              <span className="text-[13px]">
+                3 of 10 AI generations used this month · Resets June 1
+              </span>
+            </div>
+            <div className="px-3 py-1 text-[12px] text-muted-foreground border-foreground-soft2 font-mono font-medium border rounded-full text-nowrap">
+              Current Plan
+            </div>
+          </div>
+          <div className="border bg-white p-5 rounded-lg w-full flex flex-row justify-between items-center">
+            <div className="flex flex-col gap-2">
+              <div className="text-primary-text font-semibold text-[16px]">
+                First Officer
+              </div>
+              <div className="flex flex-col gap-1">
+                {FEATURES.map((item, index) => (
+                  <div
+                    className="text-[12px] text-muted-foreground"
+                    key={index}
+                  >
+                    <span className="text-primary font-bold mr-2">✓</span>
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="flex flex-col items-end gap-1">
+              <div className="text-primary-text font-display font-bold text-[32px]">
+                $12
+                <span className="text-[16px] font-normal text-muted-foreground">
+                  /mo
+                </span>
+              </div>
+              <div className="text-[12px] text-muted-foreground">
+                or $99/yr — save 30%
+              </div>
+              <Button
+                onClick={handleUpgradePlan}
+                className="cursor-pointer rounded-lg"
+              >
+                Upgrade Now
+              </Button>
             </div>
           </div>
         </div>
