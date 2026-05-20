@@ -6,38 +6,113 @@ import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
 import { Label } from '#/components/ui/label'
 import { Textarea } from '#/components/ui/textarea'
-import { Switch } from '#/components/ui/switch'
-import { pilotProfileSchema, pilotProfileDefaults } from '#/validators/profile'
+import { pilotProfileSchema } from '#/validators/profile'
 import { XIcon, PlusIcon } from 'lucide-react'
 import { SectionCard } from '#/components/layout/SectionCard'
+import { getProfile, saveProfile, updateProfile } from '#/server/profile'
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from '@tanstack/react-query'
+import { getAccountDetails } from '#/server/account'
 
 export const Route = createFileRoute('/(app)/profile')({
+  loader: ({ context: { queryClient } }) =>
+    Promise.all([
+      queryClient.ensureQueryData({
+        queryKey: ['profile'],
+        queryFn: () => getProfile(),
+      }),
+      queryClient.ensureQueryData({
+        queryKey: ['account_details'],
+        queryFn: () => getAccountDetails(),
+      }),
+    ]),
   component: RouteComponent,
 })
 
 const labelClass = 'font-sans font-medium text-[12px] text-muted-foreground'
 const inputClass = 'bg-white shadow-none placeholder:text-sm text-sm'
 
-function FieldError({ errors }: { errors: unknown[] }) {
-  if (!errors.length) return null
-  return <p className="text-xs text-destructive">{errors[0] as string}</p>
-}
-
 function RouteComponent() {
+  const queryClient = useQueryClient()
+
+  const { data: profile } = useSuspenseQuery({
+    queryKey: ['profile'],
+    queryFn: () => getProfile(),
+  })
+
+  const { data: account } = useSuspenseQuery({
+    queryKey: ['account'],
+    queryFn: () => getAccountDetails(),
+  })
+
+  const { mutateAsync: saveProfileDetails } = useMutation({
+    mutationFn: async (value: typeof form.state.values) => {
+      await saveProfile({ data: value })
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profile'] })
+    },
+    onError: (err) => {
+      console.log(err)
+      form.reset()
+    },
+  })
+
+  const { mutateAsync: updateProfileDetails } = useMutation({
+    mutationFn: async (value: typeof form.state.values) => {
+      await updateProfile({ data: value })
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profile'] })
+    },
+    onError: (err) => {
+      console.log(err)
+      form.reset()
+    },
+  })
+
   const [skillInput, setSkillInput] = useState('')
   const [roleInput, setRoleInput] = useState('')
 
+  const profileData = profile[0]
+  const accountData = account[0]
+
   const form = useForm({
-    defaultValues: pilotProfileDefaults,
+    defaultValues: {
+      fullName: accountData.name,
+      email: accountData.email,
+      location: profileData.location ?? '',
+      headline: profileData.headline ?? '',
+      summary: profileData.summary ?? '',
+      skills: profileData.skills ?? [],
+      experience: profileData.experience ?? [
+        { company: '', role: '', dates: '', bullets: [''] },
+      ],
+      education: profileData.education ?? [
+        { institution: '', degree: '', year: '' },
+      ],
+      links: (profileData.links as {
+        github: string
+        linkedin: string
+        portfolio: string
+      } | null) ?? { github: '', linkedin: '', portfolio: '' },
+      preferences: (profileData.preferences as {
+        roles: string[]
+        salaryRange: string
+      } | null) ?? { roles: [] as string[], salaryRange: '' },
+    },
     validators: {
-      onSubmit: ({ value }) => {
-        const result = pilotProfileSchema.safeParse(value)
-        if (!result.success) return result.error.issues[0]?.message
-        return undefined
-      },
+      onSubmit: pilotProfileSchema,
     },
     onSubmit: async ({ value }) => {
-      console.log(value)
+      if (profile.length > 0) {
+        updateProfileDetails(value)
+      } else {
+        saveProfileDetails(value)
+      }
     },
   })
 
@@ -55,7 +130,6 @@ function RouteComponent() {
         }}
         className="flex flex-col gap-6"
       >
-        {/* ── Personal Info ─────────────────────────── */}
         <SectionCard title="Personal Info">
           <div className="flex gap-4">
             <form.Field
@@ -73,7 +147,11 @@ function RouteComponent() {
                     onBlur={field.handleBlur}
                     className={inputClass}
                   />
-                  <FieldError errors={field.state.meta.errors} />
+                  {field.state.meta.errors.map((err, i) => (
+                    <p key={i} className="text-xs text-destructive">
+                      {err?.message as string}
+                    </p>
+                  ))}
                 </div>
               )}
             />
@@ -93,7 +171,11 @@ function RouteComponent() {
                     onBlur={field.handleBlur}
                     className={inputClass}
                   />
-                  <FieldError errors={field.state.meta.errors} />
+                  {field.state.meta.errors.map((err, i) => (
+                    <p key={i} className="text-xs text-destructive">
+                      {err?.message as string}
+                    </p>
+                  ))}
                 </div>
               )}
             />
@@ -115,7 +197,11 @@ function RouteComponent() {
                     onBlur={field.handleBlur}
                     className={inputClass}
                   />
-                  <FieldError errors={field.state.meta.errors} />
+                  {field.state.meta.errors.map((err, i) => (
+                    <p key={i} className="text-xs text-destructive">
+                      {err?.message as string}
+                    </p>
+                  ))}
                 </div>
               )}
             />
@@ -134,7 +220,11 @@ function RouteComponent() {
                     onBlur={field.handleBlur}
                     className={inputClass}
                   />
-                  <FieldError errors={field.state.meta.errors} />
+                  {field.state.meta.errors.map((err, i) => (
+                    <p key={i} className="text-xs text-destructive">
+                      {err?.message as string}
+                    </p>
+                  ))}
                 </div>
               )}
             />
@@ -156,13 +246,16 @@ function RouteComponent() {
                   onBlur={field.handleBlur}
                   className={inputClass}
                 />
-                <FieldError errors={field.state.meta.errors} />
+                {field.state.meta.errors.map((err, i) => (
+                  <p key={i} className="text-xs text-destructive">
+                    {err?.message as string}
+                  </p>
+                ))}
               </div>
             )}
           />
         </SectionCard>
 
-        {/* ── Skills ────────────────────────────────── */}
         <SectionCard title="Skills">
           <form.Field
             name="skills"
@@ -217,13 +310,16 @@ function RouteComponent() {
                     <PlusIcon className="size-4" />
                   </Button>
                 </div>
-                <FieldError errors={field.state.meta.errors} />
+                {field.state.meta.errors.map((err, i) => (
+                  <p key={i} className="text-xs text-destructive">
+                    {err?.message as string}
+                  </p>
+                ))}
               </div>
             )}
           />
         </SectionCard>
 
-        {/* ── Work Experience ───────────────────────── */}
         <SectionCard title="Work Experience">
           <form.Field
             name="experience"
@@ -257,7 +353,11 @@ function RouteComponent() {
                               onBlur={f.handleBlur}
                               className={inputClass}
                             />
-                            <FieldError errors={f.state.meta.errors} />
+                            {f.state.meta.errors.map((err, j) => (
+                              <p key={j} className="text-xs text-destructive">
+                                {err?.message as string}
+                              </p>
+                            ))}
                           </div>
                         )}
                       />
@@ -273,7 +373,11 @@ function RouteComponent() {
                               onBlur={f.handleBlur}
                               className={inputClass}
                             />
-                            <FieldError errors={f.state.meta.errors} />
+                            {f.state.meta.errors.map((err, j) => (
+                              <p key={j} className="text-xs text-destructive">
+                                {err?.message as string}
+                              </p>
+                            ))}
                           </div>
                         )}
                       />
@@ -291,7 +395,11 @@ function RouteComponent() {
                             onBlur={f.handleBlur}
                             className={inputClass}
                           />
-                          <FieldError errors={f.state.meta.errors} />
+                          {f.state.meta.errors.map((err, j) => (
+                            <p key={j} className="text-xs text-destructive">
+                              {err?.message as string}
+                            </p>
+                          ))}
                         </div>
                       )}
                     />
@@ -347,7 +455,11 @@ function RouteComponent() {
                           >
                             <PlusIcon className="size-3" /> Add bullet
                           </Button>
-                          <FieldError errors={bulletsField.state.meta.errors} />
+                          {bulletsField.state.meta.errors.map((err, j) => (
+                            <p key={j} className="text-xs text-destructive">
+                              {err?.message as string}
+                            </p>
+                          ))}
                         </div>
                       )}
                     />
@@ -369,13 +481,16 @@ function RouteComponent() {
                 >
                   <PlusIcon className="size-4" /> Add Experience
                 </Button>
-                <FieldError errors={field.state.meta.errors} />
+                {field.state.meta.errors.map((err, i) => (
+                  <p key={i} className="text-xs text-destructive">
+                    {err?.message as string}
+                  </p>
+                ))}
               </div>
             )}
           />
         </SectionCard>
 
-        {/* ── Education ─────────────────────────────── */}
         <SectionCard title="Education">
           <form.Field
             name="education"
@@ -407,7 +522,11 @@ function RouteComponent() {
                             onBlur={f.handleBlur}
                             className={inputClass}
                           />
-                          <FieldError errors={f.state.meta.errors} />
+                          {f.state.meta.errors.map((err, j) => (
+                            <p key={j} className="text-xs text-destructive">
+                              {err?.message as string}
+                            </p>
+                          ))}
                         </div>
                       )}
                     />
@@ -423,7 +542,11 @@ function RouteComponent() {
                             onBlur={f.handleBlur}
                             className={inputClass}
                           />
-                          <FieldError errors={f.state.meta.errors} />
+                          {f.state.meta.errors.map((err, j) => (
+                            <p key={j} className="text-xs text-destructive">
+                              {err?.message as string}
+                            </p>
+                          ))}
                         </div>
                       )}
                     />
@@ -439,7 +562,11 @@ function RouteComponent() {
                             onBlur={f.handleBlur}
                             className={inputClass}
                           />
-                          <FieldError errors={f.state.meta.errors} />
+                          {f.state.meta.errors.map((err, j) => (
+                            <p key={j} className="text-xs text-destructive">
+                              {err?.message as string}
+                            </p>
+                          ))}
                         </div>
                       )}
                     />
@@ -460,13 +587,16 @@ function RouteComponent() {
                 >
                   <PlusIcon className="size-4" /> Add Education
                 </Button>
-                <FieldError errors={field.state.meta.errors} />
+                {field.state.meta.errors.map((err, i) => (
+                  <p key={i} className="text-xs text-destructive">
+                    {err?.message as string}
+                  </p>
+                ))}
               </div>
             )}
           />
         </SectionCard>
 
-        {/* ── Links ─────────────────────────────────── */}
         <SectionCard title="Links">
           {(['github', 'linkedin', 'portfolio'] as const).map((key) => (
             <form.Field
@@ -485,28 +615,18 @@ function RouteComponent() {
                     onBlur={field.handleBlur}
                     className={inputClass}
                   />
-                  <FieldError errors={field.state.meta.errors} />
+                  {field.state.meta.errors.map((err, i) => (
+                    <p key={i} className="text-xs text-destructive">
+                      {err?.message as string}
+                    </p>
+                  ))}
                 </div>
               )}
             />
           ))}
         </SectionCard>
 
-        {/* ── Preferences ───────────────────────────── */}
         <SectionCard title="Preferences">
-          <form.Field
-            name="preferences.remote"
-            children={(field) => (
-              <div className="flex items-center justify-between">
-                <Label className={labelClass}>Open to Remote</Label>
-                <Switch
-                  checked={field.state.value}
-                  onCheckedChange={(v) => field.handleChange(v)}
-                />
-              </div>
-            )}
-          />
-
           <form.Field
             name="preferences.salaryRange"
             children={(field) => (
@@ -517,7 +637,7 @@ function RouteComponent() {
                 <Input
                   id="salaryRange"
                   placeholder="$120k – $160k"
-                  value={field.state.value ?? ''}
+                  value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
                   className={inputClass}
@@ -582,16 +702,29 @@ function RouteComponent() {
                     <PlusIcon className="size-4" />
                   </Button>
                 </div>
-                <FieldError errors={field.state.meta.errors} />
+                {field.state.meta.errors.map((err, i) => (
+                  <p key={i} className="text-xs text-destructive">
+                    {err?.message as string}
+                  </p>
+                ))}
               </div>
             )}
           />
         </SectionCard>
 
         <div className="flex justify-end pb-8">
-          <Button type="submit" className="text-[12px]">
-            Save Profile
-          </Button>
+          <form.Subscribe
+            selector={(s) => [s.isSubmitting, s.isDirty]}
+            children={([isSubmitting, isDirty]) => (
+              <Button
+                type="submit"
+                className="text-[13px] uppercase"
+                disabled={isSubmitting || !isDirty}
+              >
+                {profile.length > 0 ? 'Save Changes' : 'Submit'}
+              </Button>
+            )}
+          />
         </div>
       </form>
     </div>

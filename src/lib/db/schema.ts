@@ -73,6 +73,32 @@ export const verifications = pgTable('verification', {
   updatedAt: timestamp('updated_at'),
 })
 
+interface Experience {
+  company: string
+  role:    string
+  dates:   string
+  bullets: string[]
+}
+
+interface Education {
+  institution: string
+  degree:      string
+  year:        string
+}
+
+interface Links {
+  github:    string
+  linkedin:  string
+  portfolio: string
+}
+
+interface Preferences {
+  roles:              string[]
+  remote:             boolean
+  salaryRange:        string
+  interviewReminders: boolean
+}
+
 export const pilotProfiles = pgTable('pilot_profiles', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: text('user_id')
@@ -82,10 +108,10 @@ export const pilotProfiles = pgTable('pilot_profiles', {
   headline: text('headline'),
   summary: text('summary'),
   skills: text('skills').array(),
-  experience: jsonb('experience'),
-  education: jsonb('education'),
-  links: jsonb('links'),
-  preferences: jsonb('preferences'),
+  experience: jsonb('experience').$type<Experience[]>(),
+  education: jsonb('education').$type<Education[]>(),
+  links: jsonb('links').$type<Links>(),
+  preferences: jsonb('preferences').$type<Preferences>(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
   location: text('location'),
   timezone: text('timezone'),

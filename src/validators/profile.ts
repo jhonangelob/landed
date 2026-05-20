@@ -23,9 +23,9 @@ export const educationSchema = z.object({
 export type EducationInput = z.infer<typeof educationSchema>
 
 export const linksSchema = z.object({
-  github: z.string().url('Must be a valid URL').optional().or(z.literal('')),
-  linkedin: z.string().url('Must be a valid URL').optional().or(z.literal('')),
-  portfolio: z.string().url('Must be a valid URL').optional().or(z.literal('')),
+  github: z.string().url('Must be a valid URL').or(z.literal('')),
+  linkedin: z.string().url('Must be a valid URL').or(z.literal('')),
+  portfolio: z.string().url('Must be a valid URL').or(z.literal('')),
 })
 
 export type LinksInput = z.infer<typeof linksSchema>
@@ -35,8 +35,7 @@ export const preferencesSchema = z.object({
     .array(z.string().min(1))
     .min(1, 'Add at least one preferred role')
     .max(5, 'Maximum 5 preferred roles'),
-  remote: z.boolean().default(true),
-  salaryRange: z.string().optional(),
+  salaryRange: z.string(),
 })
 
 export type PreferencesInput = z.infer<typeof preferencesSchema>
@@ -84,43 +83,8 @@ export type PilotProfileInput = z.infer<typeof pilotProfileSchema>
 
 export const updatePilotProfileSchema = pilotProfileSchema
   .partial()
-  .extend({})
   .refine((data) => Object.keys(data).length > 0, {
     message: 'At least one field must be provided',
   })
 
 export type UpdatePilotProfileInput = z.infer<typeof updatePilotProfileSchema>
-
-export const pilotProfileDefaults: PilotProfileInput = {
-  fullName: '',
-  email: '',
-  location: '',
-  headline: '',
-  summary: '',
-  skills: [],
-  experience: [
-    {
-      company: '',
-      role: '',
-      dates: '',
-      bullets: [''],
-    },
-  ],
-  education: [
-    {
-      institution: '',
-      degree: '',
-      year: '',
-    },
-  ],
-  links: {
-    github: '',
-    linkedin: '',
-    portfolio: '',
-  },
-  preferences: {
-    roles: [],
-    remote: true,
-    salaryRange: '',
-  },
-}
