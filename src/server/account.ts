@@ -33,3 +33,15 @@ export const updateAccountDetails = createServerFn({ method: 'POST' })
 
     return { success: true }
   })
+
+export const deleteAccount = createServerFn({ method: 'POST' }).handler(
+  async () => {
+    const session = await getSession()
+
+    if (!session) throw new Error('Unauthorized')
+
+    await db.delete(users).where(eq(users.id, session.user.id))
+
+    return { success: true }
+  },
+)

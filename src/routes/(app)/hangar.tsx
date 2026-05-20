@@ -1,10 +1,23 @@
 import { SectionCard } from '#/components/layout/SectionCard'
 import SectionHeader from '#/components/layout/SectionHeader'
 import { Button } from '#/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '#/components/ui/dialog'
 import { Input } from '#/components/ui/input'
 import { Label } from '#/components/ui/label'
-import { changePassword } from '#/lib/auth/client'
-import { getAccountDetails, updateAccountDetails } from '#/server/account'
+import { ACCOUNT_DELETION_WARNING_LIST } from '#/constant/account'
+import { changePassword, signOut } from '#/lib/auth/client'
+import {
+  deleteAccount,
+  getAccountDetails,
+  updateAccountDetails,
+} from '#/server/account'
 import { updateAccountSchema } from '#/validators/account'
 import { useForm } from '@tanstack/react-form'
 import {
@@ -12,7 +25,8 @@ import {
   useQueryClient,
   useSuspenseQuery,
 } from '@tanstack/react-query'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { XIcon } from 'lucide-react'
 import { useState } from 'react'
 
 export const Route = createFileRoute('/(app)/hangar')({
@@ -35,9 +49,11 @@ const FEATURES = [
 ]
 
 function RouteComponent() {
+  const router = useRouter()
   const queryClient = useQueryClient()
 
   const [passwordUpdateError, setPasswordUpdateError] = useState('')
+  const [deleteInput, setDeleteInput] = useState('')
 
   const { data: account } = useSuspenseQuery({
     queryKey: ['account_details'],
@@ -70,23 +86,42 @@ function RouteComponent() {
     },
   })
 
+  const { mutateAsync: deleteUserProfile } = useMutation({
+    mutationFn: async (value: string) => {
+      console.log({ value })
+      if (value === 'DELETE') {
+        await deleteAccount()
+      }
+    },
+    onSuccess: () => {
+      signOut()
+      router.navigate({ to: '/co-pilot' })
+    },
+    onError: () => {},
+  })
+
   const form = useForm({
     defaultValues: {
       fullName: account[0].name,
       email: account[0].email,
       currentPassword: '',
-      newPassword: '',
       confirmPassword: '',
+      newPassword: '',
     },
     validators: { onSubmit: updateAccountSchema },
     onSubmit: async ({ value, formApi }) => {
       await updateProfile(value)
-      formApi.reset({ ...value, currentPassword: '', newPassword: '', confirmPassword: '' })
+      formApi.reset({
+        ...value,
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: '',
+      })
     },
   })
 
-  const handleDeleteAccount = () => {
-    console.log('unimplemented: Delete account')
+  const handleConfirmDeleteAccount = () => {
+    deleteUserProfile(deleteInput)
   }
 
   const handleUpgradePlan = () => {
@@ -347,13 +382,60 @@ function RouteComponent() {
                   documents. This <br /> cannot be undone.
                 </span>
               </div>
-              <Button
-                variant="destructive"
-                className="rounded-lg cursor-pointer"
-                onClick={handleDeleteAccount}
-              >
-                Delete account
-              </Button>
+
+              <Dialog>
+                <DialogTrigger>
+                  <Button
+                    variant="destructive"
+                    className="rounded-lg cursor-pointer"
+                  >
+                    Delete account
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="space-y-4 w-110">
+                  <DialogHeader>
+                    <DialogTitle>Are you absolutely sure?</DialogTitle>
+                    <DialogDescription className="font-medium">
+                      This will permanently delete your Landed account and all
+                      associated data. This action{' '}
+                      <span className="font-bold">cannot be undone.</span>
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="border p-3 flex flex-col gap-1 rounded-md border-destructive bg-red-200">
+                    {ACCOUNT_DELETION_WARNING_LIST.map((item) => (
+                      <div className="text-destructive font-sans text-[13px] font-medium flex flex-row gap-2 items-center">
+                        <XIcon className="w-4 h-4" />
+                        {item}
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <p className="flex gap-1 items-end text-[13px] font-sans">
+                      Type
+                      <span className="text-destructive font-mono font-medium">
+                        DELETE
+                      </span>
+                      to confirm
+                    </p>
+                    <Input
+                      placeholder="DELETE"
+                      value={deleteInput}
+                      onChange={(e) => setDeleteInput(e.target.value)}
+                    />
+                    <p className="text-muted-foreground font-sans text-[13px]">
+                      This action is permanent and cannot be reversed
+                    </p>
+                  </div>
+                  <Button
+                    variant="destructive"
+                    className="uppercase cursor-pointer w-fit ml-auto text-[13px]"
+                    disabled={deleteInput !== 'DELETE'}
+                    onClick={handleConfirmDeleteAccount}
+                  >
+                    Delete Account
+                  </Button>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
         </div>
