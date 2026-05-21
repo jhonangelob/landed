@@ -3,7 +3,7 @@ import { PlusIcon } from 'lucide-react'
 
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 
-import KanbanItem from '#/components/kanban/KanbanItem'
+import KanbanItem from '#/components/flight-deck/KanbanItem'
 import SectionHeader from '#/components/layout/SectionHeader'
 
 import { ApplicationStatusEnum } from '#/types/application'

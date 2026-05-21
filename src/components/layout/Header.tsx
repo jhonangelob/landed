@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { NAVIGATION } from '#/constant/navigations'
+import { NAVIGATION } from '#/constants/navigations'
 import {
   BellIcon,
   CircleQuestionMarkIcon,

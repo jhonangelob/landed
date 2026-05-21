@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { ACCOUNT_DELETION_WARNING_LIST } from '#/constant/account'
+import { ACCOUNT_DELETION_WARNING_LIST } from '#/constants/account'
 import { XIcon } from 'lucide-react'
 
 import { useForm } from '@tanstack/react-form'
