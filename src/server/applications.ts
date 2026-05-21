@@ -2,11 +2,14 @@ import { getSession } from '#/lib/auth/session'
 import { db } from '#/lib/db'
 import { applications } from '#/lib/db/schema'
 import {
+  createApplicationSchema,
   deleteApplicationSchema,
   updateApplicationSchema,
+  updateStatusSchema,
 } from '#/validators/application'
 import { createServerFn } from '@tanstack/react-start'
 import { and, eq, isNull } from 'drizzle-orm'
+import z from 'zod'
 
 export const getApplications = createServerFn({ method: 'GET' }).handler(
   async () => {
@@ -25,6 +28,49 @@ export const getApplications = createServerFn({ method: 'GET' }).handler(
       )
   },
 )
+
+export const getApplicationDetails = createServerFn({ method: 'GET' })
+  .inputValidator((data: unknown) =>
+    z.object({ id: z.string().uuid() }).parse(data),
+  )
+  .handler(async ({ data }) => {
+    const session = await getSession()
+    if (!session) throw new Error('Unauthorized')
+
+    const result = await db
+      .select()
+      .from(applications)
+      .where(
+        and(
+          eq(applications.id, data.id),
+          eq(applications.userId, session.user.id),
+        ),
+      )
+      .limit(1)
+
+    return result[0] ?? null
+  })
+
+export const saveApplication = createServerFn({
+  method: 'POST',
+})
+  .inputValidator((data: unknown) => createApplicationSchema.parse(data))
+  .handler(async ({ data }) => {
+    const session = await getSession()
+
+    if (!session) throw new Error('Unauthorized')
+
+    return await db
+      .insert(applications)
+      .values({
+        userId: session.user.id,
+        company: data.companyName,
+        role: data.jobTitle,
+        jobPostText: data.jobDescription,
+        status: 'spotted',
+      })
+      .returning()
+  })
 
 export const updateApplication = createServerFn({
   method: 'POST',
@@ -46,6 +92,26 @@ export const updateApplication = createServerFn({
         jobUrl: data.jobUrl,
         notes: data.notes,
       })
+      .where(
+        and(
+          eq(applications.userId, session.user.id),
+          eq(applications.id, data.id),
+        ),
+      )
+  })
+
+export const updateApplicationStatus = createServerFn({
+  method: 'POST',
+})
+  .inputValidator((data: unknown) => updateStatusSchema.parse(data))
+  .handler(async ({ data }) => {
+    const session = await getSession()
+
+    if (!session) throw new Error('Unauthorized')
+
+    await db
+      .update(applications)
+      .set({ status: data.status })
       .where(
         and(
           eq(applications.userId, session.user.id),

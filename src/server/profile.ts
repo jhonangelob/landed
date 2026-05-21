@@ -9,18 +9,18 @@ import { pilotProfiles, users } from '#/lib/db/schema'
 import { pilotProfileSchema } from '#/validators/profile'
 
 export const getProfile = createServerFn({ method: 'GET' }).handler(
-  async () => {
+  async (): Promise<any | null> => {
     const session = await getSession()
 
     if (!session) throw new Error('Unauthorized')
 
-    const [profile] = await db
+    const result = await db
       .select()
       .from(pilotProfiles)
       .where(eq(pilotProfiles.userId, session.user.id))
       .limit(1)
 
-    return profile
+    return result[0] ?? null
   },
 )
 

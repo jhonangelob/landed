@@ -22,6 +22,7 @@ import { getAccountDetails } from '#/server/account'
 import { getProfile, saveProfile, updateProfile } from '#/server/profile'
 
 import { pilotProfileSchema } from '#/validators/profile'
+import type { PilotProfile } from '#/lib/db/schema'
 
 export const Route = createFileRoute('/(app)/profile')({
   loader: ({ context: { queryClient } }) =>
@@ -46,11 +47,11 @@ function RouteComponent() {
 
   const { data: profile } = useSuspenseQuery({
     queryKey: ['profile'],
-    queryFn: () => getProfile(),
+    queryFn: (): Promise<PilotProfile | null> => getProfile(),
   })
 
   const { data: account } = useSuspenseQuery({
-    queryKey: ['account'],
+    queryKey: ['account_details'],
     queryFn: () => getAccountDetails(),
   })
 
@@ -61,8 +62,7 @@ function RouteComponent() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile'] })
     },
-    onError: (err) => {
-      console.log(err)
+    onError: () => {
       form.reset()
     },
   })
@@ -74,8 +74,7 @@ function RouteComponent() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile'] })
     },
-    onError: (err) => {
-      console.log(err)
+    onError: () => {
       form.reset()
     },
   })
@@ -85,20 +84,20 @@ function RouteComponent() {
 
   const form = useForm({
     defaultValues: {
-      fullName: account.name,
-      email: account.email,
-      location: profile.location ?? '',
-      headline: profile.headline ?? '',
-      summary: profile.summary ?? '',
-      skills: profile.skills ?? [],
-      experience: profile.experience ?? [
+      fullName: account?.name ?? '',
+      email: account?.email ?? '',
+      location: profile?.location ?? '',
+      headline: profile?.headline ?? '',
+      summary: profile?.summary ?? '',
+      skills: profile?.skills ?? [],
+      experience: profile?.experience ?? [
         { company: '', role: '', dates: '', bullets: [''] },
       ],
-      education: profile.education ?? [
+      education: profile?.education ?? [
         { institution: '', degree: '', year: '' },
       ],
-      links: profile.links ?? { github: '', linkedin: '', portfolio: '' },
-      preferences: (profile.preferences as {
+      links: profile?.links ?? { github: '', linkedin: '', portfolio: '' },
+      preferences: (profile?.preferences as {
         roles: string[]
         salaryRange: string
       } | null) ?? { roles: [] as string[], salaryRange: '' },
@@ -107,10 +106,10 @@ function RouteComponent() {
       onSubmit: pilotProfileSchema,
     },
     onSubmit: async ({ value }) => {
-      if (profile.id) {
-        updateProfileDetails(value)
+      if (profile?.id) {
+        await updateProfileDetails(value)
       } else {
-        saveProfileDetails(value)
+        await saveProfileDetails(value)
       }
     },
   })
@@ -261,7 +260,7 @@ function RouteComponent() {
             children={(field) => (
               <div className="space-y-3">
                 <div className="flex min-h-6 flex-wrap gap-2">
-                  {field.state.value.map((skill, i) => (
+                  {field.state.value.map((skill: string, i: number) => (
                     <span
                       key={i}
                       className="bg-secondary text-foreground flex items-center gap-1 rounded-md px-2 py-1 text-[12px] font-medium"
@@ -325,28 +324,70 @@ function RouteComponent() {
             children={(field) => (
               <div className="flex flex-col gap-4">
                 {field.state.value.map((_, i) => (
-                  <div
-                    key={i}
-                    className="relative flex flex-col gap-3 rounded-md border p-4"
-                  >
-                    {i > 0 && (
-                      <button
-                        type="button"
-                        onClick={() => form.removeFieldValue('experience', i)}
-                        className="text-muted-foreground hover:text-destructive absolute top-3 right-3"
-                      >
-                        <XIcon className="size-4" />
-                      </button>
-                    )}
+                    <div
+                      key={i}
+                      className="relative flex flex-col gap-3 rounded-md border p-4"
+                    >
+                      {i > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => form.removeFieldValue('experience', i)}
+                          className="text-muted-foreground hover:text-destructive absolute top-3 right-3"
+                        >
+                          <XIcon className="size-4" />
+                        </button>
+                      )}
 
-                    <div className="flex gap-4">
+                      <div className="flex gap-4">
+                        <form.Field
+                          name={`experience[${i}].company`}
+                          children={(f) => (
+                            <div className="w-full space-y-1.5">
+                              <Label className={labelClass}>Company</Label>
+                              <Input
+                                placeholder="Acme Corp"
+                                value={f.state.value}
+                                onChange={(e) => f.handleChange(e.target.value)}
+                                onBlur={f.handleBlur}
+                                className={inputClass}
+                              />
+                              {f.state.meta.errors.map((err, j) => (
+                                <p key={j} className="text-destructive text-xs">
+                                  {err?.message as string}
+                                </p>
+                              ))}
+                            </div>
+                          )}
+                        />
+                        <form.Field
+                          name={`experience[${i}].role`}
+                          children={(f) => (
+                            <div className="w-full space-y-1.5">
+                              <Label className={labelClass}>Role</Label>
+                              <Input
+                                placeholder="Software Engineer"
+                                value={f.state.value}
+                                onChange={(e) => f.handleChange(e.target.value)}
+                                onBlur={f.handleBlur}
+                                className={inputClass}
+                              />
+                              {f.state.meta.errors.map((err, j) => (
+                                <p key={j} className="text-destructive text-xs">
+                                  {err?.message as string}
+                                </p>
+                              ))}
+                            </div>
+                          )}
+                        />
+                      </div>
+
                       <form.Field
-                        name={`experience[${i}].company`}
+                        name={`experience[${i}].dates`}
                         children={(f) => (
-                          <div className="w-full space-y-1.5">
-                            <Label className={labelClass}>Company</Label>
+                          <div className="w-1/2 space-y-1.5">
+                            <Label className={labelClass}>Dates</Label>
                             <Input
-                              placeholder="Acme Corp"
+                              placeholder="Jan 2022 – Present"
                               value={f.state.value}
                               onChange={(e) => f.handleChange(e.target.value)}
                               onBlur={f.handleBlur}
@@ -360,19 +401,63 @@ function RouteComponent() {
                           </div>
                         )}
                       />
+
                       <form.Field
-                        name={`experience[${i}].role`}
-                        children={(f) => (
-                          <div className="w-full space-y-1.5">
-                            <Label className={labelClass}>Role</Label>
-                            <Input
-                              placeholder="Software Engineer"
-                              value={f.state.value}
-                              onChange={(e) => f.handleChange(e.target.value)}
-                              onBlur={f.handleBlur}
-                              className={inputClass}
-                            />
-                            {f.state.meta.errors.map((err, j) => (
+                        name={`experience[${i}].bullets`}
+                        children={(bulletsField) => (
+                          <div className="flex flex-col gap-2">
+                            <Label className={labelClass}>Bullet Points</Label>
+                            {bulletsField.state.value.map((__, j) => (
+                                <div
+                                  key={j}
+                                  className="flex items-center gap-2"
+                                >
+                                  <form.Field
+                                    name={`experience[${i}].bullets[${j}]`}
+                                    children={(bf) => (
+                                      <Input
+                                        placeholder="Achieved X by doing Y, resulting in Z..."
+                                        value={bf.state.value}
+                                        onChange={(e) =>
+                                          bf.handleChange(e.target.value)
+                                        }
+                                        onBlur={bf.handleBlur}
+                                        className={`flex-1 ${inputClass}`}
+                                      />
+                                    )}
+                                  />
+                                  {j > 0 && (
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        form.removeFieldValue(
+                                          `experience[${i}].bullets`,
+                                          j,
+                                        )
+                                      }
+                                      className="text-muted-foreground hover:text-destructive shrink-0"
+                                    >
+                                      <XIcon className="size-4" />
+                                    </button>
+                                  )}
+                                </div>
+                              ),
+                            )}
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="w-fit text-xs"
+                              onClick={() =>
+                                form.pushFieldValue(
+                                  `experience[${i}].bullets`,
+                                  '',
+                                )
+                              }
+                            >
+                              <PlusIcon className="size-3" /> Add bullet
+                            </Button>
+                            {bulletsField.state.meta.errors.map((err, j) => (
                               <p key={j} className="text-destructive text-xs">
                                 {err?.message as string}
                               </p>
@@ -381,89 +466,8 @@ function RouteComponent() {
                         )}
                       />
                     </div>
-
-                    <form.Field
-                      name={`experience[${i}].dates`}
-                      children={(f) => (
-                        <div className="w-1/2 space-y-1.5">
-                          <Label className={labelClass}>Dates</Label>
-                          <Input
-                            placeholder="Jan 2022 – Present"
-                            value={f.state.value}
-                            onChange={(e) => f.handleChange(e.target.value)}
-                            onBlur={f.handleBlur}
-                            className={inputClass}
-                          />
-                          {f.state.meta.errors.map((err, j) => (
-                            <p key={j} className="text-destructive text-xs">
-                              {err?.message as string}
-                            </p>
-                          ))}
-                        </div>
-                      )}
-                    />
-
-                    <form.Field
-                      name={`experience[${i}].bullets`}
-                      children={(bulletsField) => (
-                        <div className="flex flex-col gap-2">
-                          <Label className={labelClass}>Bullet Points</Label>
-                          {bulletsField.state.value.map((__, j) => (
-                            <div key={j} className="flex items-center gap-2">
-                              <form.Field
-                                name={`experience[${i}].bullets[${j}]`}
-                                children={(bf) => (
-                                  <Input
-                                    placeholder="Achieved X by doing Y, resulting in Z..."
-                                    value={bf.state.value}
-                                    onChange={(e) =>
-                                      bf.handleChange(e.target.value)
-                                    }
-                                    onBlur={bf.handleBlur}
-                                    className={`flex-1 ${inputClass}`}
-                                  />
-                                )}
-                              />
-                              {j > 0 && (
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    form.removeFieldValue(
-                                      `experience[${i}].bullets`,
-                                      j,
-                                    )
-                                  }
-                                  className="text-muted-foreground hover:text-destructive shrink-0"
-                                >
-                                  <XIcon className="size-4" />
-                                </button>
-                              )}
-                            </div>
-                          ))}
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            className="w-fit text-xs"
-                            onClick={() =>
-                              form.pushFieldValue(
-                                `experience[${i}].bullets`,
-                                '',
-                              )
-                            }
-                          >
-                            <PlusIcon className="size-3" /> Add bullet
-                          </Button>
-                          {bulletsField.state.meta.errors.map((err, j) => (
-                            <p key={j} className="text-destructive text-xs">
-                              {err?.message as string}
-                            </p>
-                          ))}
-                        </div>
-                      )}
-                    />
-                  </div>
-                ))}
+                  ),
+                )}
 
                 <Button
                   type="button"
@@ -496,81 +500,82 @@ function RouteComponent() {
             children={(field) => (
               <div className="flex flex-col gap-4">
                 {field.state.value.map((_, i) => (
-                  <div
-                    key={i}
-                    className="relative grid grid-cols-3 gap-4 rounded-md border p-4"
-                  >
-                    {i > 0 && (
-                      <button
-                        type="button"
-                        onClick={() => form.removeFieldValue('education', i)}
-                        className="text-muted-foreground hover:text-destructive absolute top-3 right-3"
-                      >
-                        <XIcon className="size-4" />
-                      </button>
-                    )}
-                    <form.Field
-                      name={`education[${i}].institution`}
-                      children={(f) => (
-                        <div className="space-y-1.5">
-                          <Label className={labelClass}>Institution</Label>
-                          <Input
-                            placeholder="MIT"
-                            value={f.state.value}
-                            onChange={(e) => f.handleChange(e.target.value)}
-                            onBlur={f.handleBlur}
-                            className={inputClass}
-                          />
-                          {f.state.meta.errors.map((err, j) => (
-                            <p key={j} className="text-destructive text-xs">
-                              {err?.message as string}
-                            </p>
-                          ))}
-                        </div>
+                    <div
+                      key={i}
+                      className="relative grid grid-cols-3 gap-4 rounded-md border p-4"
+                    >
+                      {i > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => form.removeFieldValue('education', i)}
+                          className="text-muted-foreground hover:text-destructive absolute top-3 right-3"
+                        >
+                          <XIcon className="size-4" />
+                        </button>
                       )}
-                    />
-                    <form.Field
-                      name={`education[${i}].degree`}
-                      children={(f) => (
-                        <div className="space-y-1.5">
-                          <Label className={labelClass}>Degree</Label>
-                          <Input
-                            placeholder="B.S. Computer Science"
-                            value={f.state.value}
-                            onChange={(e) => f.handleChange(e.target.value)}
-                            onBlur={f.handleBlur}
-                            className={inputClass}
-                          />
-                          {f.state.meta.errors.map((err, j) => (
-                            <p key={j} className="text-destructive text-xs">
-                              {err?.message as string}
-                            </p>
-                          ))}
-                        </div>
-                      )}
-                    />
-                    <form.Field
-                      name={`education[${i}].year`}
-                      children={(f) => (
-                        <div className="space-y-1.5">
-                          <Label className={labelClass}>Year</Label>
-                          <Input
-                            placeholder="2020"
-                            value={f.state.value}
-                            onChange={(e) => f.handleChange(e.target.value)}
-                            onBlur={f.handleBlur}
-                            className={inputClass}
-                          />
-                          {f.state.meta.errors.map((err, j) => (
-                            <p key={j} className="text-destructive text-xs">
-                              {err?.message as string}
-                            </p>
-                          ))}
-                        </div>
-                      )}
-                    />
-                  </div>
-                ))}
+                      <form.Field
+                        name={`education[${i}].institution`}
+                        children={(f) => (
+                          <div className="space-y-1.5">
+                            <Label className={labelClass}>Institution</Label>
+                            <Input
+                              placeholder="MIT"
+                              value={f.state.value}
+                              onChange={(e) => f.handleChange(e.target.value)}
+                              onBlur={f.handleBlur}
+                              className={inputClass}
+                            />
+                            {f.state.meta.errors.map((err, j) => (
+                              <p key={j} className="text-destructive text-xs">
+                                {err?.message as string}
+                              </p>
+                            ))}
+                          </div>
+                        )}
+                      />
+                      <form.Field
+                        name={`education[${i}].degree`}
+                        children={(f) => (
+                          <div className="space-y-1.5">
+                            <Label className={labelClass}>Degree</Label>
+                            <Input
+                              placeholder="B.S. Computer Science"
+                              value={f.state.value}
+                              onChange={(e) => f.handleChange(e.target.value)}
+                              onBlur={f.handleBlur}
+                              className={inputClass}
+                            />
+                            {f.state.meta.errors.map((err, j) => (
+                              <p key={j} className="text-destructive text-xs">
+                                {err?.message as string}
+                              </p>
+                            ))}
+                          </div>
+                        )}
+                      />
+                      <form.Field
+                        name={`education[${i}].year`}
+                        children={(f) => (
+                          <div className="space-y-1.5">
+                            <Label className={labelClass}>Year</Label>
+                            <Input
+                              placeholder="2020"
+                              value={f.state.value}
+                              onChange={(e) => f.handleChange(e.target.value)}
+                              onBlur={f.handleBlur}
+                              className={inputClass}
+                            />
+                            {f.state.meta.errors.map((err, j) => (
+                              <p key={j} className="text-destructive text-xs">
+                                {err?.message as string}
+                              </p>
+                            ))}
+                          </div>
+                        )}
+                      />
+                    </div>
+                  ),
+                )}
 
                 <Button
                   type="button"
@@ -720,7 +725,7 @@ function RouteComponent() {
                 className="text-[13px] uppercase"
                 disabled={isSubmitting || !isDirty}
               >
-                {profile.id ? 'Save Changes' : 'Submit'}
+                {profile?.id ? 'Save Changes' : 'Submit'}
               </Button>
             )}
           />

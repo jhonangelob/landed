@@ -9,18 +9,18 @@ import { users } from '#/lib/db/schema'
 import { updateAccountSchema } from '#/validators/account'
 
 export const getAccountDetails = createServerFn({ method: 'GET' }).handler(
-  async () => {
+  async (): Promise<any | null> => {
     const session = await getSession()
 
     if (!session) throw new Error('Unauthorized')
 
-    const [account] = await db
+    const result = await db
       .select()
       .from(users)
       .where(eq(users.id, session.user.id))
       .limit(1)
 
-    return account
+    return result[0] ?? null
   },
 )
 

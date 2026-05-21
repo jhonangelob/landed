@@ -17,9 +17,9 @@ export const createApplicationSchema = z.object({
   companyName: z.string().min(1, 'Company name is required'),
   jobTitle: z.string().min(1, 'Job title is required'),
   jobDescription: z.string().min(1, 'Job description is required'),
-  jobUrl: z.string().url('Must be a valid URL').optional().or(z.literal('')),
-  location: z.string().optional(),
-  salaryRange: z.string().optional(),
+  jobUrl: z.string().url('Must be a valid URL').or(z.literal('')),
+  location: z.string().or(z.literal('')),
+  salaryRange: z.string().or(z.literal('')),
   notes: z.string().optional(),
   status: applicationStatusSchema.default('spotted'),
 })

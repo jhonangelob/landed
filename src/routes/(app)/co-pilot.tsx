@@ -1,7 +1,7 @@
 import { SparklesIcon } from 'lucide-react'
 
 import { useForm } from '@tanstack/react-form'
-import { useMutation, useSuspenseQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 
 import { Button } from '#/components/ui/button'
@@ -16,22 +16,58 @@ import { generateDocuments } from '#/server/co-pilot'
 import { getProfile } from '#/server/profile'
 
 import { createApplicationSchema } from '#/validators/application'
+import z from 'zod'
+import {
+  getApplicationDetails,
+  saveApplication,
+  updateApplication,
+} from '#/server/applications'
 
 export const Route = createFileRoute('/(app)/co-pilot')({
-  loader: ({ context: { queryClient } }) =>
-    queryClient.ensureQueryData({
-      queryKey: ['profile'],
-      queryFn: () => getProfile(),
-    }),
+  validateSearch: z.object({
+    applicationId: z.string().uuid().optional(),
+  }),
+  loader: ({ context: { queryClient }, location }) => {
+    const { applicationId } = location.search as { applicationId?: string }
+
+    const queries = [
+      queryClient.ensureQueryData({
+        queryKey: ['profile'],
+        queryFn: () => getProfile(),
+      }),
+    ]
+
+    if (applicationId) {
+      queries.push(
+        queryClient.ensureQueryData({
+          queryKey: ['application', applicationId],
+          queryFn: () => getApplicationDetails({ data: { id: applicationId } }),
+        }),
+      )
+    }
+
+    return Promise.all(queries)
+  },
   component: RouteComponent,
 })
 
 function RouteComponent() {
   const router = useRouter()
+  const { applicationId } = Route.useSearch()
+  const isEditMode = !!applicationId
 
   const { data: profile } = useSuspenseQuery({
     queryKey: ['profile'],
     queryFn: () => getProfile(),
+  })
+
+  const { data: application } = useQuery({
+    queryKey: ['application', applicationId ?? 'skip'],
+    queryFn: () => {
+      if (!applicationId) return Promise.resolve(null) // ← guard
+      return getApplicationDetails({ data: { id: applicationId } })
+    },
+    enabled: isEditMode,
   })
 
   const { mutateAsync: generateDocument } = useMutation({
@@ -39,7 +75,39 @@ function RouteComponent() {
       return await generateDocuments({ data: value })
     },
     onSuccess: (data) => {
-      console.log(data)
+      router.navigate({
+        to: '/co-pilot',
+        search: { applicationId: data.id },
+      })
+    },
+    onError: () => {
+      form.reset()
+    },
+  })
+
+  const { mutateAsync: updateApplicationDetails } = useMutation({
+    mutationFn: async (value: typeof form.state.values) => {
+      return await updateApplication({
+        data: {
+          id: applicationId!,
+          companyName: value.companyName,
+          jobTitle: value.jobTitle,
+          jobUrl: value.jobUrl || null,
+          location: application?.location ?? null,
+          salaryRange: value.salaryRange || null,
+          notes: application?.notes ?? null,
+          status: application?.status ?? 'spotted',
+        },
+      })
+    },
+    onError: () => {
+      form.reset()
+    },
+  })
+
+  const { mutateAsync: saveApplicationDetails } = useMutation({
+    mutationFn: async (value: typeof form.state.values) => {
+      return await saveApplication({ data: value })
     },
     onError: () => {
       form.reset()
@@ -48,36 +116,46 @@ function RouteComponent() {
 
   const form = useForm({
     defaultValues: {
-      companyName: '',
-      jobTitle: '',
-      jobDescription: '',
+      companyName: application?.company || '',
+      jobTitle: application?.role || '',
+      jobDescription: application?.jobPostText || '',
+      jobUrl: application?.jobUrl || '',
+      salaryRange: application?.salaryRange || '',
     },
     validators: {
       onSubmit: createApplicationSchema,
     },
-    onSubmit: async ({ value }) => {
-      const docs = generateDocument(value)
-      console.log(docs)
+    onSubmit: ({ value }) => {
+      if (isEditMode) {
+        updateApplicationDetails(value)
+      } else {
+        saveApplicationDetails(value)
+      }
     },
   })
+
+  const handleGenerateDocuments = () => {
+    generateDocument(form.state.values)
+  }
 
   const handleSetupProfile = () => {
     router.navigate({ to: '/profile' })
   }
 
+  const pageDescription = isEditMode
+    ? 'Editing existing application. Changes saved here will update this application on your Flight Deck.'
+    : "Paste a job posting and we'll tailor your CV and cover letter using your Pilot Profile."
+
   return (
     <div className="section">
-      <SectionHeader
-        title="Co-Pilot"
-        description="Paste a job posting and we'll tailor your CV and cover letter using your Pilot Profile."
-      />
+      <SectionHeader title="Co-Pilot" description={pageDescription} />
       <div className="flex flex-row gap-3">
         <form
           onSubmit={(e) => {
             e.preventDefault()
             form.handleSubmit()
           }}
-          className="w-full space-y-8 lg:w-3/5"
+          className="w-full space-y-4 lg:w-3/5"
         >
           <SectionCard title="Application Information">
             <div className="flex flex-row space-x-4">
@@ -136,6 +214,64 @@ function RouteComponent() {
               />
             </div>
 
+            {isEditMode && (
+              <div className="flex flex-row space-x-4">
+                <form.Field
+                  name="jobUrl"
+                  children={(field) => (
+                    <div className="w-full space-y-1.5">
+                      <Label
+                        htmlFor="jobUrl"
+                        className="text-muted-foreground font-sans text-[12px] font-medium"
+                      >
+                        Job URL
+                      </Label>
+                      <Input
+                        id="jobUrl"
+                        placeholder="e.g. Acme Corp"
+                        value={field.state.value}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        onBlur={field.handleBlur}
+                        className="bg-white shadow-none placeholder:text-sm"
+                      />
+                      {field.state.meta.errors.map((err, i) => (
+                        <p key={i} className="text-destructive text-xs">
+                          {err?.message as string}
+                        </p>
+                      ))}
+                    </div>
+                  )}
+                />
+
+                <form.Field
+                  name="salaryRange"
+                  children={(field) => (
+                    <div className="w-full space-y-1.5">
+                      <Label
+                        htmlFor="salaryRange"
+                        className="text-muted-foreground font-sans text-[12px] font-medium"
+                      >
+                        Salary Range
+                      </Label>
+                      <Input
+                        id="salaryRange"
+                        placeholder="e.g. Software Engineer"
+                        value={field.state.value}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        onBlur={field.handleBlur}
+                        className="bg-white shadow-none placeholder:text-sm"
+                      />
+                      {field.state.meta.errors.map((err, i) => (
+                        <p key={i} className="text-destructive text-xs">
+                          {err?.message as string}
+                        </p>
+                      ))}
+                    </div>
+                  )}
+                />
+              </div>
+            )}
+
             <form.Field
               name="jobDescription"
               children={(field) => (
@@ -163,21 +299,41 @@ function RouteComponent() {
                 </div>
               )}
             />
-          </SectionCard>
 
-          <div className="flex flex-col-reverse items-center justify-between gap-4 rounded-md border bg-white px-4 py-3 md:flex-row">
-            <p className="text-muted-foreground text-center font-sans text-[12px] md:text-left">
-              {profile.id
-                ? 'Co-Pilot will match your Pilot Profile to this exact role.'
-                : 'You need to setup your pilot profile first.'}
-            </p>
-            {profile.id ? (
+            {profile && isEditMode && (
               <Button
                 type="submit"
                 className="w-full cursor-pointer text-[12px] uppercase md:w-auto"
               >
-                <SparklesIcon /> Generate Documents
+                Update Application
               </Button>
+            )}
+          </SectionCard>
+
+          <div className="flex flex-col-reverse items-center justify-between gap-4 rounded-md border bg-white px-4 py-3 md:flex-row">
+            <p className="text-muted-foreground text-center font-sans text-[12px] md:text-left">
+              {profile
+                ? 'Co-Pilot will match your Pilot Profile to this exact role.'
+                : 'You need to setup your pilot profile first.'}
+            </p>
+
+            {profile ? (
+              <form.Subscribe
+                selector={(s) => [s.isSubmitting, s.isDirty]}
+                children={([isSubmitting, isDirty]) => (
+                  <Button
+                    type="button"
+                    className="w-full cursor-pointer text-[12px] uppercase md:w-auto"
+                    onClick={handleGenerateDocuments}
+                    disabled={isSubmitting || !isDirty}
+                  >
+                    <SparklesIcon />{' '}
+                    {isEditMode
+                      ? 'Re-Generate Documents'
+                      : 'Generate Documents'}
+                  </Button>
+                )}
+              />
             ) : (
               <Button
                 type="button"

@@ -111,6 +111,7 @@ export const generateDocuments = createServerFn({ method: 'POST' })
     ])
 
     return {
+      id: application.id,
       cv: parsed.cv,
       coverLetter: parsed.coverLetter,
     }

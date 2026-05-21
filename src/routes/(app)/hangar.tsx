@@ -95,7 +95,6 @@ function RouteComponent() {
 
   const { mutateAsync: deleteUserProfile } = useMutation({
     mutationFn: async (value: string) => {
-      console.log({ value })
       if (value === 'DELETE') {
         await deleteAccount()
       }
