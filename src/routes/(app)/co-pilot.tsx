@@ -9,7 +9,8 @@ import { SparklesIcon } from 'lucide-react'
 import { createApplicationSchema } from '#/validators/application'
 import { SectionCard } from '#/components/layout/SectionCard'
 import { getProfile } from '#/server/profile'
-import { useSuspenseQuery } from '@tanstack/react-query'
+import { useMutation, useSuspenseQuery } from '@tanstack/react-query'
+import { generateDocuments } from '#/server/co-pilot'
 
 export const Route = createFileRoute('/(app)/co-pilot')({
   loader: ({ context: { queryClient } }) =>
@@ -28,7 +29,17 @@ function RouteComponent() {
     queryFn: () => getProfile(),
   })
 
-  console.log({ profile })
+  const { mutateAsync: generateDocument } = useMutation({
+    mutationFn: async (value: typeof form.state.values) => {
+      return await generateDocuments({ data: value })
+    },
+    onSuccess: (data) => {
+      console.log(data)
+    },
+    onError: () => {
+      form.reset()
+    },
+  })
 
   const form = useForm({
     defaultValues: {
@@ -40,7 +51,8 @@ function RouteComponent() {
       onSubmit: createApplicationSchema,
     },
     onSubmit: async ({ value }) => {
-      console.log(value)
+      const docs = generateDocument(value)
+      console.log(docs)
     },
   })
 
@@ -83,7 +95,7 @@ function RouteComponent() {
                       className="bg-white shadow-none placeholder:text-sm"
                     />
                     {field.state.meta.errors.map((err, i) => (
-                      <p key={i} className="text-sm text-destructive">
+                      <p key={i} className="text-xs text-destructive">
                         {err?.message as string}
                       </p>
                     ))}
@@ -110,7 +122,7 @@ function RouteComponent() {
                       className="bg-white shadow-none placeholder:text-sm"
                     />
                     {field.state.meta.errors.map((err, i) => (
-                      <p key={i} className="text-sm text-destructive">
+                      <p key={i} className="text-xs text-destructive">
                         {err?.message as string}
                       </p>
                     ))}
@@ -139,7 +151,7 @@ function RouteComponent() {
                     className="bg-white shadow-none placeholder:text-sm"
                   />
                   {field.state.meta.errors.map((err, i) => (
-                    <p key={i} className="text-sm text-destructive">
+                    <p key={i} className="text-xs text-destructive">
                       {err?.message as string}
                     </p>
                   ))}

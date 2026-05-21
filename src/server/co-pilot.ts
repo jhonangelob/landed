@@ -1,0 +1,115 @@
+import { getSession } from '#/lib/auth/session'
+import { createServerFn } from '@tanstack/react-start'
+import { db } from '#/lib/db'
+import { applications, generatedDocs, pilotProfiles } from '#/lib/db/schema'
+import { eq } from 'drizzle-orm'
+
+import { generateText } from 'ai'
+import { anthropic } from '@ai-sdk/anthropic'
+import { generateDocumentSchema } from '#/validators/co-pilot'
+
+export const generateDocuments = createServerFn({ method: 'POST' })
+  .inputValidator((data: unknown) => generateDocumentSchema.parse(data))
+  .handler(async ({ data }) => {
+    const session = await getSession()
+
+    if (!session) throw new Error('Unauthorized')
+
+    const {
+      companyName: company,
+      jobTitle: role,
+      jobDescription: description,
+    } = data
+
+    const [profile] = await db
+      .select()
+      .from(pilotProfiles)
+      .where(eq(pilotProfiles.userId, session.user.id))
+      .limit(1)
+
+    const [application] = await db
+      .insert(applications)
+      .values({
+        userId: session.user.id,
+        company,
+        role,
+        jobPostText: description,
+        status: 'spotted',
+      })
+      .returning()
+
+    const { text } = await generateText({
+      model: anthropic('claude-haiku-4-5-20251001'),
+      system: `
+        You are Co-Pilot, an expert CV writer inside the Landed app.
+        Respond ONLY with valid JSON — no markdown, no backticks, no extra text.
+        Return this exact shape:
+        {
+          "cv": {
+            "headline": "string",
+            "summary": "string",
+            "experience": [{ "company": "string", "role": "string", "dates": "string", "bullets": ["string"] }],
+            "skills": ["string"],
+            "education": [{ "institution": "string", "degree": "string", "year": "string" }]
+          },
+          "coverLetter": {
+            "opening": "string",
+            "body": "string",
+            "closing": "string"
+          }
+        }
+        Rules:
+        - Mirror language from the job posting
+        - Reorder skills to match requirements
+        - Use numbers and outcomes wherever the profile has them
+        - Do NOT invent experience or skills not in the profile
+      `.trim(),
+      prompt: `
+        Job Details:
+        Company: ${company}
+        Role: ${role}
+
+        Job Posting:
+        ${description}
+
+        Candidate Profile:
+        Name: ${profile.headline}
+        Summary: ${profile.summary}
+        Skills: ${(profile.skills ?? []).join(', ')}
+        Experience: ${JSON.stringify(profile.experience, null, 2)}
+        Education: ${JSON.stringify(profile.education, null, 2)}
+      `.trim(),
+      maxOutputTokens: 3000,
+    })
+
+    const cleaned = text
+      .replace(/```json\n?/g, '')
+      .replace(/```\n?/g, '')
+      .trim()
+
+    const parsed = JSON.parse(cleaned)
+
+    await db.insert(generatedDocs).values([
+      {
+        userId: session.user.id,
+        applicationId: application.id,
+        type: 'cv',
+        contentJson: parsed.cv,
+        contentHtml: '',
+        version: 1,
+      },
+      {
+        userId: session.user.id,
+        applicationId: application.id,
+        type: 'cover_letter',
+        contentJson: parsed.coverLetter,
+        contentHtml: '',
+        version: 1,
+      },
+    ])
+
+    return {
+      cv: parsed.cv,
+      coverLetter: parsed.coverLetter,
+    }
+  })

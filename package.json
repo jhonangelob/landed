@@ -20,6 +20,7 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^3.0.78",
     "@neondatabase/serverless": "^1.1.0",
     "@tailwindcss/vite": "^4.3.0",
     "@tanstack/react-devtools": "latest",
@@ -31,6 +32,7 @@
     "@tanstack/react-router-ssr-query": "latest",
     "@tanstack/react-start": "latest",
     "@tanstack/router-plugin": "^1.132.0",
+    "ai": "^6.0.188",
     "better-auth": "^1.6.11",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

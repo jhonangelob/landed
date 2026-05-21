@@ -54,7 +54,7 @@ export const saveProfile = createServerFn({ method: 'POST' })
           skills: data.skills,
           experience: data.experience,
           education: data.education,
-          links: data.links as any,
+          links: data.links,
           preferences: data.preferences as any,
           updatedAt: new Date(),
         },
@@ -84,7 +84,7 @@ export const updateProfile = createServerFn({ method: 'POST' })
         skills: data.skills,
         experience: data.experience,
         education: data.education,
-        links: data.links as any,
+        links: data.links,
         preferences: data.preferences as any,
         updatedAt: new Date(),
       })
