@@ -1,6 +1,7 @@
+import { useEffect, useRef, useState } from 'react'
+
 import { useIsFetching, useIsMutating } from '@tanstack/react-query'
 import { useRouterState } from '@tanstack/react-router'
-import { useEffect, useRef, useState } from 'react'
 
 export function NavigationProgress() {
   const initialLoadDone = useRef(false)
@@ -24,12 +25,7 @@ export function NavigationProgress() {
   return (
     <>
       <div
-        className={`
-          fixed top-0 left-0 right-0 z-9999 h-0.5
-          pointer-events-none
-          transition-opacity duration-300
-          ${show ? 'opacity-100' : 'opacity-0'}
-        `}
+        className={`pointer-events-none fixed top-0 right-0 left-0 z-9999 h-0.5 transition-opacity duration-300 ${show ? 'opacity-100' : 'opacity-0'} `}
       >
         <div
           className="h-full w-full bg-sky-500"

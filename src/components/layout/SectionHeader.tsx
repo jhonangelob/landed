@@ -13,11 +13,11 @@ export default function SectionHeader({
 }: SectionHeader) {
   return (
     <div className="flex flex-row">
-      <div className="flex-1 flex flex-col">
-        <p className="font-display font-bold text-[18px] md:text-[32px] text-primary">
+      <div className="flex flex-1 flex-col">
+        <p className="font-display text-primary text-[18px] font-bold md:text-[32px]">
           {title}
         </p>
-        <p className="font-sans font-medium  text-[12px] md:text-[14px] text-muted-foreground">
+        <p className="text-muted-foreground font-sans text-[12px] font-medium md:text-[14px]">
           {description}
         </p>
       </div>

@@ -1,14 +1,14 @@
-import {
-  pgTable,
-  pgEnum,
-  uuid,
-  text,
-  jsonb,
-  integer,
-  timestamp,
-  boolean,
-} from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
+import {
+  boolean,
+  integer,
+  jsonb,
+  pgEnum,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+} from 'drizzle-orm/pg-core'
 
 export const applicationStatusEnum = pgEnum('application_status', [
   'spotted',
@@ -75,27 +75,27 @@ export const verifications = pgTable('verification', {
 
 interface Experience {
   company: string
-  role:    string
-  dates:   string
+  role: string
+  dates: string
   bullets: string[]
 }
 
 interface Education {
   institution: string
-  degree:      string
-  year:        string
+  degree: string
+  year: string
 }
 
 interface Links {
-  github:    string
-  linkedin:  string
+  github: string
+  linkedin: string
   portfolio: string
 }
 
 interface Preferences {
-  roles:              string[]
-  remote:             boolean
-  salaryRange:        string
+  roles: string[]
+  remote: boolean
+  salaryRange: string
   interviewReminders: boolean
 }
 

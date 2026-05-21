@@ -1,11 +1,13 @@
-import { getSession } from '#/lib/auth/session'
-import { createServerFn } from '@tanstack/react-start'
-import { db } from '#/lib/db'
-import { applications, generatedDocs, pilotProfiles } from '#/lib/db/schema'
+import { anthropic } from '@ai-sdk/anthropic'
+import { generateText } from 'ai'
 import { eq } from 'drizzle-orm'
 
-import { generateText } from 'ai'
-import { anthropic } from '@ai-sdk/anthropic'
+import { createServerFn } from '@tanstack/react-start'
+
+import { getSession } from '#/lib/auth/session'
+import { db } from '#/lib/db'
+import { applications, generatedDocs, pilotProfiles } from '#/lib/db/schema'
+
 import { generateDocumentSchema } from '#/validators/co-pilot'
 
 export const generateDocuments = createServerFn({ method: 'POST' })

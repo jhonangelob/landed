@@ -1,6 +1,7 @@
 import type { Application } from '#/dummy/data'
-import type { ApplicationStatusEnum } from '#/types/application'
+
 import { useForm } from '@tanstack/react-form'
+
 import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
 import { Label } from '#/components/ui/label'
@@ -12,8 +13,12 @@ import {
   SelectValue,
 } from '#/components/ui/select'
 import { Textarea } from '#/components/ui/textarea'
-import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet'
+
 import { updateApplicationSchema } from '#/validators/application'
+
+import type { ApplicationStatusEnum } from '#/types/application'
+
+import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet'
 
 export interface KanbanItemProps {
   data: Application
@@ -59,7 +64,7 @@ const statusItemClass: Record<(typeof STATUS_OPTIONS)[number], string> = {
 function KanbanItemBadge({ label, variant }: KanbanItemBadgeProps) {
   return (
     <div
-      className={`border w-fit rounded-md py-0.5 px-1.5 font-sans uppercase text-[10px] leading-3.75 ${variantStyles[variant]}`}
+      className={`w-fit rounded-md border px-1.5 py-0.5 font-sans text-[10px] leading-3.75 uppercase ${variantStyles[variant]}`}
     >
       {label}
     </div>
@@ -90,9 +95,9 @@ export default function KanbanItem({ data, ...rest }: KanbanItemProps) {
   return (
     <Sheet>
       <SheetTrigger>
-        <div className="rounded-lg border hover:border-primary bg-white p-4 w-73 flex flex-col space-y-1.5 cursor-pointer">
-          <div className="flex flex-row justify-between items-center">
-            <p className="font-mono text-[12px] font-medium text-muted-foreground">
+        <div className="hover:border-primary flex w-73 cursor-pointer flex-col space-y-1.5 rounded-lg border bg-white p-4">
+          <div className="flex flex-row items-center justify-between">
+            <p className="text-muted-foreground font-mono text-[12px] font-medium">
               {new Date(data.created_at).toLocaleDateString('en-US', {
                 month: 'short',
                 day: 'numeric',
@@ -104,30 +109,30 @@ export default function KanbanItem({ data, ...rest }: KanbanItemProps) {
               {...rest}
             />
           </div>
-          <p className="font-display text-[12px] text-left font-bold text-primary-text">
+          <p className="font-display text-primary-text text-left text-[12px] font-bold">
             {data.role}
           </p>
-          <p className="font-sans text-[12px] text-left font-medium text-muted-foreground">
+          <p className="text-muted-foreground text-left font-sans text-[12px] font-medium">
             {data.company}
           </p>
         </div>
       </SheetTrigger>
-      <SheetContent className="pt-12 px-8 pb-8 overflow-y-auto bg-white flex flex-col">
+      <SheetContent className="flex flex-col overflow-y-auto bg-white px-8 pt-12 pb-8">
         <form
           onSubmit={(e) => {
             e.preventDefault()
             form.handleSubmit()
           }}
-          className="flex flex-col gap-4 w-full flex-1"
+          className="flex w-full flex-1 flex-col gap-4"
         >
-          <div className="flex md:flex-row flex-col gap-4">
+          <div className="flex flex-col gap-4 md:flex-row">
             <form.Field
               name="companyName"
               children={(field) => (
-                <div className="space-y-1.5 w-full">
+                <div className="w-full space-y-1.5">
                   <Label
                     htmlFor="companyName"
-                    className="font-sans font-medium text-[12px] text-muted-foreground"
+                    className="text-muted-foreground font-sans text-[12px] font-medium"
                   >
                     Company Name
                   </Label>
@@ -137,10 +142,10 @@ export default function KanbanItem({ data, ...rest }: KanbanItemProps) {
                     value={field.state.value}
                     onChange={(e) => field.handleChange(e.target.value)}
                     onBlur={field.handleBlur}
-                    className="bg-white shadow-none text-sm"
+                    className="bg-white text-sm shadow-none"
                   />
                   {field.state.meta.errors.map((err, i) => (
-                    <p key={i} className="text-sm text-destructive">
+                    <p key={i} className="text-destructive text-sm">
                       {err?.message as string}
                     </p>
                   ))}
@@ -151,10 +156,10 @@ export default function KanbanItem({ data, ...rest }: KanbanItemProps) {
             <form.Field
               name="jobTitle"
               children={(field) => (
-                <div className="space-y-1.5 w-full">
+                <div className="w-full space-y-1.5">
                   <Label
                     htmlFor="jobTitle"
-                    className="font-sans font-medium text-[12px] text-muted-foreground"
+                    className="text-muted-foreground font-sans text-[12px] font-medium"
                   >
                     Job Title
                   </Label>
@@ -164,10 +169,10 @@ export default function KanbanItem({ data, ...rest }: KanbanItemProps) {
                     value={field.state.value}
                     onChange={(e) => field.handleChange(e.target.value)}
                     onBlur={field.handleBlur}
-                    className="bg-white shadow-none text-sm"
+                    className="bg-white text-sm shadow-none"
                   />
                   {field.state.meta.errors.map((err, i) => (
-                    <p key={i} className="text-sm text-destructive">
+                    <p key={i} className="text-destructive text-sm">
                       {err?.message as string}
                     </p>
                   ))}
@@ -180,7 +185,7 @@ export default function KanbanItem({ data, ...rest }: KanbanItemProps) {
             name="status"
             children={(field) => (
               <div className="space-y-1.5">
-                <Label className="font-sans font-medium text-[12px] text-muted-foreground">
+                <Label className="text-muted-foreground font-sans text-[12px] font-medium">
                   Status
                 </Label>
                 <Select
@@ -189,7 +194,7 @@ export default function KanbanItem({ data, ...rest }: KanbanItemProps) {
                     field.handleChange(v as (typeof STATUS_OPTIONS)[number])
                   }
                 >
-                  <SelectTrigger className="bg-white shadow-none w-1/2 capitalize text-sm font-sans">
+                  <SelectTrigger className="w-1/2 bg-white font-sans text-sm capitalize shadow-none">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -197,7 +202,7 @@ export default function KanbanItem({ data, ...rest }: KanbanItemProps) {
                       <SelectItem
                         key={s}
                         value={s}
-                        className={`font-medium text-sm capitalize font-sans ${statusItemClass[s]}`}
+                        className={`font-sans text-sm font-medium capitalize ${statusItemClass[s]}`}
                       >
                         {s.replace('_', ' ')}
                       </SelectItem>
@@ -211,10 +216,10 @@ export default function KanbanItem({ data, ...rest }: KanbanItemProps) {
           <form.Field
             name="location"
             children={(field) => (
-              <div className="space-y-1.5 w-full">
+              <div className="w-full space-y-1.5">
                 <Label
                   htmlFor="location"
-                  className="font-sans font-medium text-[12px] text-muted-foreground"
+                  className="text-muted-foreground font-sans text-[12px] font-medium"
                 >
                   Location
                 </Label>
@@ -224,7 +229,7 @@ export default function KanbanItem({ data, ...rest }: KanbanItemProps) {
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
-                  className="bg-white shadow-none text-sm"
+                  className="bg-white text-sm shadow-none"
                 />
               </div>
             )}
@@ -236,7 +241,7 @@ export default function KanbanItem({ data, ...rest }: KanbanItemProps) {
               <div className="space-y-1.5">
                 <Label
                   htmlFor="salaryRange"
-                  className="font-sans font-medium text-[12px] text-muted-foreground"
+                  className="text-muted-foreground font-sans text-[12px] font-medium"
                 >
                   Salary Range
                 </Label>
@@ -246,7 +251,7 @@ export default function KanbanItem({ data, ...rest }: KanbanItemProps) {
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
-                  className="bg-white shadow-none text-sm"
+                  className="bg-white text-sm shadow-none"
                 />
               </div>
             )}
@@ -258,7 +263,7 @@ export default function KanbanItem({ data, ...rest }: KanbanItemProps) {
               <div className="space-y-1.5">
                 <Label
                   htmlFor="jobUrl"
-                  className="font-sans font-medium text-[12px] text-muted-foreground"
+                  className="text-muted-foreground font-sans text-[12px] font-medium"
                 >
                   Job URL
                 </Label>
@@ -268,10 +273,10 @@ export default function KanbanItem({ data, ...rest }: KanbanItemProps) {
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
-                  className="bg-white shadow-none text-sm"
+                  className="bg-white text-sm shadow-none"
                 />
                 {field.state.meta.errors.map((err, i) => (
-                  <p key={i} className="text-sm text-destructive">
+                  <p key={i} className="text-destructive text-sm">
                     {err?.message as string}
                   </p>
                 ))}
@@ -280,10 +285,10 @@ export default function KanbanItem({ data, ...rest }: KanbanItemProps) {
           />
 
           <div className="space-y-1.5">
-            <p className="font-sans font-medium text-[12px] text-muted-foreground">
+            <p className="text-muted-foreground font-sans text-[12px] font-medium">
               Dates
             </p>
-            <div className="divide-y divide-border rounded-md border bg-white">
+            <div className="divide-border divide-y rounded-md border bg-white">
               {(
                 [
                   { label: 'Applied', value: data.applied_at },
@@ -297,10 +302,10 @@ export default function KanbanItem({ data, ...rest }: KanbanItemProps) {
                   key={label}
                   className="flex items-center justify-between px-3 py-2"
                 >
-                  <p className="font-sans text-[12px] font-medium text-muted-foreground">
+                  <p className="text-muted-foreground font-sans text-[12px] font-medium">
                     {label}
                   </p>
-                  <p className="font-mono text-[12px] text-primary-text">
+                  <p className="text-primary-text font-mono text-[12px]">
                     {value
                       ? new Date(value).toLocaleDateString('en-US', {
                           month: 'short',
@@ -320,7 +325,7 @@ export default function KanbanItem({ data, ...rest }: KanbanItemProps) {
               <div className="space-y-1.5">
                 <Label
                   htmlFor="notes"
-                  className="font-sans font-medium text-[12px] text-muted-foreground"
+                  className="text-muted-foreground font-sans text-[12px] font-medium"
                 >
                   Notes
                 </Label>
@@ -331,21 +336,21 @@ export default function KanbanItem({ data, ...rest }: KanbanItemProps) {
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
-                  className="bg-white shadow-none text-sm"
+                  className="bg-white text-sm shadow-none"
                 />
               </div>
             )}
           />
 
-          <div className="flex flex-row gap-4 items-center mt-auto">
+          <div className="mt-auto flex flex-row items-center gap-4">
             <Button
-              className="text-[12px] cursor-pointer flex-1"
+              className="flex-1 cursor-pointer text-[12px]"
               variant={'destructive'}
             >
               Delete Application
             </Button>
 
-            <Button type="submit" className="text-[12px] cursor-pointer flex-1">
+            <Button type="submit" className="flex-1 cursor-pointer text-[12px]">
               Save Changes
             </Button>
           </div>

@@ -1,5 +1,16 @@
-import { SectionCard } from '#/components/layout/SectionCard'
-import SectionHeader from '#/components/layout/SectionHeader'
+import { useState } from 'react'
+
+import { ACCOUNT_DELETION_WARNING_LIST } from '#/constant/account'
+import { XIcon } from 'lucide-react'
+
+import { useForm } from '@tanstack/react-form'
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from '@tanstack/react-query'
+import { createFileRoute, useRouter } from '@tanstack/react-router'
+
 import { Button } from '#/components/ui/button'
 import {
   Dialog,
@@ -11,23 +22,19 @@ import {
 } from '#/components/ui/dialog'
 import { Input } from '#/components/ui/input'
 import { Label } from '#/components/ui/label'
-import { ACCOUNT_DELETION_WARNING_LIST } from '#/constant/account'
-import { changePassword, signOut } from '#/lib/auth/client'
+
+import { SectionCard } from '#/components/layout/SectionCard'
+import SectionHeader from '#/components/layout/SectionHeader'
+
 import {
   deleteAccount,
   getAccountDetails,
   updateAccountDetails,
 } from '#/server/account'
+
+import { changePassword, signOut } from '#/lib/auth/client'
+
 import { updateAccountSchema } from '#/validators/account'
-import { useForm } from '@tanstack/react-form'
-import {
-  useMutation,
-  useQueryClient,
-  useSuspenseQuery,
-} from '@tanstack/react-query'
-import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { XIcon } from 'lucide-react'
-import { useState } from 'react'
 
 export const Route = createFileRoute('/(app)/hangar')({
   loader: ({ context: { queryClient } }) =>
@@ -134,7 +141,7 @@ function RouteComponent() {
         title="Hangar"
         description="Account settings and preferences."
       />
-      <div className="flex flex-col lg:flex-row gap-6">
+      <div className="flex flex-col gap-6 lg:flex-row">
         <div>
           <form
             onSubmit={(e) => {
@@ -144,11 +151,11 @@ function RouteComponent() {
             className="flex flex-col gap-6"
           >
             <SectionCard title="Profile">
-              <div className="flex flex-col lg:flex-row gap-4">
+              <div className="flex flex-col gap-4 lg:flex-row">
                 <form.Field
                   name="fullName"
                   children={(field) => (
-                    <div className="space-y-1.5 w-full">
+                    <div className="w-full space-y-1.5">
                       <Label htmlFor="fullName" className={labelClass}>
                         Full Name
                       </Label>
@@ -161,7 +168,7 @@ function RouteComponent() {
                         className={inputClass}
                       />
                       {field.state.meta.errors.map((err, i) => (
-                        <p key={i} className="text-xs text-destructive">
+                        <p key={i} className="text-destructive text-xs">
                           {err?.message as string}
                         </p>
                       ))}
@@ -171,7 +178,7 @@ function RouteComponent() {
                 <form.Field
                   name="email"
                   children={(field) => (
-                    <div className="space-y-1.5 w-full">
+                    <div className="w-full space-y-1.5">
                       <Label htmlFor="email" className={labelClass}>
                         Email
                       </Label>
@@ -185,11 +192,11 @@ function RouteComponent() {
                         className={inputClass}
                         disabled
                       />
-                      <Label className="font-sans text-[11px] text-foreground-soft2">
+                      <Label className="text-foreground-soft2 font-sans text-[11px]">
                         Contact support to change your email.
                       </Label>
                       {field.state.meta.errors.map((err, i) => (
-                        <p key={i} className="text-xs text-destructive">
+                        <p key={i} className="text-destructive text-xs">
                           {err?.message as string}
                         </p>
                       ))}
@@ -201,7 +208,7 @@ function RouteComponent() {
 
             <SectionCard title="Change Password">
               {passwordUpdateError && (
-                <p className="font-display text-[12px] font-medium text-destructive">
+                <p className="font-display text-destructive text-[12px] font-medium">
                   {passwordUpdateError}
                 </p>
               )}
@@ -223,7 +230,7 @@ function RouteComponent() {
                       className={inputClass}
                     />
                     {field.state.meta.errors.map((err, i) => (
-                      <p key={i} className="text-xs text-destructive">
+                      <p key={i} className="text-destructive text-xs">
                         {err?.message as string}
                       </p>
                     ))}
@@ -235,7 +242,7 @@ function RouteComponent() {
                 <form.Field
                   name="newPassword"
                   children={(field) => (
-                    <div className="space-y-1.5 w-full">
+                    <div className="w-full space-y-1.5">
                       <Label htmlFor="newPassword" className={labelClass}>
                         New Password
                       </Label>
@@ -249,7 +256,7 @@ function RouteComponent() {
                         className={inputClass}
                       />
                       {field.state.meta.errors.map((err, i) => (
-                        <p key={i} className="text-xs text-destructive">
+                        <p key={i} className="text-destructive text-xs">
                           {err?.message as string}
                         </p>
                       ))}
@@ -259,7 +266,7 @@ function RouteComponent() {
                 <form.Field
                   name="confirmPassword"
                   children={(field) => (
-                    <div className="space-y-1.5 w-full">
+                    <div className="w-full space-y-1.5">
                       <Label htmlFor="confirmPassword" className={labelClass}>
                         Confirm Password
                       </Label>
@@ -273,7 +280,7 @@ function RouteComponent() {
                         className={inputClass}
                       />
                       {field.state.meta.errors.map((err, i) => (
-                        <p key={i} className="text-xs text-destructive">
+                        <p key={i} className="text-destructive text-xs">
                           {err?.message as string}
                         </p>
                       ))}
@@ -311,7 +318,7 @@ function RouteComponent() {
                 children={([isSubmitting, isDirty]) => (
                   <Button
                     type="submit"
-                    className="uppercase text-[12px]"
+                    className="text-[12px] uppercase"
                     disabled={isSubmitting || !isDirty}
                   >
                     {isSubmitting ? 'Saving...' : 'Save Changes'}
@@ -321,15 +328,15 @@ function RouteComponent() {
             </div>
           </form>
           <div className="mt-auto mb-24">
-            <p className="font-mono uppercase font-medium text-[12px] text-destructive">
+            <p className="text-destructive font-mono text-[12px] font-medium uppercase">
               Danger Zone
             </p>
-            <div className="border border-destructive rounded-lg bg-white p-5 mt-3 flex flex-row gap-2 items-center justify-between">
+            <div className="border-destructive mt-3 flex flex-row items-center justify-between gap-2 rounded-lg border bg-white p-5">
               <div>
-                <p className="font-sans text-primary-text font-semibold text-[14px]">
+                <p className="text-primary-text font-sans text-[14px] font-semibold">
                   Delete account
                 </p>
-                <span className="font-sans text-muted-foreground text-[12px]">
+                <span className="text-muted-foreground font-sans text-[12px]">
                   Permanently removes your account, all applications, and
                   documents. This <br /> cannot be undone.
                 </span>
@@ -339,12 +346,12 @@ function RouteComponent() {
                 <DialogTrigger>
                   <Button
                     variant="destructive"
-                    className="rounded-lg cursor-pointer"
+                    className="cursor-pointer rounded-lg"
                   >
                     Delete account
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="space-y-4 w-110">
+                <DialogContent className="w-110 space-y-4">
                   <DialogHeader>
                     <DialogTitle>Are you absolutely sure?</DialogTitle>
                     <DialogDescription className="font-medium">
@@ -353,16 +360,16 @@ function RouteComponent() {
                       <span className="font-bold">cannot be undone.</span>
                     </DialogDescription>
                   </DialogHeader>
-                  <div className="border p-3 flex flex-col gap-1 rounded-md border-destructive bg-red-200">
+                  <div className="border-destructive flex flex-col gap-1 rounded-md border bg-red-200 p-3">
                     {ACCOUNT_DELETION_WARNING_LIST.map((item) => (
-                      <div className="text-destructive font-sans text-[13px] font-medium flex flex-row gap-2 items-center">
-                        <XIcon className="w-4 h-4" />
+                      <div className="text-destructive flex flex-row items-center gap-2 font-sans text-[13px] font-medium">
+                        <XIcon className="h-4 w-4" />
                         {item}
                       </div>
                     ))}
                   </div>
                   <div className="flex flex-col gap-2">
-                    <p className="flex gap-1 items-end text-[13px] font-sans">
+                    <p className="flex items-end gap-1 font-sans text-[13px]">
                       Type
                       <span className="text-destructive font-mono font-medium">
                         DELETE
@@ -380,7 +387,7 @@ function RouteComponent() {
                   </div>
                   <Button
                     variant="destructive"
-                    className="uppercase cursor-pointer w-fit ml-auto text-[13px]"
+                    className="ml-auto w-fit cursor-pointer text-[13px] uppercase"
                     disabled={deleteInput !== 'DELETE'}
                     onClick={handleConfirmDeleteAccount}
                   >
@@ -392,43 +399,43 @@ function RouteComponent() {
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col gap-4">
-          <div className="border border-primary/40 bg-primary/10 p-5 rounded-lg w-full flex flex-row justify-between items-center">
+        <div className="flex flex-1 flex-col gap-4">
+          <div className="border-primary/40 bg-primary/10 flex w-full flex-row items-center justify-between rounded-lg border p-5">
             <div className="text-primary">
-              <p className="font-bold text-[14px] font-display">Free Plan</p>
+              <p className="font-display text-[14px] font-bold">Free Plan</p>
               <span className="text-[13px]">
                 3 of 10 AI generations used this month · Resets June 1
               </span>
             </div>
-            <div className="px-3 py-1 text-[12px] text-muted-foreground border-foreground-soft2 font-mono font-medium border rounded-full text-nowrap">
+            <div className="text-muted-foreground border-foreground-soft2 rounded-full border px-3 py-1 font-mono text-[12px] font-medium text-nowrap">
               Current Plan
             </div>
           </div>
-          <div className="border bg-white p-5 rounded-lg w-full flex flex-row justify-between items-center">
+          <div className="flex w-full flex-row items-center justify-between rounded-lg border bg-white p-5">
             <div className="flex flex-col gap-2">
-              <div className="text-primary-text font-semibold text-[16px]">
+              <div className="text-primary-text text-[16px] font-semibold">
                 First Officer
               </div>
               <div className="flex flex-col gap-1">
                 {FEATURES.map((item, index) => (
                   <div
-                    className="text-[12px] text-muted-foreground"
+                    className="text-muted-foreground text-[12px]"
                     key={index}
                   >
-                    <span className="text-primary font-bold mr-2">✓</span>
+                    <span className="text-primary mr-2 font-bold">✓</span>
                     {item}
                   </div>
                 ))}
               </div>
             </div>
             <div className="flex flex-col items-end gap-1">
-              <div className="text-primary-text font-display font-bold text-[32px]">
+              <div className="text-primary-text font-display text-[32px] font-bold">
                 $12
-                <span className="text-[16px] font-normal text-muted-foreground">
+                <span className="text-muted-foreground text-[16px] font-normal">
                   /mo
                 </span>
               </div>
-              <div className="text-[12px] text-muted-foreground">
+              <div className="text-muted-foreground text-[12px]">
                 or $99/yr — save 30%
               </div>
               <Button

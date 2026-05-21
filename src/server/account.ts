@@ -1,9 +1,12 @@
+import { eq } from 'drizzle-orm'
+
+import { createServerFn } from '@tanstack/react-start'
+
 import { getSession } from '#/lib/auth/session'
 import { db } from '#/lib/db'
 import { users } from '#/lib/db/schema'
+
 import { updateAccountSchema } from '#/validators/account'
-import { createServerFn } from '@tanstack/react-start'
-import { eq } from 'drizzle-orm'
 
 export const getAccountDetails = createServerFn({ method: 'GET' }).handler(
   async () => {

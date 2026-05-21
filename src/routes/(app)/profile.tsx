@@ -1,21 +1,27 @@
 import { useState } from 'react'
-import SectionHeader from '#/components/layout/SectionHeader'
-import { createFileRoute } from '@tanstack/react-router'
+
+import { PlusIcon, XIcon } from 'lucide-react'
+
 import { useForm } from '@tanstack/react-form'
-import { Button } from '#/components/ui/button'
-import { Input } from '#/components/ui/input'
-import { Label } from '#/components/ui/label'
-import { Textarea } from '#/components/ui/textarea'
-import { pilotProfileSchema } from '#/validators/profile'
-import { XIcon, PlusIcon } from 'lucide-react'
-import { SectionCard } from '#/components/layout/SectionCard'
-import { getProfile, saveProfile, updateProfile } from '#/server/profile'
 import {
   useMutation,
   useQueryClient,
   useSuspenseQuery,
 } from '@tanstack/react-query'
+import { createFileRoute } from '@tanstack/react-router'
+
+import { Button } from '#/components/ui/button'
+import { Input } from '#/components/ui/input'
+import { Label } from '#/components/ui/label'
+import { Textarea } from '#/components/ui/textarea'
+
+import { SectionCard } from '#/components/layout/SectionCard'
+import SectionHeader from '#/components/layout/SectionHeader'
+
 import { getAccountDetails } from '#/server/account'
+import { getProfile, saveProfile, updateProfile } from '#/server/profile'
+
+import { pilotProfileSchema } from '#/validators/profile'
 
 export const Route = createFileRoute('/(app)/profile')({
   loader: ({ context: { queryClient } }) =>
@@ -94,11 +100,7 @@ function RouteComponent() {
       education: profileData?.education ?? [
         { institution: '', degree: '', year: '' },
       ],
-      links: (profileData?.links as {
-        github: string
-        linkedin: string
-        portfolio: string
-      } | null) ?? { github: '', linkedin: '', portfolio: '' },
+      links: (profileData?.links) ?? { github: '', linkedin: '', portfolio: '' },
       preferences: (profileData?.preferences as {
         roles: string[]
         salaryRange: string
@@ -135,7 +137,7 @@ function RouteComponent() {
             <form.Field
               name="fullName"
               children={(field) => (
-                <div className="space-y-1.5 w-full">
+                <div className="w-full space-y-1.5">
                   <Label htmlFor="fullName" className={labelClass}>
                     Full Name
                   </Label>
@@ -148,7 +150,7 @@ function RouteComponent() {
                     className={inputClass}
                   />
                   {field.state.meta.errors.map((err, i) => (
-                    <p key={i} className="text-xs text-destructive">
+                    <p key={i} className="text-destructive text-xs">
                       {err?.message as string}
                     </p>
                   ))}
@@ -158,7 +160,7 @@ function RouteComponent() {
             <form.Field
               name="email"
               children={(field) => (
-                <div className="space-y-1.5 w-full">
+                <div className="w-full space-y-1.5">
                   <Label htmlFor="email" className={labelClass}>
                     Email
                   </Label>
@@ -172,7 +174,7 @@ function RouteComponent() {
                     className={inputClass}
                   />
                   {field.state.meta.errors.map((err, i) => (
-                    <p key={i} className="text-xs text-destructive">
+                    <p key={i} className="text-destructive text-xs">
                       {err?.message as string}
                     </p>
                   ))}
@@ -185,7 +187,7 @@ function RouteComponent() {
             <form.Field
               name="location"
               children={(field) => (
-                <div className="space-y-1.5 w-full">
+                <div className="w-full space-y-1.5">
                   <Label htmlFor="location" className={labelClass}>
                     Location
                   </Label>
@@ -198,7 +200,7 @@ function RouteComponent() {
                     className={inputClass}
                   />
                   {field.state.meta.errors.map((err, i) => (
-                    <p key={i} className="text-xs text-destructive">
+                    <p key={i} className="text-destructive text-xs">
                       {err?.message as string}
                     </p>
                   ))}
@@ -208,7 +210,7 @@ function RouteComponent() {
             <form.Field
               name="headline"
               children={(field) => (
-                <div className="space-y-1.5 w-full">
+                <div className="w-full space-y-1.5">
                   <Label htmlFor="headline" className={labelClass}>
                     Headline
                   </Label>
@@ -221,7 +223,7 @@ function RouteComponent() {
                     className={inputClass}
                   />
                   {field.state.meta.errors.map((err, i) => (
-                    <p key={i} className="text-xs text-destructive">
+                    <p key={i} className="text-destructive text-xs">
                       {err?.message as string}
                     </p>
                   ))}
@@ -247,7 +249,7 @@ function RouteComponent() {
                   className={inputClass}
                 />
                 {field.state.meta.errors.map((err, i) => (
-                  <p key={i} className="text-xs text-destructive">
+                  <p key={i} className="text-destructive text-xs">
                     {err?.message as string}
                   </p>
                 ))}
@@ -261,11 +263,11 @@ function RouteComponent() {
             name="skills"
             children={(field) => (
               <div className="space-y-3">
-                <div className="flex flex-wrap gap-2 min-h-6">
+                <div className="flex min-h-6 flex-wrap gap-2">
                   {field.state.value.map((skill, i) => (
                     <span
                       key={i}
-                      className="flex items-center gap-1 text-[12px] font-medium bg-secondary text-foreground rounded-md px-2 py-1"
+                      className="bg-secondary text-foreground flex items-center gap-1 rounded-md px-2 py-1 text-[12px] font-medium"
                     >
                       {skill}
                       <button
@@ -311,7 +313,7 @@ function RouteComponent() {
                   </Button>
                 </div>
                 {field.state.meta.errors.map((err, i) => (
-                  <p key={i} className="text-xs text-destructive">
+                  <p key={i} className="text-destructive text-xs">
                     {err?.message as string}
                   </p>
                 ))}
@@ -328,13 +330,13 @@ function RouteComponent() {
                 {field.state.value.map((_, i) => (
                   <div
                     key={i}
-                    className="relative flex flex-col gap-3 border rounded-md p-4"
+                    className="relative flex flex-col gap-3 rounded-md border p-4"
                   >
                     {i > 0 && (
                       <button
                         type="button"
                         onClick={() => form.removeFieldValue('experience', i)}
-                        className="absolute top-3 right-3 text-muted-foreground hover:text-destructive"
+                        className="text-muted-foreground hover:text-destructive absolute top-3 right-3"
                       >
                         <XIcon className="size-4" />
                       </button>
@@ -344,7 +346,7 @@ function RouteComponent() {
                       <form.Field
                         name={`experience[${i}].company`}
                         children={(f) => (
-                          <div className="space-y-1.5 w-full">
+                          <div className="w-full space-y-1.5">
                             <Label className={labelClass}>Company</Label>
                             <Input
                               placeholder="Acme Corp"
@@ -354,7 +356,7 @@ function RouteComponent() {
                               className={inputClass}
                             />
                             {f.state.meta.errors.map((err, j) => (
-                              <p key={j} className="text-xs text-destructive">
+                              <p key={j} className="text-destructive text-xs">
                                 {err?.message as string}
                               </p>
                             ))}
@@ -364,7 +366,7 @@ function RouteComponent() {
                       <form.Field
                         name={`experience[${i}].role`}
                         children={(f) => (
-                          <div className="space-y-1.5 w-full">
+                          <div className="w-full space-y-1.5">
                             <Label className={labelClass}>Role</Label>
                             <Input
                               placeholder="Software Engineer"
@@ -374,7 +376,7 @@ function RouteComponent() {
                               className={inputClass}
                             />
                             {f.state.meta.errors.map((err, j) => (
-                              <p key={j} className="text-xs text-destructive">
+                              <p key={j} className="text-destructive text-xs">
                                 {err?.message as string}
                               </p>
                             ))}
@@ -386,7 +388,7 @@ function RouteComponent() {
                     <form.Field
                       name={`experience[${i}].dates`}
                       children={(f) => (
-                        <div className="space-y-1.5 w-1/2">
+                        <div className="w-1/2 space-y-1.5">
                           <Label className={labelClass}>Dates</Label>
                           <Input
                             placeholder="Jan 2022 – Present"
@@ -396,7 +398,7 @@ function RouteComponent() {
                             className={inputClass}
                           />
                           {f.state.meta.errors.map((err, j) => (
-                            <p key={j} className="text-xs text-destructive">
+                            <p key={j} className="text-destructive text-xs">
                               {err?.message as string}
                             </p>
                           ))}
@@ -410,7 +412,7 @@ function RouteComponent() {
                         <div className="flex flex-col gap-2">
                           <Label className={labelClass}>Bullet Points</Label>
                           {bulletsField.state.value.map((__, j) => (
-                            <div key={j} className="flex gap-2 items-center">
+                            <div key={j} className="flex items-center gap-2">
                               <form.Field
                                 name={`experience[${i}].bullets[${j}]`}
                                 children={(bf) => (
@@ -456,7 +458,7 @@ function RouteComponent() {
                             <PlusIcon className="size-3" /> Add bullet
                           </Button>
                           {bulletsField.state.meta.errors.map((err, j) => (
-                            <p key={j} className="text-xs text-destructive">
+                            <p key={j} className="text-destructive text-xs">
                               {err?.message as string}
                             </p>
                           ))}
@@ -482,7 +484,7 @@ function RouteComponent() {
                   <PlusIcon className="size-4" /> Add Experience
                 </Button>
                 {field.state.meta.errors.map((err, i) => (
-                  <p key={i} className="text-xs text-destructive">
+                  <p key={i} className="text-destructive text-xs">
                     {err?.message as string}
                   </p>
                 ))}
@@ -499,13 +501,13 @@ function RouteComponent() {
                 {field.state.value.map((_, i) => (
                   <div
                     key={i}
-                    className="relative grid grid-cols-3 gap-4 border rounded-md p-4"
+                    className="relative grid grid-cols-3 gap-4 rounded-md border p-4"
                   >
                     {i > 0 && (
                       <button
                         type="button"
                         onClick={() => form.removeFieldValue('education', i)}
-                        className="absolute top-3 right-3 text-muted-foreground hover:text-destructive"
+                        className="text-muted-foreground hover:text-destructive absolute top-3 right-3"
                       >
                         <XIcon className="size-4" />
                       </button>
@@ -523,7 +525,7 @@ function RouteComponent() {
                             className={inputClass}
                           />
                           {f.state.meta.errors.map((err, j) => (
-                            <p key={j} className="text-xs text-destructive">
+                            <p key={j} className="text-destructive text-xs">
                               {err?.message as string}
                             </p>
                           ))}
@@ -543,7 +545,7 @@ function RouteComponent() {
                             className={inputClass}
                           />
                           {f.state.meta.errors.map((err, j) => (
-                            <p key={j} className="text-xs text-destructive">
+                            <p key={j} className="text-destructive text-xs">
                               {err?.message as string}
                             </p>
                           ))}
@@ -563,7 +565,7 @@ function RouteComponent() {
                             className={inputClass}
                           />
                           {f.state.meta.errors.map((err, j) => (
-                            <p key={j} className="text-xs text-destructive">
+                            <p key={j} className="text-destructive text-xs">
                               {err?.message as string}
                             </p>
                           ))}
@@ -588,7 +590,7 @@ function RouteComponent() {
                   <PlusIcon className="size-4" /> Add Education
                 </Button>
                 {field.state.meta.errors.map((err, i) => (
-                  <p key={i} className="text-xs text-destructive">
+                  <p key={i} className="text-destructive text-xs">
                     {err?.message as string}
                   </p>
                 ))}
@@ -616,7 +618,7 @@ function RouteComponent() {
                     className={inputClass}
                   />
                   {field.state.meta.errors.map((err, i) => (
-                    <p key={i} className="text-xs text-destructive">
+                    <p key={i} className="text-destructive text-xs">
                       {err?.message as string}
                     </p>
                   ))}
@@ -651,11 +653,11 @@ function RouteComponent() {
             children={(field) => (
               <div className="space-y-3">
                 <Label className={labelClass}>Preferred Roles</Label>
-                <div className="flex flex-wrap gap-2 min-h-6">
+                <div className="flex min-h-6 flex-wrap gap-2">
                   {field.state.value.map((role, i) => (
                     <span
                       key={i}
-                      className="flex items-center gap-1 text-[12px] font-medium bg-secondary text-foreground rounded-md px-2 py-1"
+                      className="bg-secondary text-foreground flex items-center gap-1 rounded-md px-2 py-1 text-[12px] font-medium"
                     >
                       {role}
                       <button
@@ -703,7 +705,7 @@ function RouteComponent() {
                   </Button>
                 </div>
                 {field.state.meta.errors.map((err, i) => (
-                  <p key={i} className="text-xs text-destructive">
+                  <p key={i} className="text-destructive text-xs">
                     {err?.message as string}
                   </p>
                 ))}

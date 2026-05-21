@@ -1,9 +1,12 @@
-import { getSession } from '#/lib/auth/session'
-import { pilotProfileSchema } from '#/validators/profile'
-import { createServerFn } from '@tanstack/react-start'
-import { db } from '#/lib/db'
-import { users, pilotProfiles } from '#/lib/db/schema'
 import { eq } from 'drizzle-orm'
+
+import { createServerFn } from '@tanstack/react-start'
+
+import { getSession } from '#/lib/auth/session'
+import { db } from '#/lib/db'
+import { pilotProfiles, users } from '#/lib/db/schema'
+
+import { pilotProfileSchema } from '#/validators/profile'
 
 export const getProfile = createServerFn({ method: 'GET' }).handler(
   async () => {

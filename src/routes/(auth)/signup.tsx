@@ -1,16 +1,21 @@
-import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 
-import logo from '/landed.svg'
-import { useForm } from '@tanstack/react-form'
-import { signupSchema } from '#/validators/account'
-import { Label } from '#/components/ui/label'
-import { Input } from '#/components/ui/input'
-import { Button } from '#/components/ui/button'
 import { EyeIcon, EyeOffIcon } from 'lucide-react'
+
+import { useForm } from '@tanstack/react-form'
+import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
+
+import { Button } from '#/components/ui/button'
+import { Input } from '#/components/ui/input'
+import { Label } from '#/components/ui/label'
+
 import { signUp } from '#/lib/auth/client'
 import { getSession } from '#/lib/auth/session'
 import { cn } from '#/lib/utils'
+
+import { signupSchema } from '#/validators/account'
+
+import logo from '/landed.svg'
 
 export const Route = createFileRoute('/(auth)/signup')({
   beforeLoad: async () => {
@@ -62,22 +67,22 @@ function RouteComponent() {
   }
 
   return (
-    <div className="bg-background h-screen flex flex-col justify-start md:justify-center items-center gap-4 p-12">
+    <div className="bg-background flex h-screen flex-col items-center justify-start gap-4 p-12 md:justify-center">
       <img
         src={logo}
         alt="Landed Logo"
-        className="min-w-fit h-10 md:h-14 mb-4"
+        className="mb-4 h-10 min-w-fit md:h-14"
       />
 
-      <div className="w-100 border bg-white py-5 px-7 rounded-xl flex flex-col gap-6">
+      <div className="flex w-100 flex-col gap-6 rounded-xl border bg-white px-7 py-5">
         <div className="flex flex-col gap-2">
-          <p className="font-display text-[24px] font-bold text-primary-text text-center">
+          <p className="font-display text-primary-text text-center text-[24px] font-bold">
             Create an Account
           </p>
 
           <p
             className={cn(
-              'font-display text-[12px] font-medium text-center',
+              'font-display text-center text-[12px] font-medium',
               errorMessage.length > 0
                 ? 'text-destructive'
                 : 'text-muted-foreground',
@@ -116,10 +121,10 @@ function RouteComponent() {
           <form.Field
             name="fullName"
             children={(field) => (
-              <div className="space-y-1.5 w-full">
+              <div className="w-full space-y-1.5">
                 <Label
                   htmlFor="fullName"
-                  className="font-sans font-medium text-[13px] text-muted-foreground"
+                  className="text-muted-foreground font-sans text-[13px] font-medium"
                 >
                   Full Name
                 </Label>
@@ -129,10 +134,10 @@ function RouteComponent() {
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
-                  className="bg-white shadow-none text-sm"
+                  className="bg-white text-sm shadow-none"
                 />
                 {field.state.meta.errors.map((err, i) => (
-                  <p key={i} className="text-xs text-destructive">
+                  <p key={i} className="text-destructive text-xs">
                     {err?.message as string}
                   </p>
                 ))}
@@ -143,10 +148,10 @@ function RouteComponent() {
           <form.Field
             name="email"
             children={(field) => (
-              <div className="space-y-1.5 w-full">
+              <div className="w-full space-y-1.5">
                 <Label
                   htmlFor="email"
-                  className="font-sans font-medium text-[13px] text-muted-foreground"
+                  className="text-muted-foreground font-sans text-[13px] font-medium"
                 >
                   Email
                 </Label>
@@ -156,10 +161,10 @@ function RouteComponent() {
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
-                  className="bg-white shadow-none text-sm"
+                  className="bg-white text-sm shadow-none"
                 />
                 {field.state.meta.errors.map((err, i) => (
-                  <p key={i} className="text-xs text-destructive">
+                  <p key={i} className="text-destructive text-xs">
                     {err?.message as string}
                   </p>
                 ))}
@@ -170,10 +175,10 @@ function RouteComponent() {
           <form.Field
             name="password"
             children={(field) => (
-              <div className="space-y-1.5 w-full">
+              <div className="w-full space-y-1.5">
                 <Label
                   htmlFor="password"
-                  className="font-sans font-medium text-[13px] text-muted-foreground"
+                  className="text-muted-foreground font-sans text-[13px] font-medium"
                 >
                   Password
                 </Label>
@@ -184,13 +189,13 @@ function RouteComponent() {
                     value={field.state.value}
                     onChange={(e) => field.handleChange(e.target.value)}
                     onBlur={field.handleBlur}
-                    className="bg-white shadow-none text-sm pr-9"
+                    className="bg-white pr-9 text-sm shadow-none"
                     type={showPassword ? 'text' : 'password'}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
+                    className="text-muted-foreground hover:text-foreground absolute top-1/2 right-2.5 -translate-y-1/2 cursor-pointer"
                   >
                     {showPassword ? (
                       <EyeOffIcon className="size-4" />
@@ -200,7 +205,7 @@ function RouteComponent() {
                   </button>
                 </div>
                 {field.state.meta.errors.map((err, i) => (
-                  <p key={i} className="text-xs text-destructive">
+                  <p key={i} className="text-destructive text-xs">
                     {err?.message as string}
                   </p>
                 ))}
@@ -211,10 +216,10 @@ function RouteComponent() {
           <form.Field
             name="confirmPassword"
             children={(field) => (
-              <div className="space-y-1.5 w-full">
+              <div className="w-full space-y-1.5">
                 <Label
                   htmlFor="confirmPassword"
-                  className="font-sans font-medium text-[13px] text-muted-foreground"
+                  className="text-muted-foreground font-sans text-[13px] font-medium"
                 >
                   Confirm Password
                 </Label>
@@ -225,13 +230,13 @@ function RouteComponent() {
                     value={field.state.value}
                     onChange={(e) => field.handleChange(e.target.value)}
                     onBlur={field.handleBlur}
-                    className="bg-white shadow-none text-sm pr-9"
+                    className="bg-white pr-9 text-sm shadow-none"
                     type={showConfirm ? 'text' : 'password'}
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirm((v) => !v)}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
+                    className="text-muted-foreground hover:text-foreground absolute top-1/2 right-2.5 -translate-y-1/2 cursor-pointer"
                   >
                     {showConfirm ? (
                       <EyeOffIcon className="size-4" />
@@ -241,7 +246,7 @@ function RouteComponent() {
                   </button>
                 </div>
                 {field.state.meta.errors.map((err, i) => (
-                  <p key={i} className="text-xs text-destructive">
+                  <p key={i} className="text-destructive text-xs">
                     {err?.message as string}
                   </p>
                 ))}
@@ -254,10 +259,10 @@ function RouteComponent() {
           </Button>
         </form>
 
-        <p className="font-sans text-[13px] text-muted-foreground text-center">
+        <p className="text-muted-foreground text-center font-sans text-[13px]">
           Already have an account?{' '}
           <span
-            className="font-sans font-medium text-[13px] text-primary cursor-pointer"
+            className="text-primary cursor-pointer font-sans text-[13px] font-medium"
             onClick={handleSignIn}
           >
             Sign in.
