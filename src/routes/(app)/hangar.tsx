@@ -141,7 +141,7 @@ function RouteComponent() {
         description="Account settings and preferences."
       />
       <div className="flex flex-col gap-6 lg:flex-row">
-        <div>
+        <div className="max-w-1/2">
           <form
             onSubmit={(e) => {
               e.preventDefault()
@@ -289,28 +289,6 @@ function RouteComponent() {
               </div>
             </SectionCard>
 
-            {/* <SectionCard title="Notifications">
-              <form.Field
-                name="notifications.interviewReminders"
-                children={(field) => (
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-primary-text">
-                        Interview Reminders
-                      </p>
-                      <p className={labelClass}>
-                        Get notified before upcoming interview dates.
-                      </p>
-                    </div>
-                    <Switch
-                      checked={field.state.value}
-                      onCheckedChange={(v) => field.handleChange(v)}
-                    />
-                  </div>
-                )}
-              />
-            </SectionCard> */}
-
             <div className="flex justify-end pb-8">
               <form.Subscribe
                 selector={(s) => [s.isSubmitting, s.isDirty]}
@@ -330,14 +308,14 @@ function RouteComponent() {
             <p className="text-destructive font-mono text-[12px] font-medium uppercase">
               Danger Zone
             </p>
-            <div className="border-destructive mt-3 flex flex-row items-center justify-between gap-2 rounded-lg border bg-white p-5">
+            <div className="border-destructive mt-3 flex flex-row items-center justify-between gap-12 rounded-lg border bg-white p-5">
               <div>
                 <p className="text-primary-text font-sans text-[14px] font-semibold">
                   Delete account
                 </p>
                 <span className="text-muted-foreground font-sans text-[12px]">
                   Permanently removes your account, all applications, and
-                  documents. This <br /> cannot be undone.
+                  documents. This cannot be undone.
                 </span>
               </div>
 
