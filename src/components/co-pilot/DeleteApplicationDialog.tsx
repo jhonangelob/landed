@@ -15,6 +15,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { deleteApplication } from '#/server/applications'
 import { useState } from 'react'
 import type { ApplicationStatus } from '#/lib/db/schema'
+import { useRouter } from '@tanstack/react-router'
 
 type DisplayDataProps = {
   id: string
@@ -33,6 +34,7 @@ export default function DeleteApplicationDialog({
   children,
   data,
 }: DeleteApplicationDialogProps) {
+  const router = useRouter()
   const queryClient = useQueryClient()
 
   const [isOpen, setIsOpen] = useState(false)
@@ -41,6 +43,7 @@ export default function DeleteApplicationDialog({
     mutationFn: (value: string) => deleteApplication({ data: { id: value } }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['applications'] })
+      router.navigate({ to: '/flight-deck' })
     },
     onError: (err) => {
       console.log(err)
@@ -59,7 +62,7 @@ export default function DeleteApplicationDialog({
       <DialogTrigger asChild onClick={() => setIsOpen(true)}>
         {children}
       </DialogTrigger>
-      <DialogContent className="space-y-4">
+      <DialogContent className="space-y-4" showCloseButton={false}>
         <DialogHeader>
           <DialogTitle>Are you absolutely sure?</DialogTitle>
           <DialogDescription>

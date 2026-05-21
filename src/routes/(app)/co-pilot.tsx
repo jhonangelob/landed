@@ -9,7 +9,7 @@ import { Input } from '#/components/ui/input'
 import { Label } from '#/components/ui/label'
 import { Textarea } from '#/components/ui/textarea'
 
-import { SectionCard } from '#/components/layout/SectionCard'
+import SectionCard from '#/components/layout/SectionCard'
 import SectionHeader from '#/components/layout/SectionHeader'
 
 import { generateDocuments } from '#/server/co-pilot'
@@ -22,6 +22,8 @@ import {
   saveApplication,
   updateApplication,
 } from '#/server/applications'
+import ApplicationSummary from '#/components/co-pilot/ApplicationSummary'
+import StageTimeline from '#/components/co-pilot/StageTimeline'
 
 export const Route = createFileRoute('/(app)/co-pilot')({
   validateSearch: z.object({
@@ -285,7 +287,7 @@ function RouteComponent() {
                   <Textarea
                     id="jobDescription"
                     placeholder="Paste the full job requirements and role description here..."
-                    rows={14}
+                    rows={12}
                     value={field.state.value}
                     onChange={(e) => field.handleChange(e.target.value)}
                     onBlur={field.handleBlur}
@@ -345,6 +347,10 @@ function RouteComponent() {
             )}
           </div>
         </form>
+        <div className="flex flex-1 flex-col gap-4">
+          {application && <ApplicationSummary data={application} />}
+          {application && <StageTimeline data={application} />}
+        </div>
       </div>
     </div>
   )

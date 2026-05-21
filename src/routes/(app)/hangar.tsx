@@ -23,7 +23,7 @@ import {
 import { Input } from '#/components/ui/input'
 import { Label } from '#/components/ui/label'
 
-import { SectionCard } from '#/components/layout/SectionCard'
+import SectionCard from '#/components/layout/SectionCard'
 import SectionHeader from '#/components/layout/SectionHeader'
 
 import {

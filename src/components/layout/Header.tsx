@@ -1,21 +1,19 @@
-import { useState } from 'react'
-
 import { NAVIGATION } from '#/constants/navigations'
 import {
   BellIcon,
   CircleQuestionMarkIcon,
   LogOutIcon,
   MenuIcon,
-  Search,
+  PlusIcon,
 } from 'lucide-react'
 
-import { Link, useLocation } from '@tanstack/react-router'
+import { Link, useLocation, useRouter } from '@tanstack/react-router'
 
 import { signOut } from '#/lib/auth/client'
 import { cn } from '#/lib/utils'
 
 import { Button } from '../ui/button'
-import { Input } from '../ui/input'
+
 import {
   Sheet,
   SheetContent,
@@ -27,8 +25,7 @@ import logo from '/landed-logo.svg'
 
 export default function Header() {
   const location = useLocation()
-
-  const [searchQuery, setSearchQuery] = useState<string>('')
+  const router = useRouter()
 
   const checkIfSelected = (path: string) => location.pathname === path
 
@@ -38,11 +35,15 @@ export default function Header() {
 
   const handleClickLogout = async () => {
     await signOut()
-    window.location.href = '/login'
+    router.navigate({ to: '/login' })
+  }
+
+  const handleNewApplication = () => {
+    router.navigate({ to: '/co-pilot' })
   }
 
   return (
-    <header className="fixed top-0 left-0 z-99 w-full border-b bg-white">
+    <header className="fixed top-0 left-0 z-91 w-full border-b bg-white">
       <div className="mx-auto flex h-16 max-w-7xl flex-row items-center justify-between px-4 md:px-8">
         <div className="flex flex-row items-center gap-0.5 lg:mr-14">
           <img
@@ -74,16 +75,13 @@ export default function Header() {
         </div>
 
         <div className="hidden flex-row items-center gap-2 md:flex lg:ml-auto">
-          <div className="relative hidden lg:block">
-            <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-            <Input
-              type="search"
-              placeholder="Search applications..."
-              className="pl-9"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
+          <Button
+            className="bg-primary cursor-pointer"
+            onClick={handleNewApplication}
+          >
+            <PlusIcon />
+            New Application
+          </Button>
 
           <Button
             variant="ghost"
