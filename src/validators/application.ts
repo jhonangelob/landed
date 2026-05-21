@@ -19,7 +19,6 @@ export const createApplicationSchema = z.object({
   jobDescription: z.string().min(1, 'Job description is required'),
   jobUrl: z.string().url('Must be a valid URL').optional().or(z.literal('')),
   location: z.string().optional(),
-  isRemote: z.boolean().default(false),
   salaryRange: z.string().optional(),
   notes: z.string().optional(),
   status: applicationStatusSchema.default('spotted'),
@@ -28,15 +27,16 @@ export const createApplicationSchema = z.object({
 export type CreateApplicationInput = z.infer<typeof createApplicationSchema>
 
 export const updateApplicationSchema = z.object({
-  id: z.string(),
-  companyName: z.string().min(1, 'Company name is required').optional(),
-  jobTitle: z.string().min(1, 'Job title is required').optional(),
-  jobUrl: z.string().url('Must be a valid URL').optional().or(z.literal('')),
-  location: z.string().optional(),
-  isRemote: z.boolean().optional(),
-  salaryRange: z.string().optional(),
-  notes: z.string().optional(),
-  status: applicationStatusSchema.optional(),
+  id: z.string().uuid(),
+  companyName: z.string().min(1, 'Company name is required'),
+  jobTitle: z.string().min(1, 'Job title is required'),
+  jobUrl: z.string().url('Must be a valid URL').nullable().or(z.literal('')),
+  location: z.string().nullable(),
+  salaryRange: z.string().nullable(),
+  notes: z.string().nullable(),
+  status: applicationStatusSchema,
+
+  // timestamps — optional, only set when stage changes
   appliedAt: z.string().datetime().optional(),
   interviewAt: z.string().datetime().optional(),
   offerAt: z.string().datetime().optional(),
@@ -52,3 +52,7 @@ export const updateStatusSchema = z.object({
 })
 
 export type UpdateStatusInput = z.infer<typeof updateStatusSchema>
+
+export const deleteApplicationSchema = z.object({
+  id: z.string(),
+})

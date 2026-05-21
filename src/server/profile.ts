@@ -14,11 +14,13 @@ export const getProfile = createServerFn({ method: 'GET' }).handler(
 
     if (!session) throw new Error('Unauthorized')
 
-    return await db
+    const [profile] = await db
       .select()
       .from(pilotProfiles)
       .where(eq(pilotProfiles.userId, session.user.id))
       .limit(1)
+
+    return profile
   },
 )
 

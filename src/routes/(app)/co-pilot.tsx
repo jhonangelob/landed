@@ -167,11 +167,11 @@ function RouteComponent() {
 
           <div className="flex flex-col-reverse items-center justify-between gap-4 rounded-md border bg-white px-4 py-3 md:flex-row">
             <p className="text-muted-foreground text-center font-sans text-[12px] md:text-left">
-              {profile.length
+              {profile.id
                 ? 'Co-Pilot will match your Pilot Profile to this exact role.'
                 : 'You need to setup your pilot profile first.'}
             </p>
-            {profile.length ? (
+            {profile.id ? (
               <Button
                 type="submit"
                 className="w-full cursor-pointer text-[12px] uppercase md:w-auto"

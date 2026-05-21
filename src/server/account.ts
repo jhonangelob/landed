@@ -14,11 +14,13 @@ export const getAccountDetails = createServerFn({ method: 'GET' }).handler(
 
     if (!session) throw new Error('Unauthorized')
 
-    return await db
+    const [account] = await db
       .select()
       .from(users)
       .where(eq(users.id, session.user.id))
       .limit(1)
+
+    return account
   },
 )
 

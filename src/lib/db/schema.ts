@@ -130,9 +130,8 @@ export const applications = pgTable('applications', {
   notes: text('notes'),
   salaryRange: text('salary_range'),
   location: text('location'),
-  isRemote: boolean('is_remote').default(false),
 
-  appliedAt: timestamp('applied_at'),
+  appliedAt: timestamp('applied_at').defaultNow().notNull(),
   interviewAt: timestamp('interview_at'),
   offerAt: timestamp('offer_at'),
   landedAt: timestamp('landed_at'),
@@ -140,6 +139,7 @@ export const applications = pgTable('applications', {
 
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  deletedAt: timestamp('deleted_at'),
 })
 
 export const generatedDocs = pgTable('generated_docs', {

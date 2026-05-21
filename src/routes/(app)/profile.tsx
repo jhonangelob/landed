@@ -83,25 +83,22 @@ function RouteComponent() {
   const [skillInput, setSkillInput] = useState('')
   const [roleInput, setRoleInput] = useState('')
 
-  const profileData = profile[0]
-  const accountData = account[0]
-
   const form = useForm({
     defaultValues: {
-      fullName: accountData.name,
-      email: accountData.email,
-      location: profileData?.location ?? '',
-      headline: profileData?.headline ?? '',
-      summary: profileData?.summary ?? '',
-      skills: profileData?.skills ?? [],
-      experience: profileData?.experience ?? [
+      fullName: account.name,
+      email: account.email,
+      location: profile.location ?? '',
+      headline: profile.headline ?? '',
+      summary: profile.summary ?? '',
+      skills: profile.skills ?? [],
+      experience: profile.experience ?? [
         { company: '', role: '', dates: '', bullets: [''] },
       ],
-      education: profileData?.education ?? [
+      education: profile.education ?? [
         { institution: '', degree: '', year: '' },
       ],
-      links: (profileData?.links) ?? { github: '', linkedin: '', portfolio: '' },
-      preferences: (profileData?.preferences as {
+      links: profile.links ?? { github: '', linkedin: '', portfolio: '' },
+      preferences: (profile.preferences as {
         roles: string[]
         salaryRange: string
       } | null) ?? { roles: [] as string[], salaryRange: '' },
@@ -110,7 +107,7 @@ function RouteComponent() {
       onSubmit: pilotProfileSchema,
     },
     onSubmit: async ({ value }) => {
-      if (profile.length > 0) {
+      if (profile.id) {
         updateProfileDetails(value)
       } else {
         saveProfileDetails(value)
@@ -723,7 +720,7 @@ function RouteComponent() {
                 className="text-[13px] uppercase"
                 disabled={isSubmitting || !isDirty}
               >
-                {profile.length > 0 ? 'Save Changes' : 'Submit'}
+                {profile.id ? 'Save Changes' : 'Submit'}
               </Button>
             )}
           />

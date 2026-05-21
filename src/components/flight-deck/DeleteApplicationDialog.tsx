@@ -1,0 +1,112 @@
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+  DialogClose,
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import type React from 'react'
+import { TrashIcon } from 'lucide-react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { deleteApplication } from '#/server/applications'
+import { useState } from 'react'
+import type { ApplicationStatus } from '#/lib/db/schema'
+
+type DisplayDataProps = {
+  id: string
+  company: string
+  role: string
+  status: ApplicationStatus
+  appliedAt: Date | null
+}
+
+interface DeleteApplicationDialogProps {
+  children: React.ReactNode
+  data: DisplayDataProps
+}
+
+export default function DeleteApplicationDialog({
+  children,
+  data,
+}: DeleteApplicationDialogProps) {
+  const queryClient = useQueryClient()
+
+  const [isOpen, setIsOpen] = useState(false)
+
+  const { mutateAsync: deleteApplicationItem } = useMutation({
+    mutationFn: (value: string) => deleteApplication({ data: { id: value } }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['applications'] })
+    },
+    onError: (err) => {
+      console.log(err)
+    },
+    onSettled: () => {
+      setIsOpen(false)
+    },
+  })
+
+  const handleDeleteApplication = () => {
+    deleteApplicationItem(data.id)
+  }
+
+  return (
+    <Dialog open={isOpen}>
+      <DialogTrigger asChild onClick={() => setIsOpen(true)}>
+        {children}
+      </DialogTrigger>
+      <DialogContent className="space-y-4">
+        <DialogHeader>
+          <DialogTitle>Are you absolutely sure?</DialogTitle>
+          <DialogDescription>
+            This will permanently remove this application and all generated
+            documents. This action cannot be undone.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="rounded-md border p-3">
+          <p className="text-muted-foreground font-mono text-[12px] uppercase">
+            {data.company}
+          </p>
+          <p className="text-primary-text font-sans text-[14px] font-bold">
+            {data.role}
+          </p>
+          <div className="mt-1 flex flex-row items-center gap-2">
+            <p className="rounded-full border px-2 py-0.5 font-mono text-[10px]">
+              {data.status}
+            </p>
+            {data.appliedAt && (
+              <p className="text-muted-foreground font-mono text-[11px] font-medium">
+                {new Date(data.appliedAt).toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}
+              </p>
+            )}
+          </div>
+        </div>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button
+              className="text-muted-foreground border-muted-foreground hover:bg-muted-foreground/40 hover:text-primary-text cursor-pointer border bg-transparent font-sans text-[13px] uppercase"
+              onClick={() => setIsOpen(false)}
+            >
+              Cancel
+            </Button>
+          </DialogClose>
+          <Button
+            onClick={handleDeleteApplication}
+            className="bg-destructive hover:bg-destructive cursor-pointer font-sans text-[13px] uppercase hover:opacity-80"
+          >
+            <TrashIcon />
+            Delete Application
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}

@@ -1,5 +1,3 @@
-import type { Application } from '#/dummy/data'
-
 import { useForm } from '@tanstack/react-form'
 
 import { Button } from '#/components/ui/button'
@@ -16,9 +14,12 @@ import { Textarea } from '#/components/ui/textarea'
 
 import { updateApplicationSchema } from '#/validators/application'
 
-import type { ApplicationStatusEnum } from '#/types/application'
-
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet'
+import type { Application } from '#/types/application'
+import DeleteApplicationDialog from './DeleteApplicationDialog'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { updateApplication } from '#/server/applications'
+import { useState } from 'react'
 
 export interface KanbanItemProps {
   data: Application
@@ -26,7 +27,7 @@ export interface KanbanItemProps {
 
 export type KanbanItemBadgeProps = {
   label: string
-  variant: ApplicationStatusEnum
+  variant: string
 }
 
 const variantStyles: Record<KanbanItemBadgeProps['variant'], string> = {
@@ -72,40 +73,56 @@ function KanbanItemBadge({ label, variant }: KanbanItemBadgeProps) {
 }
 
 export default function KanbanItem({ data, ...rest }: KanbanItemProps) {
+  const queryClient = useQueryClient()
+
+  const [isOpen, setIsOpen] = useState(false)
+
+  const { mutateAsync: updateApplicationDetails } = useMutation({
+    mutationFn: (value: typeof form.state.values) =>
+      updateApplication({ data: value }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['applications'] })
+    },
+    onError: (err) => {
+      console.log(err)
+    },
+  })
+
   const form = useForm({
     defaultValues: {
       id: data.id,
       companyName: data.company,
       jobTitle: data.role,
-      jobUrl: data.job_url ?? '',
+      jobUrl: data.jobUrl,
       location: data.location,
-      isRemote: data.is_remote,
-      salaryRange: data.salary_range ?? '',
-      notes: data.notes ?? '',
+      salaryRange: data.salaryRange,
+      notes: data.notes,
       status: data.status,
     },
     validators: {
       onSubmit: updateApplicationSchema,
     },
     onSubmit: async ({ value }) => {
-      console.log(value)
+      updateApplicationDetails(value)
+      setIsOpen(false)
+      form.reset()
     },
   })
 
   return (
-    <Sheet>
-      <SheetTrigger>
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+      <SheetTrigger onClick={() => setIsOpen(true)}>
         <div className="hover:border-primary flex w-73 cursor-pointer flex-col space-y-1.5 rounded-lg border bg-white p-4">
           <div className="flex flex-row items-center justify-between">
             <p className="text-muted-foreground font-mono text-[12px] font-medium">
-              {new Date(data.created_at).toLocaleDateString('en-US', {
-                month: 'short',
+              {new Date(data.createdAt).toLocaleDateString('en-US', {
+                month: 'long',
                 day: 'numeric',
               })}
             </p>
             <KanbanItemBadge
               label="NEW ENTRY"
-              variant={data.status as ApplicationStatusEnum}
+              variant={data.status}
               {...rest}
             />
           </div>
@@ -117,7 +134,7 @@ export default function KanbanItem({ data, ...rest }: KanbanItemProps) {
           </p>
         </div>
       </SheetTrigger>
-      <SheetContent className="flex flex-col overflow-y-auto bg-white px-8 pt-12 pb-8">
+      <SheetContent className="flex flex-col overflow-y-auto bg-white px-12 pt-22 pb-8">
         <form
           onSubmit={(e) => {
             e.preventDefault()
@@ -125,61 +142,59 @@ export default function KanbanItem({ data, ...rest }: KanbanItemProps) {
           }}
           className="flex w-full flex-1 flex-col gap-4"
         >
-          <div className="flex flex-col gap-4 md:flex-row">
-            <form.Field
-              name="companyName"
-              children={(field) => (
-                <div className="w-full space-y-1.5">
-                  <Label
-                    htmlFor="companyName"
-                    className="text-muted-foreground font-sans text-[12px] font-medium"
-                  >
-                    Company Name
-                  </Label>
-                  <Input
-                    id="companyName"
-                    placeholder="e.g. Acme Corp"
-                    value={field.state.value}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    onBlur={field.handleBlur}
-                    className="bg-white text-sm shadow-none"
-                  />
-                  {field.state.meta.errors.map((err, i) => (
-                    <p key={i} className="text-destructive text-sm">
-                      {err?.message as string}
-                    </p>
-                  ))}
-                </div>
-              )}
-            />
+          <form.Field
+            name="companyName"
+            children={(field) => (
+              <div className="w-full space-y-1.5">
+                <Label
+                  htmlFor="companyName"
+                  className="text-muted-foreground font-sans text-[12px] font-medium"
+                >
+                  Company Name
+                </Label>
+                <Input
+                  id="companyName"
+                  placeholder="e.g. Acme Corp"
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  onBlur={field.handleBlur}
+                  className="bg-white text-sm shadow-none"
+                />
+                {field.state.meta.errors.map((err, i) => (
+                  <p key={i} className="text-destructive text-sm">
+                    {err?.message as string}
+                  </p>
+                ))}
+              </div>
+            )}
+          />
 
-            <form.Field
-              name="jobTitle"
-              children={(field) => (
-                <div className="w-full space-y-1.5">
-                  <Label
-                    htmlFor="jobTitle"
-                    className="text-muted-foreground font-sans text-[12px] font-medium"
-                  >
-                    Job Title
-                  </Label>
-                  <Input
-                    id="jobTitle"
-                    placeholder="e.g. Software Engineer"
-                    value={field.state.value}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    onBlur={field.handleBlur}
-                    className="bg-white text-sm shadow-none"
-                  />
-                  {field.state.meta.errors.map((err, i) => (
-                    <p key={i} className="text-destructive text-sm">
-                      {err?.message as string}
-                    </p>
-                  ))}
-                </div>
-              )}
-            />
-          </div>
+          <form.Field
+            name="jobTitle"
+            children={(field) => (
+              <div className="w-full space-y-1.5">
+                <Label
+                  htmlFor="jobTitle"
+                  className="text-muted-foreground font-sans text-[12px] font-medium"
+                >
+                  Job Title
+                </Label>
+                <Input
+                  id="jobTitle"
+                  placeholder="e.g. Software Engineer"
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  onBlur={field.handleBlur}
+                  className="bg-white text-sm shadow-none"
+                />
+                {field.state.meta.errors.map((err, i) => (
+                  <p key={i} className="text-destructive text-sm">
+                    {err?.message as string}
+                  </p>
+                ))}
+              </div>
+            )}
+          />
 
           <form.Field
             name="status"
@@ -226,7 +241,7 @@ export default function KanbanItem({ data, ...rest }: KanbanItemProps) {
                 <Input
                   id="location"
                   placeholder="e.g. Remote"
-                  value={field.state.value}
+                  value={field.state.value ?? ''}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
                   className="bg-white text-sm shadow-none"
@@ -248,7 +263,7 @@ export default function KanbanItem({ data, ...rest }: KanbanItemProps) {
                 <Input
                   id="salaryRange"
                   placeholder="e.g. $120k – $150k"
-                  value={field.state.value}
+                  value={field.state.value ?? ''}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
                   className="bg-white text-sm shadow-none"
@@ -270,7 +285,7 @@ export default function KanbanItem({ data, ...rest }: KanbanItemProps) {
                 <Input
                   id="jobUrl"
                   placeholder="https://..."
-                  value={field.state.value}
+                  value={field.state.value ?? ''}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
                   className="bg-white text-sm shadow-none"
@@ -291,11 +306,11 @@ export default function KanbanItem({ data, ...rest }: KanbanItemProps) {
             <div className="divide-border divide-y rounded-md border bg-white">
               {(
                 [
-                  { label: 'Applied', value: data.applied_at },
-                  { label: 'Interview', value: data.interview_at },
-                  { label: 'Offer', value: data.offer_at },
-                  { label: 'Landed', value: data.landed_at },
-                  { label: 'Rejected', value: data.rejected_at },
+                  { label: 'Applied', value: data.appliedAt },
+                  { label: 'Interview', value: data.interviewAt },
+                  { label: 'Offer', value: data.offerAt },
+                  { label: 'Landed', value: data.landedAt },
+                  { label: 'Rejected', value: data.rejectedAt },
                 ] as const
               ).map(({ label, value }) => (
                 <div
@@ -333,7 +348,7 @@ export default function KanbanItem({ data, ...rest }: KanbanItemProps) {
                   id="notes"
                   placeholder="Add notes..."
                   rows={4}
-                  value={field.state.value}
+                  value={field.state.value ?? ''}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
                   className="bg-white text-sm shadow-none"
@@ -343,16 +358,27 @@ export default function KanbanItem({ data, ...rest }: KanbanItemProps) {
           />
 
           <div className="mt-auto flex flex-row items-center gap-4">
-            <Button
-              className="flex-1 cursor-pointer text-[12px]"
-              variant={'destructive'}
-            >
-              Delete Application
-            </Button>
+            <DeleteApplicationDialog data={data}>
+              <Button
+                className="max-w-1/2 flex-1 cursor-pointer text-[12px]"
+                variant={'destructive'}
+              >
+                Delete Application
+              </Button>
+            </DeleteApplicationDialog>
 
-            <Button type="submit" className="flex-1 cursor-pointer text-[12px]">
-              Save Changes
-            </Button>
+            <form.Subscribe
+              selector={(s) => [s.isSubmitting, s.isDirty]}
+              children={([isSubmitting, isDirty]) => (
+                <Button
+                  type="submit"
+                  className="w-full max-w-1/2 text-[12px] uppercase"
+                  disabled={isSubmitting || !isDirty}
+                >
+                  {isSubmitting ? 'Saving...' : 'Save Changes'}
+                </Button>
+              )}
+            />
           </div>
         </form>
       </SheetContent>

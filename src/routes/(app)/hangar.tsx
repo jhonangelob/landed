@@ -109,8 +109,8 @@ function RouteComponent() {
 
   const form = useForm({
     defaultValues: {
-      fullName: account[0].name,
-      email: account[0].email,
+      fullName: account.name,
+      email: account.email,
       currentPassword: '',
       confirmPassword: '',
       newPassword: '',
