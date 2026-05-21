@@ -84,22 +84,22 @@ function RouteComponent() {
     defaultValues: {
       fullName: accountData.name,
       email: accountData.email,
-      location: profileData.location ?? '',
-      headline: profileData.headline ?? '',
-      summary: profileData.summary ?? '',
-      skills: profileData.skills ?? [],
-      experience: profileData.experience ?? [
+      location: profileData?.location ?? '',
+      headline: profileData?.headline ?? '',
+      summary: profileData?.summary ?? '',
+      skills: profileData?.skills ?? [],
+      experience: profileData?.experience ?? [
         { company: '', role: '', dates: '', bullets: [''] },
       ],
-      education: profileData.education ?? [
+      education: profileData?.education ?? [
         { institution: '', degree: '', year: '' },
       ],
-      links: (profileData.links as {
+      links: (profileData?.links as {
         github: string
         linkedin: string
         portfolio: string
       } | null) ?? { github: '', linkedin: '', portfolio: '' },
-      preferences: (profileData.preferences as {
+      preferences: (profileData?.preferences as {
         roles: string[]
         salaryRange: string
       } | null) ?? { roles: [] as string[], salaryRange: '' },

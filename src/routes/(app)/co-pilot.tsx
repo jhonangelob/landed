@@ -1,5 +1,5 @@
 import SectionHeader from '#/components/layout/SectionHeader'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useForm } from '@tanstack/react-form'
 import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
@@ -8,12 +8,28 @@ import { Textarea } from '#/components/ui/textarea'
 import { SparklesIcon } from 'lucide-react'
 import { createApplicationSchema } from '#/validators/application'
 import { SectionCard } from '#/components/layout/SectionCard'
+import { getProfile } from '#/server/profile'
+import { useSuspenseQuery } from '@tanstack/react-query'
 
 export const Route = createFileRoute('/(app)/co-pilot')({
+  loader: ({ context: { queryClient } }) =>
+    queryClient.ensureQueryData({
+      queryKey: ['profile'],
+      queryFn: () => getProfile(),
+    }),
   component: RouteComponent,
 })
 
 function RouteComponent() {
+  const router = useRouter()
+
+  const { data: profile } = useSuspenseQuery({
+    queryKey: ['profile'],
+    queryFn: () => getProfile(),
+  })
+
+  console.log({ profile })
+
   const form = useForm({
     defaultValues: {
       companyName: '',
@@ -27,6 +43,10 @@ function RouteComponent() {
       console.log(value)
     },
   })
+
+  const handleSetupProfile = () => {
+    router.navigate({ to: '/profile' })
+  }
 
   return (
     <div className="section">
@@ -130,14 +150,26 @@ function RouteComponent() {
 
           <div className="py-3 px-4 flex-col-reverse md:flex-row bg-white rounded-md flex  justify-between items-center gap-4 border">
             <p className="font-sans text-[12px] text-muted-foreground text-center md:text-left">
-              Co-Pilot will match your Pilot Profile to this exact role.
+              {profile.length
+                ? 'Co-Pilot will match your Pilot Profile to this exact role.'
+                : 'You need to setup your pilot profile first.'}
             </p>
-            <Button
-              type="submit"
-              className="text-[12px] cursor-pointer w-full md:w-auto"
-            >
-              <SparklesIcon /> GENERATE DOCUMENTS
-            </Button>
+            {profile.length ? (
+              <Button
+                type="submit"
+                className="text-[12px] cursor-pointer w-full md:w-auto uppercase"
+              >
+                <SparklesIcon /> Generate Documents
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                className="text-[12px] cursor-pointer w-full md:w-auto uppercase"
+                onClick={handleSetupProfile}
+              >
+                Setup Pilot Profile
+              </Button>
+            )}
           </div>
         </form>
       </div>
