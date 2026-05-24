@@ -54,6 +54,12 @@ function RouteComponent() {
         callbackURL: '/login',
       })
 
+      console.log(res)
+
+      if (res.data) {
+        navigate({ to: '/flight-deck' })
+      }
+
       if (res.error) {
         setErrorMessage(res.error.message || '')
       }

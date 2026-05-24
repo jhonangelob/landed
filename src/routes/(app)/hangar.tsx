@@ -5,7 +5,7 @@ import {
   useQueryClient,
   useSuspenseQuery,
 } from '@tanstack/react-query'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 
 import { Button } from '#/components/ui/button'
 
@@ -30,6 +30,8 @@ import type {
   updatePasswordSchema,
 } from '#/validators/account'
 
+import { PLANS } from '#/constants/plan'
+
 export const Route = createFileRoute('/(app)/hangar')({
   loader: ({ context: { queryClient } }) =>
     queryClient.ensureQueryData({
@@ -39,43 +41,8 @@ export const Route = createFileRoute('/(app)/hangar')({
   component: RouteComponent,
 })
 
-export const PLANS = [
-  {
-    id: 'free' as const,
-    name: 'Free',
-    price: 0,
-    currency: 'PHP',
-    duration: null,
-    generations: 10,
-    applications: 10,
-    features: [
-      '10 AI generations',
-      '10 applications',
-      'PDF export',
-      'Flight Deck kanban',
-    ],
-    isCurrent: true,
-  },
-  {
-    id: 'runway' as const,
-    name: 'Runway',
-    price: 299,
-    currency: 'PHP',
-    duration: 30,
-    generations: 50,
-    applications: null,
-    features: [
-      '50 AI generations',
-      'Unlimited applications',
-      'PDF + DOCX export',
-      'Version history',
-      'Priority support',
-    ],
-    isCurrent: false,
-  },
-]
-
 function RouteComponent() {
+  const navigate = useNavigate()
   const queryClient = useQueryClient()
 
   const { data: account } = useSuspenseQuery({
@@ -85,7 +52,6 @@ function RouteComponent() {
 
   const { mutateAsync: updateAccountPassword } = useMutation({
     mutationFn: async (value: z.infer<typeof updatePasswordSchema>) => {
-      console.log(value)
       await changePassword({
         currentPassword: value.currentPassword,
         newPassword: value.newPassword,
@@ -118,6 +84,7 @@ function RouteComponent() {
     },
     onSuccess: () => {
       signOut()
+      navigate({ to: '/login' })
     },
     onError: () => {},
   })
@@ -130,13 +97,13 @@ function RouteComponent() {
         title2="Hangar"
         description="Account settings, your subscription, and the controls you rarely need to touch."
       />
-      <div className="flex flex-row gap-4">
+      <div className="flex flex-col gap-4 lg:flex-row">
         <SectionCard
           subTitle="Bay 01 · Account"
           title="Account details"
           description="The name printed on every CV and cover letter Co-Pilot generates. Use the name you'd want a recruiter to call out on a phone screen."
           order={1}
-          className="w-3/5"
+          className="w-full lg:w-3/5"
         >
           <AccountForm data={account} onConfirmUpdate={updateAccount} />
         </SectionCard>
@@ -145,7 +112,7 @@ function RouteComponent() {
           title="Password "
           description="Lock down access. Two-factor is on by default for accounts older than 30 days."
           order={2}
-          className="w-2/5"
+          className="w-full lg:w-2/5"
         >
           <PasswordForm onUpdatePassword={updateAccountPassword} />
         </SectionCard>
@@ -156,7 +123,7 @@ function RouteComponent() {
         description="Every plan includes unlimited applications, the Flight Deck, and the Pilot Profile. Co-Pilot generations and extras vary."
         order={3}
       >
-        <div className="flex gap-4">
+        <div className="flex flex-col gap-4 lg:flex-row">
           {PLANS.map((item) => (
             <SubscriptionCard
               data={item}
@@ -167,13 +134,13 @@ function RouteComponent() {
           ))}
         </div>
       </SectionCard>
-      <div className="flex flex-row gap-4">
+      <div className="flex flex-col gap-4 lg:flex-row">
         <SectionCard
           subTitle="Bay 04 · Usage this month"
           title="Activity"
           description="Your activity since 19 May. Resets monthly."
           order={4}
-          className="w-3/5"
+          className="w-full lg:w-3/5"
         >
           <ActivityCardGroup />
         </SectionCard>
@@ -182,7 +149,7 @@ function RouteComponent() {
           title="Delete account"
           description="Permanently delete your Pilot Profile, application history, and every document Co-Pilot has generated. This cannot be undone."
           order={5}
-          className="w-2/5 border-[#e4b9ba]! bg-[#fef1f0]!"
+          className="w-full border-[#e4b9ba]! bg-[#fef1f0]! lg:w-2/5"
         >
           <div className="mt-auto flex flex-row items-end justify-between">
             <p className="text-muted font-mono text-[11px] leading-[1.4] font-normal tracking-[1.1px] uppercase">

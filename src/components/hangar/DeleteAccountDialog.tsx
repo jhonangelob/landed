@@ -25,9 +25,10 @@ export default function DeleteAccountDialog({
   onDelete,
 }: DeleteAccountDialogProps) {
   const [input, setInput] = useState('')
+  const [open, setOpen] = useState(false)
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="w-110 space-y-0">
         <DialogHeader>
@@ -42,8 +43,11 @@ export default function DeleteAccountDialog({
           <p className="text-primary-text font-sans text-[14px] leading-[1.55]">
             This will permanently delete
           </p>
-          {ACCOUNT_DELETION_WARNING_LIST.map((item) => (
-            <div className="text-primary-text pl-1 font-sans text-[14px] leading-[1.55]">
+          {ACCOUNT_DELETION_WARNING_LIST.map((item, index) => (
+            <div
+              className="text-primary-text pl-1 font-sans text-[14px] leading-[1.55]"
+              key={index}
+            >
               • {item}
             </div>
           ))}
@@ -65,8 +69,7 @@ export default function DeleteAccountDialog({
           <Button
             variant="outline"
             className="w-fit cursor-pointer text-[13px] uppercase"
-            disabled={input !== 'DELETE'}
-            onClick={onDelete}
+            onClick={() => setOpen(false)}
           >
             Keep Account
           </Button>

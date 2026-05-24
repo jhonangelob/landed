@@ -15,7 +15,7 @@ import {
 import { TrashIcon } from 'lucide-react'
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useRouter } from '@tanstack/react-router'
+import { useNavigate } from '@tanstack/react-router'
 
 import { deleteApplication } from '#/server/applications'
 
@@ -38,7 +38,7 @@ export default function DeleteApplicationDialog({
   children,
   data,
 }: DeleteApplicationDialogProps) {
-  const router = useRouter()
+  const navigate = useNavigate()
   const queryClient = useQueryClient()
 
   const [isOpen, setIsOpen] = useState(false)
@@ -47,7 +47,7 @@ export default function DeleteApplicationDialog({
     mutationFn: (value: string) => deleteApplication({ data: { id: value } }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['applications'] })
-      router.navigate({ to: '/flight-deck' })
+      navigate({ to: '/flight-deck' })
     },
     onError: (err) => {
       console.log(err)

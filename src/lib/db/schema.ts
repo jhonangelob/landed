@@ -100,6 +100,14 @@ interface Preferences {
   interviewReminders: boolean
 }
 
+interface Certifications {
+  name: string
+  issuer: string
+  issueDate: Date
+  expiryDate: Date
+  url: string
+}
+
 export const pilotProfiles = pgTable('pilot_profiles', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: text('user_id')
@@ -111,6 +119,7 @@ export const pilotProfiles = pgTable('pilot_profiles', {
   skills: text('skills').array(),
   experience: jsonb('experience').$type<Experience[]>(),
   education: jsonb('education').$type<Education[]>(),
+  certifications: jsonb('certifications').$type<Certifications[]>(),
   links: jsonb('links').$type<Links>(),
   preferences: jsonb('preferences').$type<Preferences>(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),

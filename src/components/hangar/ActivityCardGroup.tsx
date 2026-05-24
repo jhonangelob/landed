@@ -7,8 +7,8 @@ const SUBSCRITION_DATA = {
 
 export default function ActivityCardGroup() {
   return (
-    <div className="flex flex-row gap-4">
-      <div className="flex h-23.5 flex-1 flex-col gap-2 rounded-md border bg-[#f5f6f8] px-4 py-3.5 shadow-none">
+    <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="flex h-23.5 flex-col gap-2 rounded-md border bg-[#f5f6f8] px-4 py-3.5 shadow-none">
         <p className="font-display text-[30px] leading-none font-bold tracking-[-0.8px] text-[#0f1b2]">
           {SUBSCRITION_DATA.applications}
         </p>
@@ -16,7 +16,7 @@ export default function ActivityCardGroup() {
           Applications submitted
         </p>
       </div>
-      <div className="flex h-23.5 flex-1 flex-col gap-2 rounded-md border bg-[#f5f6f8] px-4 py-3.5 shadow-none">
+      <div className="flex h-23.5 flex-col gap-2 rounded-md border bg-[#f5f6f8] px-4 py-3.5 shadow-none">
         <p className="font-display text-[30px] leading-none font-bold tracking-[-0.8px] text-[#0f1b2]">
           {SUBSCRITION_DATA.documents}
         </p>
@@ -24,7 +24,7 @@ export default function ActivityCardGroup() {
           Documents Generated
         </p>
       </div>
-      <div className="flex h-23.5 flex-1 flex-col gap-2 rounded-md border bg-[#f5f6f8] px-4 py-3.5 shadow-none">
+      <div className="flex h-23.5 flex-col gap-2 rounded-md border bg-[#f5f6f8] px-4 py-3.5 shadow-none">
         <p className="font-display text-[30px] leading-none font-bold tracking-[-0.8px] text-[#0f1b2]">
           {SUBSCRITION_DATA.interview}
         </p>
@@ -32,7 +32,7 @@ export default function ActivityCardGroup() {
           Active Interviews
         </p>
       </div>
-      <div className="flex h-23.5 flex-1 flex-col gap-2 rounded-md border bg-[#f5f6f8] px-4 py-3.5 shadow-none">
+      <div className="flex h-23.5 flex-col gap-2 rounded-md border bg-[#f5f6f8] px-4 py-3.5 shadow-none">
         <p className="font-display text-[30px] leading-none font-bold tracking-[-0.8px] text-[#0f1b2]">
           {SUBSCRITION_DATA.words}
         </p>

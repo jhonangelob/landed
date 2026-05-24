@@ -61,7 +61,7 @@ export default function PasswordForm({ onUpdatePassword }: PasswordFormProps) {
           </div>
         )}
       />
-      <div className="flex flex-row gap-4">
+      <div className="flex flex-col gap-4 lg:flex-row">
         <form.Field
           name="newPassword"
           children={(field) => (
@@ -120,17 +120,23 @@ export default function PasswordForm({ onUpdatePassword }: PasswordFormProps) {
 
       <div className="flex justify-end gap-3">
         <form.Subscribe
-          selector={(s) => [s.isSubmitting, s.isDirty]}
-          children={([isSubmitting, isDirty]) => (
-            <Button
-              type="submit"
-              variant="outline"
-              className="cursor-pointer text-[12px] uppercase shadow-none"
-              disabled={isSubmitting || !isDirty}
-            >
-              {isSubmitting ? 'Updating...' : 'Update Password'}
-            </Button>
-          )}
+          selector={(s) => ({ isSubmitting: s.isSubmitting, values: s.values })}
+          children={({ isSubmitting, values }) => {
+            const hasValues =
+              values.currentPassword !== '' &&
+              values.newPassword !== '' &&
+              values.confirmPassword !== ''
+            return (
+              <Button
+                type="submit"
+                variant="outline"
+                className="cursor-pointer text-[12px] uppercase shadow-none"
+                disabled={isSubmitting || !hasValues}
+              >
+                {isSubmitting ? 'Updating...' : 'Update Password'}
+              </Button>
+            )
+          }}
         />
       </div>
     </form>

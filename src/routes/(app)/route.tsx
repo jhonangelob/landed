@@ -18,9 +18,9 @@ export const Route = createFileRoute('/(app)')({
 
 function AppLayout() {
   return (
-    <div className="bg-background min-h-screen">
+    <div className="bg-background min-h-screen border">
       <Header />
-      <main className="mx-auto mt-16 w-full max-w-370 px-7 pt-7 pb-20">
+      <main className="mx-auto mt-16 w-full max-w-370 px-4 pt-4 pb-12 md:px-7 md:pt-7 md:pb-20">
         <Outlet />
       </main>
       <Footer />

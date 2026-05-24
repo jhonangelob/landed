@@ -1,7 +1,7 @@
 import { PlusIcon } from 'lucide-react'
 
 import { useSuspenseQuery } from '@tanstack/react-query'
-import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 
 import KanbanItem from '#/components/flight-deck/KanbanItem'
 import SectionHeader from '#/components/layout/SectionHeader'
@@ -20,7 +20,7 @@ export const Route = createFileRoute('/(app)/flight-deck')({
 })
 
 function RouteComponent() {
-  const router = useRouter()
+  const navigate = useNavigate()
 
   const { data: applications } = useSuspenseQuery({
     queryKey: ['applications'],
@@ -28,7 +28,7 @@ function RouteComponent() {
   })
 
   const handleNewApplication = () => {
-    router.navigate({ to: '/co-pilot' })
+    navigate({ to: '/co-pilot' })
   }
 
   return (

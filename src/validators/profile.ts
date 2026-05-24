@@ -22,6 +22,16 @@ export const educationSchema = z.object({
 
 export type EducationInput = z.infer<typeof educationSchema>
 
+export const certificationSchema = z.object({
+  name: z.string().min(1, 'Certification name is required'),
+  issuer: z.string().min(1, 'Issuer is required'),
+  issueDate: z.string().min(1, 'Issue date is required'),
+  expiryDate: z.string().nullable().or(z.literal('')),
+  url: z.string().url('Must be a valid URL').nullable().or(z.literal('')),
+})
+
+export type CertificationInput = z.infer<typeof certificationSchema>
+
 export const linksSchema = z.object({
   github: z.string().url('Must be a valid URL').or(z.literal('')),
   linkedin: z.string().url('Must be a valid URL').or(z.literal('')),
@@ -71,6 +81,10 @@ export const pilotProfileSchema = z.object({
     .array(experienceSchema)
     .min(1, 'Add at least one work experience')
     .max(8, 'Maximum 8 experience entries'),
+  certifications: z
+    .array(certificationSchema)
+    .max(10, 'Maximum 10 certifications')
+    .default([]),
   education: z
     .array(educationSchema)
     .min(1, 'Add at least one education entry')

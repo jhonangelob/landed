@@ -8,7 +8,7 @@ import {
 import { ChevronDown } from 'lucide-react'
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useRouter } from '@tanstack/react-router'
+import { useNavigate } from '@tanstack/react-router'
 
 import { Button } from '#/components/ui/button'
 
@@ -57,7 +57,7 @@ const statusItemClass: Record<
 }
 
 export default function KanbanItem({ data }: KanbanItemProps) {
-  const router = useRouter()
+  const navigate = useNavigate()
   const queryClient = useQueryClient()
 
   const { mutateAsync: updateStatus } = useMutation({
@@ -72,7 +72,7 @@ export default function KanbanItem({ data }: KanbanItemProps) {
   })
 
   const handleClickApplicationItem = () => {
-    router.navigate({
+    navigate({
       to: '/co-pilot',
       search: { applicationId: data.id },
     })

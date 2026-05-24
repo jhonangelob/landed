@@ -6,7 +6,7 @@ import {
   PlusIcon,
 } from 'lucide-react'
 
-import { Link, useLocation, useRouter } from '@tanstack/react-router'
+import { Link, useLocation, useNavigate } from '@tanstack/react-router'
 
 import { signOut } from '#/lib/auth/client'
 import { cn } from '#/lib/utils'
@@ -25,7 +25,7 @@ import logo from '/landed-logo.svg'
 
 export default function Header() {
   const location = useLocation()
-  const router = useRouter()
+  const navigate = useNavigate()
 
   const checkIfSelected = (path: string) => location.pathname === path
 
@@ -35,11 +35,11 @@ export default function Header() {
 
   const handleClickLogout = async () => {
     await signOut()
-    router.navigate({ to: '/login' })
+    navigate({ to: '/login' })
   }
 
   const handleNewApplication = () => {
-    router.navigate({ to: '/co-pilot' })
+    navigate({ to: '/co-pilot' })
   }
 
   return (

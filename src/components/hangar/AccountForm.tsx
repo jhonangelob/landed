@@ -68,7 +68,7 @@ export default function AccountForm({
           </div>
         )}
       />
-      <div className="flex flex-row gap-4">
+      <div className="flex flex-col gap-4 lg:flex-row">
         <form.Field
           name="username"
           children={(field) => (
@@ -131,6 +131,7 @@ export default function AccountForm({
 
       <div className="flex justify-end gap-3">
         <Button
+          type="button"
           variant="outline"
           className="cursor-pointer bg-white text-[12px] font-normal uppercase shadow-none"
           onClick={handleDiscard}
@@ -138,16 +139,21 @@ export default function AccountForm({
           Discard
         </Button>
         <form.Subscribe
-          selector={(s) => [s.isSubmitting, s.isDirty]}
-          children={([isSubmitting, isDirty]) => (
-            <Button
-              type="submit"
-              className="cursor-pointer text-[12px] uppercase shadow-none"
-              disabled={isSubmitting || !isDirty}
-            >
-              {isSubmitting ? 'Saving...' : 'Save Changes'}
-            </Button>
-          )}
+          selector={(s) => ({ isSubmitting: s.isSubmitting, values: s.values })}
+          children={({ isSubmitting, values }) => {
+            const hasChanges =
+              values.fullName !== (data.name ?? '') ||
+              values.username !== (data.username ?? '')
+            return (
+              <Button
+                type="submit"
+                className="cursor-pointer text-[12px] uppercase shadow-none"
+                disabled={isSubmitting || !hasChanges}
+              >
+                {isSubmitting ? 'Saving...' : 'Save Changes'}
+              </Button>
+            )
+          }}
         />
       </div>
     </form>

@@ -4,7 +4,7 @@ import z from 'zod'
 
 import { useForm } from '@tanstack/react-form'
 import { useMutation, useQuery, useSuspenseQuery } from '@tanstack/react-query'
-import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 
 import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
@@ -61,7 +61,7 @@ export const Route = createFileRoute('/(app)/co-pilot')({
 })
 
 function RouteComponent() {
-  const router = useRouter()
+  const navigate = useNavigate()
   const { applicationId } = Route.useSearch()
 
   const isEditMode = !!applicationId
@@ -94,7 +94,7 @@ function RouteComponent() {
       return await generateDocuments({ data: value })
     },
     onSuccess: (data) => {
-      router.navigate({
+      navigate({
         to: '/co-pilot',
         search: { applicationId: data.id },
       })
@@ -129,7 +129,7 @@ function RouteComponent() {
       return await saveApplication({ data: value })
     },
     onSuccess: (data) => {
-      router.navigate({
+      navigate({
         to: '/co-pilot',
         search: { applicationId: data.id },
       })
@@ -164,7 +164,7 @@ function RouteComponent() {
   }
 
   const handleSetupProfile = () => {
-    router.navigate({ to: '/profile' })
+    navigate({ to: '/profile' })
   }
 
   const pageDescription = isEditMode
