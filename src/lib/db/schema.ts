@@ -151,7 +151,7 @@ export const generatedDocs = pgTable('generated_docs', {
     .notNull()
     .references(() => applications.id, { onDelete: 'cascade' }),
   type: docTypeEnum('type').notNull(),
-  contentJson: jsonb('content_json').notNull(),
+  contentJson: jsonb('content_json').$type<Record<string, unknown>>().notNull(),
   contentHtml: text('content_html').notNull(),
   version: integer('version').notNull().default(1),
   createdAt: timestamp('created_at').defaultNow().notNull(),

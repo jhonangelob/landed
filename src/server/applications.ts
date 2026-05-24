@@ -35,6 +35,7 @@ export const getApplicationDetails = createServerFn({ method: 'GET' })
   )
   .handler(async ({ data }) => {
     const session = await getSession()
+
     if (!session) throw new Error('Unauthorized')
 
     const result = await db
@@ -60,7 +61,7 @@ export const saveApplication = createServerFn({
 
     if (!session) throw new Error('Unauthorized')
 
-    return await db
+    const [application] = await db
       .insert(applications)
       .values({
         userId: session.user.id,
@@ -70,6 +71,8 @@ export const saveApplication = createServerFn({
         status: 'spotted',
       })
       .returning()
+
+    return application
   })
 
 export const updateApplication = createServerFn({

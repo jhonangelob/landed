@@ -137,8 +137,10 @@ function RouteComponent() {
   return (
     <div className="section">
       <SectionHeader
-        title="Hangar"
-        description="Account settings and preferences."
+        subTitle="Settings & billing"
+        title1="The"
+        title2="Hangar"
+        description="Account settings, your subscription, and the controls you rarely need to touch."
       />
       <div className="flex flex-col gap-6 lg:flex-row">
         <div className="max-w-1/2">
@@ -320,7 +322,7 @@ function RouteComponent() {
               </div>
 
               <Dialog>
-                <DialogTrigger>
+                <DialogTrigger asChild>
                   <Button
                     variant="destructive"
                     className="cursor-pointer rounded-lg"

@@ -117,7 +117,9 @@ function RouteComponent() {
   return (
     <div className="section max-w-3xl">
       <SectionHeader
-        title="Pilot Profile"
+        subTitle="Master profile"
+        title1="Pilot"
+        title2="Profile"
         description="Your master CV data. Co-Pilot uses this to tailor every document it generates."
       />
 

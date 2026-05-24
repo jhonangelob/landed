@@ -20,7 +20,7 @@ function AppLayout() {
   return (
     <div className="bg-background min-h-screen">
       <Header />
-      <main className="mx-auto max-w-7xl p-4 md:p-12">
+      <main className="mx-auto mt-16 w-full max-w-370 px-7 pt-7 pb-20">
         <Outlet />
       </main>
       <Footer />

@@ -1,6 +1,6 @@
 import { anthropic } from '@ai-sdk/anthropic'
 import { generateText } from 'ai'
-import { eq } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 
 import { createServerFn } from '@tanstack/react-start'
 
@@ -9,6 +9,32 @@ import { db } from '#/lib/db'
 import { applications, generatedDocs, pilotProfiles } from '#/lib/db/schema'
 
 import { generateDocumentSchema } from '#/validators/co-pilot'
+import z from 'zod'
+import { clToHtml, cvToHtml } from '#/helper/document'
+
+export const getDocuments = createServerFn({ method: 'GET' })
+  .inputValidator((data: unknown) =>
+    z.object({ id: z.string().uuid() }).parse(data),
+  )
+  .handler(async ({ data }): Promise<any | null> => {
+    const session = await getSession()
+
+    if (!session) throw new Error('Unauthorized')
+
+    const result = await db
+      .select()
+      .from(generatedDocs)
+      .where(
+        and(
+          eq(generatedDocs.applicationId, data.id),
+          eq(generatedDocs.userId, session.user.id),
+        ),
+      )
+      .orderBy(generatedDocs.createdAt)
+      .limit(2)
+
+    return result
+  })
 
 export const generateDocuments = createServerFn({ method: 'POST' })
   .inputValidator((data: unknown) => generateDocumentSchema.parse(data))
@@ -97,7 +123,7 @@ export const generateDocuments = createServerFn({ method: 'POST' })
         applicationId: application.id,
         type: 'cv',
         contentJson: parsed.cv,
-        contentHtml: '',
+        contentHtml: cvToHtml(parsed.cv),
         version: 1,
       },
       {
@@ -105,7 +131,7 @@ export const generateDocuments = createServerFn({ method: 'POST' })
         applicationId: application.id,
         type: 'cover_letter',
         contentJson: parsed.coverLetter,
-        contentHtml: '',
+        contentHtml: clToHtml(parsed.coverLetter),
         version: 1,
       },
     ])

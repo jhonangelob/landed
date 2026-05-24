@@ -44,7 +44,7 @@ export default function Header() {
 
   return (
     <header className="fixed top-0 left-0 z-91 w-full border-b bg-white">
-      <div className="mx-auto flex h-16 max-w-7xl flex-row items-center justify-between px-4 md:px-8">
+      <div className="max-w-8xl mx-auto flex h-16 flex-row items-center justify-between gap-8 px-4 md:px-8">
         <div className="flex flex-row items-center gap-0.5 lg:mr-14">
           <img
             src={logo}
@@ -52,18 +52,18 @@ export default function Header() {
             className="h-6 min-w-fit md:h-8"
           />
 
-          <p className="text-foreground-soft2 hidden font-sans text-[13px] leading-[19.5px] text-nowrap md:block">
+          <p className="text-muted hidden font-mono text-[10px] font-medium tracking-[1.4px] text-nowrap uppercase md:block">
             Your job search, Navigated
           </p>
         </div>
 
-        <div className="hidden flex-row gap-6 md:flex">
+        <div className="hidden flex-row md:flex">
           {NAVIGATION.map((item) => (
             <Link
               to={item.url}
               key={item.url}
               className={cn(
-                'border-primary flex h-16 items-center pt-0.5 font-sans text-[13px] leading-[19.5px] font-semibold text-nowrap',
+                'border-primary flex h-16 items-center px-4 pt-0.5 font-sans text-[13px] leading-[19.5px] font-semibold text-nowrap',
                 checkIfSelected(item.url)
                   ? 'text-primary! border-b-3'
                   : 'text-muted-foreground! pb-0.5',
@@ -74,9 +74,9 @@ export default function Header() {
           ))}
         </div>
 
-        <div className="hidden flex-row items-center gap-2 md:flex lg:ml-auto">
+        <div className="hidden flex-row items-center gap-4 md:flex lg:ml-auto">
           <Button
-            className="bg-primary cursor-pointer"
+            className="bg-primary cursor-pointer rounded-full"
             onClick={handleNewApplication}
           >
             <PlusIcon />
@@ -84,22 +84,20 @@ export default function Header() {
           </Button>
 
           <Button
-            variant="ghost"
-            className="cursor-pointer rounded-full p-0"
+            variant="outline"
+            size="icon"
+            className="cursor-pointer rounded-full shadow-none"
             onClick={handleClickNotification}
           >
-            <CircleQuestionMarkIcon className="text-foreground-soft stroke-2.5" />
+            <CircleQuestionMarkIcon className="size-3.5" />
           </Button>
-
           <Button
-            variant="ghost"
-            className="group hover:border-destructive cursor-pointer rounded-md border border-white p-0 hover:bg-white"
+            variant="outline"
+            size="icon"
+            className="cursor-pointer rounded-full shadow-none"
             onClick={handleClickLogout}
           >
-            <LogOutIcon className="text-foreground-soft stroke-2.5 shrink-0 transition-colors duration-300 group-hover:text-red-500" />
-            <span className="text-muted-foreground overflow-hidden font-sans group-hover:max-w-20 group-hover:text-red-500 group-hover:opacity-100">
-              Logout
-            </span>
+            <LogOutIcon className="size-3.5" />
           </Button>
         </div>
 

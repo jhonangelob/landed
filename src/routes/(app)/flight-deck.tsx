@@ -33,7 +33,9 @@ function RouteComponent() {
   return (
     <div className="section">
       <SectionHeader
-        title="Flight Deck"
+        subTitle="Dashboard"
+        title1="Flight "
+        title2="Deck"
         description="Real-time telemetry for your professional trajectory."
       />
       <div className="flex max-h-[calc(100vh-250px)] max-w-full flex-1 flex-row gap-4 overflow-scroll pr-24">

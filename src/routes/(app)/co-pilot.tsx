@@ -12,7 +12,7 @@ import { Textarea } from '#/components/ui/textarea'
 import SectionCard from '#/components/layout/SectionCard'
 import SectionHeader from '#/components/layout/SectionHeader'
 
-import { generateDocuments } from '#/server/co-pilot'
+import { generateDocuments, getDocuments } from '#/server/co-pilot'
 import { getProfile } from '#/server/profile'
 
 import { createApplicationSchema } from '#/validators/application'
@@ -24,6 +24,8 @@ import {
 } from '#/server/applications'
 import ApplicationSummary from '#/components/co-pilot/ApplicationSummary'
 import StageTimeline from '#/components/co-pilot/StageTimeline'
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 export const Route = createFileRoute('/(app)/co-pilot')({
   validateSearch: z.object({
@@ -46,6 +48,12 @@ export const Route = createFileRoute('/(app)/co-pilot')({
           queryFn: () => getApplicationDetails({ data: { id: applicationId } }),
         }),
       )
+      queries.push(
+        queryClient.ensureQueryData({
+          queryKey: ['generated_docs', applicationId],
+          queryFn: () => getDocuments({ data: { id: applicationId } }),
+        }),
+      )
     }
 
     return Promise.all(queries)
@@ -56,6 +64,7 @@ export const Route = createFileRoute('/(app)/co-pilot')({
 function RouteComponent() {
   const router = useRouter()
   const { applicationId } = Route.useSearch()
+
   const isEditMode = !!applicationId
 
   const { data: profile } = useSuspenseQuery({
@@ -63,10 +72,19 @@ function RouteComponent() {
     queryFn: () => getProfile(),
   })
 
+  const { data: documents } = useQuery({
+    queryKey: ['documents', applicationId ?? 'skip'],
+    queryFn: () => {
+      if (!applicationId) return Promise.resolve(null)
+      return getDocuments({ data: { id: applicationId } })
+    },
+    enabled: isEditMode,
+  })
+
   const { data: application } = useQuery({
     queryKey: ['application', applicationId ?? 'skip'],
     queryFn: () => {
-      if (!applicationId) return Promise.resolve(null) // ← guard
+      if (!applicationId) return Promise.resolve(null)
       return getApplicationDetails({ data: { id: applicationId } })
     },
     enabled: isEditMode,
@@ -111,6 +129,12 @@ function RouteComponent() {
     mutationFn: async (value: typeof form.state.values) => {
       return await saveApplication({ data: value })
     },
+    onSuccess: (data) => {
+      router.navigate({
+        to: '/co-pilot',
+        search: { applicationId: data.id },
+      })
+    },
     onError: () => {
       form.reset()
     },
@@ -150,7 +174,12 @@ function RouteComponent() {
 
   return (
     <div className="section">
-      <SectionHeader title="Co-Pilot" description={pageDescription} />
+      <SectionHeader
+        subTitle="Ai Document Generator"
+        title1="Co-"
+        title2="Pilot"
+        description={pageDescription}
+      />
       <div className="flex flex-row gap-3">
         <form
           onSubmit={(e) => {
@@ -352,6 +381,19 @@ function RouteComponent() {
           {application && <StageTimeline data={application} />}
         </div>
       </div>
+
+      {application && documents && (
+        <div>
+          <Tabs defaultValue="cv" className="w-full">
+            <TabsList>
+              <TabsTrigger value="cv">CV</TabsTrigger>
+              <TabsTrigger value="cl">Cover Letter</TabsTrigger>
+            </TabsList>
+            <TabsContent value="cv"></TabsContent>
+            <TabsContent value="cl"></TabsContent>
+          </Tabs>
+        </div>
+      )}
     </div>
   )
 }

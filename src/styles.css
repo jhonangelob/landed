@@ -38,7 +38,7 @@
   --primary-foreground: #ffffff;
   --secondary: #f1f5f9;
   --secondary-foreground: #0f172a;
-  --muted: #f1f5f9;
+  --muted: #6b7a92;
   --muted-foreground: #64748b;
   --accent: #eff6ff;
   --accent-foreground: #0f172a;
@@ -85,7 +85,7 @@
   --primary-foreground: #0f172a;
   --secondary: #1e2338;
   --secondary-foreground: #f8fafc;
-  --muted: #1e2338;
+  --muted: #6b7a92;
   --muted-foreground: #94a3b8;
   --accent: #172040;
   --accent-foreground: #f8fafc;
@@ -388,7 +388,7 @@ header {
   }
 
   .section {
-    @apply mt-16 flex min-h-[calc(100vh-160px)] flex-col gap-8 md:mt-12;
+    @apply flex min-h-[calc(100vh-160px)] flex-col gap-8;
   }
 }
 
