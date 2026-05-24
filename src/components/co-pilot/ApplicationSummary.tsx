@@ -1,6 +1,8 @@
 import { ChevronDown, Trash2Icon } from 'lucide-react'
+
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
+import { Button } from '#/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,11 +10,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '#/components/ui/dropdown-menu'
-import { Button } from '#/components/ui/button'
 
 import { updateApplicationStatus } from '#/server/applications'
-import { applicationStatusSchema } from '#/validators/application'
+
 import type { Application } from '#/lib/db/schema'
+
+import { applicationStatusSchema } from '#/validators/application'
+
 import type { KanbanItemBadgeProps } from '../flight-deck/KanbanItem'
 import DeleteApplicationDialog from './DeleteApplicationDialog'
 

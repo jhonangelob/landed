@@ -21,8 +21,9 @@ import SectionHeader from '#/components/layout/SectionHeader'
 import { getAccountDetails } from '#/server/account'
 import { getProfile, saveProfile, updateProfile } from '#/server/profile'
 
-import { pilotProfileSchema } from '#/validators/profile'
 import type { PilotProfile } from '#/lib/db/schema'
+
+import { pilotProfileSchema } from '#/validators/profile'
 
 export const Route = createFileRoute('/(app)/profile')({
   loader: ({ context: { queryClient } }) =>

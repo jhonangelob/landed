@@ -1,15 +1,18 @@
+import { and, eq, isNull } from 'drizzle-orm'
+import z from 'zod'
+
+import { createServerFn } from '@tanstack/react-start'
+
 import { getSession } from '#/lib/auth/session'
 import { db } from '#/lib/db'
 import { applications } from '#/lib/db/schema'
+
 import {
   createApplicationSchema,
   deleteApplicationSchema,
   updateApplicationSchema,
   updateStatusSchema,
 } from '#/validators/application'
-import { createServerFn } from '@tanstack/react-start'
-import { and, eq, isNull } from 'drizzle-orm'
-import z from 'zod'
 
 export const getApplications = createServerFn({ method: 'GET' }).handler(
   async () => {

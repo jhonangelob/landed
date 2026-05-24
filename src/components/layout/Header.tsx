@@ -1,4 +1,3 @@
-import { NAVIGATION } from '#/constants/navigations'
 import {
   BellIcon,
   CircleQuestionMarkIcon,
@@ -12,8 +11,9 @@ import { Link, useLocation, useRouter } from '@tanstack/react-router'
 import { signOut } from '#/lib/auth/client'
 import { cn } from '#/lib/utils'
 
-import { Button } from '../ui/button'
+import { NAVIGATION } from '#/constants/navigations'
 
+import { Button } from '../ui/button'
 import {
   Sheet,
   SheetContent,

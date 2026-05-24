@@ -1,6 +1,8 @@
+import { clToHtml, cvToHtml } from '#/helper/document'
 import { anthropic } from '@ai-sdk/anthropic'
 import { generateText } from 'ai'
 import { and, eq } from 'drizzle-orm'
+import z from 'zod'
 
 import { createServerFn } from '@tanstack/react-start'
 
@@ -9,8 +11,6 @@ import { db } from '#/lib/db'
 import { applications, generatedDocs, pilotProfiles } from '#/lib/db/schema'
 
 import { generateDocumentSchema } from '#/validators/co-pilot'
-import z from 'zod'
-import { clToHtml, cvToHtml } from '#/helper/document'
 
 export const getDocuments = createServerFn({ method: 'GET' })
   .inputValidator((data: unknown) =>

@@ -29,6 +29,7 @@ export const users = pgTable('user', {
   email: text('email').notNull().unique(),
   emailVerified: boolean('email_verified').notNull(),
   image: text('image'),
+  username: text('username').unique(),
   createdAt: timestamp('created_at').notNull(),
   updatedAt: timestamp('updated_at').notNull(),
 })
@@ -229,6 +230,22 @@ export const touchdownSharesRelations = relations(
     }),
   }),
 )
+
+export const subscriptions = pgTable('subscriptions', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  planId: text('plan_id').notNull().default('free'),
+  startedAt: timestamp('started_at').defaultNow().notNull(),
+  expiresAt: timestamp('expires_at'), // null = free plan
+  isActive: boolean('is_active').notNull().default(true),
+  generationsUsed: integer('generations_used').notNull().default(0),
+  generationsLimit: integer('generations_limit').notNull().default(10),
+  paymentRef: text('payment_ref'), // PayMongo payment ID
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
 
 export type User = typeof users.$inferSelect
 export type NewUser = typeof users.$inferInsert

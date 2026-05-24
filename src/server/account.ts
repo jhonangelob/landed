@@ -33,7 +33,11 @@ export const updateAccountDetails = createServerFn({ method: 'POST' })
 
     await db
       .update(users)
-      .set({ name: data.fullName, updatedAt: new Date() })
+      .set({
+        name: data.fullName,
+        updatedAt: new Date(),
+        username: data.username,
+      })
       .where(eq(users.id, session.user.id))
 
     return { success: true }

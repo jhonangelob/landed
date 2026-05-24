@@ -1,21 +1,25 @@
+import type React from 'react'
+import { useState } from 'react'
+
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogFooter,
-  DialogClose,
 } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import type React from 'react'
 import { TrashIcon } from 'lucide-react'
+
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { deleteApplication } from '#/server/applications'
-import { useState } from 'react'
-import type { ApplicationStatus } from '#/lib/db/schema'
 import { useRouter } from '@tanstack/react-router'
+
+import { deleteApplication } from '#/server/applications'
+
+import type { ApplicationStatus } from '#/lib/db/schema'
 
 type DisplayDataProps = {
   id: string

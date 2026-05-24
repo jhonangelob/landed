@@ -1,13 +1,14 @@
 import { PlusIcon } from 'lucide-react'
 
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 
 import KanbanItem from '#/components/flight-deck/KanbanItem'
 import SectionHeader from '#/components/layout/SectionHeader'
 
-import { KANBAN_COLUMNS } from '#/types/application'
 import { getApplications } from '#/server/applications'
-import { useSuspenseQuery } from '@tanstack/react-query'
+
+import { KANBAN_COLUMNS } from '#/types/application'
 
 export const Route = createFileRoute('/(app)/flight-deck')({
   loader: ({ context: { queryClient } }) =>

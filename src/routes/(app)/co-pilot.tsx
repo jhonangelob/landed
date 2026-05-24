@@ -1,4 +1,6 @@
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { SparklesIcon } from 'lucide-react'
+import z from 'zod'
 
 import { useForm } from '@tanstack/react-form'
 import { useMutation, useQuery, useSuspenseQuery } from '@tanstack/react-query'
@@ -9,23 +11,20 @@ import { Input } from '#/components/ui/input'
 import { Label } from '#/components/ui/label'
 import { Textarea } from '#/components/ui/textarea'
 
+import ApplicationSummary from '#/components/co-pilot/ApplicationSummary'
+import StageTimeline from '#/components/co-pilot/StageTimeline'
 import SectionCard from '#/components/layout/SectionCard'
 import SectionHeader from '#/components/layout/SectionHeader'
 
-import { generateDocuments, getDocuments } from '#/server/co-pilot'
-import { getProfile } from '#/server/profile'
-
-import { createApplicationSchema } from '#/validators/application'
-import z from 'zod'
 import {
   getApplicationDetails,
   saveApplication,
   updateApplication,
 } from '#/server/applications'
-import ApplicationSummary from '#/components/co-pilot/ApplicationSummary'
-import StageTimeline from '#/components/co-pilot/StageTimeline'
+import { generateDocuments, getDocuments } from '#/server/co-pilot'
+import { getProfile } from '#/server/profile'
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { createApplicationSchema } from '#/validators/application'
 
 export const Route = createFileRoute('/(app)/co-pilot')({
   validateSearch: z.object({

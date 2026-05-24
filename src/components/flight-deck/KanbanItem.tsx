@@ -1,11 +1,3 @@
-import { Button } from '#/components/ui/button'
-
-import { applicationStatusSchema } from '#/validators/application'
-
-import type { Application } from '#/types/application'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { updateApplicationStatus } from '#/server/applications'
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,7 +6,17 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { ChevronDown } from 'lucide-react'
+
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from '@tanstack/react-router'
+
+import { Button } from '#/components/ui/button'
+
+import { updateApplicationStatus } from '#/server/applications'
+
+import { applicationStatusSchema } from '#/validators/application'
+
+import type { Application } from '#/types/application'
 
 export interface KanbanItemProps {
   data: Application

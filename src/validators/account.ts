@@ -35,13 +35,27 @@ export const signupSchema = z
 
 export type SignupInput = z.infer<typeof signupSchema>
 
-export const updateAccountSchema = z
+export const updateAccountSchema = z.object({
+  fullName: z
+    .string()
+    .min(1, 'Full name is required')
+    .max(100, 'Full name must be 100 characters or less')
+    .trim(),
+  email: z
+    .string()
+    .min(1, 'Email is required')
+    .email('Must be a valid email address'),
+  username: z
+    .string()
+    .or(z.literal(''))
+    .refine(
+      (val) => val === '' || /^[a-z0-9_-]{3,30}$/.test(val),
+      'Username must be 3–30 characters — lowercase letters, numbers, _ and - only',
+    ),
+})
+
+export const updatePasswordSchema = z
   .object({
-    fullName: z.union([
-      z.literal(''),
-      z.string().max(100, 'Full name must be 100 characters or less'),
-    ]),
-    email: z.string().email('Must be a valid email address'),
     currentPassword: z.string(),
     newPassword: z.union([
       z.literal(''),
