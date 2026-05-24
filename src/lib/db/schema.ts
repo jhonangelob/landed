@@ -103,8 +103,8 @@ interface Preferences {
 interface Certifications {
   name: string
   issuer: string
-  issueDate: Date
-  expiryDate: Date
+  issueDate: string
+  expiryDate: string
   url: string
 }
 
