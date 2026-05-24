@@ -25,7 +25,7 @@ export function NavigationProgress() {
   return (
     <>
       <div
-        className={`pointer-events-none fixed top-0 right-0 left-0 z-9999 h-0.5 transition-opacity duration-300 ${show ? 'opacity-100' : 'opacity-0'} `}
+        className={`pointer-events-none fixed top-0 right-0 left-0 z-9999 h-0.75 transition-opacity duration-300 ${show ? 'opacity-100' : 'opacity-0'} `}
       >
         <div
           className="h-full w-full bg-sky-500"
