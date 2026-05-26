@@ -35,6 +35,7 @@ export const updateApplicationSchema = z.object({
   salaryRange: z.string().nullable(),
   notes: z.string().nullable(),
   status: applicationStatusSchema,
+  subStatus: z.string().nullable(),
 
   // timestamps — optional, only set when stage changes
   appliedAt: z.string().datetime().optional(),

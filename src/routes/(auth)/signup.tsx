@@ -100,13 +100,13 @@ function RouteComponent() {
 
         {/* <div className="flex flex-col gap-2">
           <Button
-            className="rounded-lg shadow-none cursor-pointer bg-white font-sans"
+            className="rounded-lg shadow-none  bg-white font-sans"
             variant="outline"
           >
             Continue with Google
           </Button>
           <Button
-            className="rounded-lg shadow-none cursor-pointer bg-white font-sans"
+            className="rounded-lg shadow-none  bg-white font-sans"
             variant="outline"
           >
             Continue with Github
@@ -128,19 +128,13 @@ function RouteComponent() {
             name="fullName"
             children={(field) => (
               <div className="w-full space-y-1.5">
-                <Label
-                  htmlFor="fullName"
-                  className="text-muted-foreground font-sans text-[13px] font-medium"
-                >
-                  Full Name
-                </Label>
+                <Label htmlFor="fullName">Full Name</Label>
                 <Input
                   id="fullName"
                   placeholder="Jane Doe"
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
-                  className="bg-white text-sm shadow-none"
                 />
                 {field.state.meta.errors.map((err, i) => (
                   <p key={i} className="text-destructive text-xs">
@@ -155,19 +149,13 @@ function RouteComponent() {
             name="email"
             children={(field) => (
               <div className="w-full space-y-1.5">
-                <Label
-                  htmlFor="email"
-                  className="text-muted-foreground font-sans text-[13px] font-medium"
-                >
-                  Email
-                </Label>
+                <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   placeholder="jane@email.com"
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
-                  className="bg-white text-sm shadow-none"
                 />
                 {field.state.meta.errors.map((err, i) => (
                   <p key={i} className="text-destructive text-xs">
@@ -182,12 +170,7 @@ function RouteComponent() {
             name="password"
             children={(field) => (
               <div className="w-full space-y-1.5">
-                <Label
-                  htmlFor="password"
-                  className="text-muted-foreground font-sans text-[13px] font-medium"
-                >
-                  Password
-                </Label>
+                <Label htmlFor="password">Password</Label>
                 <div className="relative">
                   <Input
                     id="password"
@@ -195,13 +178,12 @@ function RouteComponent() {
                     value={field.state.value}
                     onChange={(e) => field.handleChange(e.target.value)}
                     onBlur={field.handleBlur}
-                    className="bg-white pr-9 text-sm shadow-none"
                     type={showPassword ? 'text' : 'password'}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
-                    className="text-muted-foreground hover:text-foreground absolute top-1/2 right-2.5 -translate-y-1/2 cursor-pointer"
+                    className="text-muted-foreground hover:text-foreground absolute top-1/2 right-2.5 -translate-y-1/2"
                   >
                     {showPassword ? (
                       <EyeOffIcon className="size-4" />
@@ -223,12 +205,7 @@ function RouteComponent() {
             name="confirmPassword"
             children={(field) => (
               <div className="w-full space-y-1.5">
-                <Label
-                  htmlFor="confirmPassword"
-                  className="text-muted-foreground font-sans text-[13px] font-medium"
-                >
-                  Confirm Password
-                </Label>
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
                 <div className="relative">
                   <Input
                     id="confirmPassword"
@@ -236,13 +213,12 @@ function RouteComponent() {
                     value={field.state.value}
                     onChange={(e) => field.handleChange(e.target.value)}
                     onBlur={field.handleBlur}
-                    className="bg-white pr-9 text-sm shadow-none"
                     type={showConfirm ? 'text' : 'password'}
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirm((v) => !v)}
-                    className="text-muted-foreground hover:text-foreground absolute top-1/2 right-2.5 -translate-y-1/2 cursor-pointer"
+                    className="text-muted-foreground hover:text-foreground absolute top-1/2 right-2.5 -translate-y-1/2"
                   >
                     {showConfirm ? (
                       <EyeOffIcon className="size-4" />
@@ -260,7 +236,7 @@ function RouteComponent() {
             )}
           />
 
-          <Button type="submit" className="mt-1 cursor-pointer">
+          <Button type="submit" className="mt-1">
             {isLoading ? 'Loading...' : 'Submit'}
           </Button>
         </form>
@@ -268,7 +244,7 @@ function RouteComponent() {
         <p className="text-muted-foreground text-center font-sans text-[13px]">
           Already have an account?{' '}
           <span
-            className="text-primary cursor-pointer font-sans text-[13px] font-medium"
+            className="text-primary font-sans text-[13px] font-medium"
             onClick={handleSignIn}
           >
             Sign in.

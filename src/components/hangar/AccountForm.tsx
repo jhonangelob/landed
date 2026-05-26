@@ -1,5 +1,3 @@
-import type z from 'zod'
-
 import { useForm } from '@tanstack/react-form'
 
 import { Button } from '#/components/ui/button'
@@ -7,10 +5,11 @@ import { Input } from '#/components/ui/input'
 import { Label } from '#/components/ui/label'
 
 import { updateAccountSchema } from '#/validators/account'
+import type { UpdateAccountInput } from '#/validators/account'
 
 interface AccountFormProps {
   data: any
-  onConfirmUpdate: (value: z.infer<typeof updateAccountSchema>) => void
+  onConfirmUpdate: (value: UpdateAccountInput) => void
 }
 
 export default function AccountForm({
@@ -46,19 +45,13 @@ export default function AccountForm({
         name="fullName"
         children={(field) => (
           <div className="w-full space-y-1.5">
-            <Label
-              htmlFor="fullName"
-              className="text-muted font-mono text-[11px] leading-[1.4] font-medium tracking-[1.3px] uppercase"
-            >
-              Full Name
-            </Label>
+            <Label htmlFor="fullName">Full Name</Label>
             <Input
               id="fullName"
               placeholder="Jane Doe"
               value={field.state.value}
               onChange={(e) => field.handleChange(e.target.value)}
               onBlur={field.handleBlur}
-              className="h-10.5 rounded-md py-2.75 shadow-none"
             />
             {field.state.meta.errors.map((err, i) => (
               <p key={i} className="text-destructive text-xs">
@@ -73,19 +66,14 @@ export default function AccountForm({
           name="username"
           children={(field) => (
             <div className="w-full space-y-1.5">
-              <Label
-                htmlFor="username"
-                className="text-muted font-mono text-[11px] leading-[1.4] font-medium tracking-[1.3px] uppercase"
-              >
-                Username
-              </Label>
+              <Label htmlFor="username">Username</Label>
               <Input
                 id="username"
                 placeholder="@"
                 value={field.state.value}
                 onChange={(e) => field.handleChange(e.target.value)}
                 onBlur={field.handleBlur}
-                className="h-10.5 rounded-md py-2.75 shadow-none placeholder:italic"
+                className="placeholder:italic"
               />
               {field.state.meta.errors.map((err, i) => (
                 <p key={i} className="text-destructive text-xs">
@@ -100,12 +88,7 @@ export default function AccountForm({
           name="email"
           children={(field) => (
             <div className="w-full space-y-1.5">
-              <Label
-                htmlFor="email"
-                className="text-muted font-mono text-[11px] leading-[1.4] font-medium tracking-[1.3px] uppercase"
-              >
-                Email
-              </Label>
+              <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -113,12 +96,11 @@ export default function AccountForm({
                 value={field.state.value}
                 onChange={(e) => field.handleChange(e.target.value)}
                 onBlur={field.handleBlur}
-                className="h-10.5 rounded-md py-2.75 shadow-none"
                 disabled
               />
-              <Label className="text-foreground-soft2 font-sans text-[11px]">
+              <p className="text-foreground-soft2 font-sans text-[11px]">
                 Contact support to change your email.
-              </Label>
+              </p>
               {field.state.meta.errors.map((err, i) => (
                 <p key={i} className="text-destructive text-xs">
                   {err?.message as string}
@@ -133,7 +115,7 @@ export default function AccountForm({
         <Button
           type="button"
           variant="outline"
-          className="cursor-pointer bg-white text-[12px] font-normal uppercase shadow-none"
+          className="bg-white text-[12px] font-normal uppercase shadow-none"
           onClick={handleDiscard}
         >
           Discard
@@ -147,7 +129,7 @@ export default function AccountForm({
             return (
               <Button
                 type="submit"
-                className="cursor-pointer text-[12px] uppercase shadow-none"
+                className="text-[12px] uppercase shadow-none"
                 disabled={isSubmitting || !hasChanges}
               >
                 {isSubmitting ? 'Saving...' : 'Save Changes'}

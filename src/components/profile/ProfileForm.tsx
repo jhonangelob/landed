@@ -16,10 +16,6 @@ import type { PilotProfile } from '#/lib/db/schema'
 import { pilotProfileSchema } from '#/validators/profile'
 import type { PilotProfileInput } from '#/validators/profile'
 
-const labelClass =
-  'font-mono text-[11px] font-medium text-muted leading-[1.40] tracking-[1.3px] uppercase'
-const inputClass = 'h-10.5 rounded-md py-2.75 shadow-none'
-
 interface ProfileFormProps {
   profile: PilotProfile | null
   account: any
@@ -32,6 +28,7 @@ export default function ProfileForm({
   onSave,
 }: ProfileFormProps) {
   const [skillInput, setSkillInput] = useState('')
+  const [roleInput, setRoleInput] = useState('')
 
   const form = useForm({
     defaultValues: {
@@ -80,16 +77,13 @@ export default function ProfileForm({
             name="fullName"
             children={(field) => (
               <div className="w-full space-y-1.5">
-                <Label htmlFor="fullName" className={labelClass}>
-                  Full Name
-                </Label>
+                <Label htmlFor="fullName">Full Name</Label>
                 <Input
                   id="fullName"
                   placeholder="Jane Doe"
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
-                  className={inputClass}
                 />
                 {field.state.meta.errors.map((err, i) => (
                   <p key={i} className="text-destructive text-xs">
@@ -103,16 +97,13 @@ export default function ProfileForm({
             name="headline"
             children={(field) => (
               <div className="w-full space-y-1.5">
-                <Label htmlFor="headline" className={labelClass}>
-                  Headline
-                </Label>
+                <Label htmlFor="headline">Headline</Label>
                 <Input
                   id="headline"
                   placeholder="Senior Frontend Engineer"
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
-                  className={inputClass}
                 />
                 {field.state.meta.errors.map((err, i) => (
                   <p key={i} className="text-destructive text-xs">
@@ -128,9 +119,7 @@ export default function ProfileForm({
             name="email"
             children={(field) => (
               <div className="w-full space-y-1.5">
-                <Label htmlFor="email" className={labelClass}>
-                  Email
-                </Label>
+                <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   type="email"
@@ -138,7 +127,6 @@ export default function ProfileForm({
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
-                  className={inputClass}
                 />
                 {field.state.meta.errors.map((err, i) => (
                   <p key={i} className="text-destructive text-xs">
@@ -152,16 +140,13 @@ export default function ProfileForm({
             name="location"
             children={(field) => (
               <div className="w-full space-y-1.5">
-                <Label htmlFor="location" className={labelClass}>
-                  Location
-                </Label>
+                <Label htmlFor="location">Location</Label>
                 <Input
                   id="location"
                   placeholder="San Francisco, CA"
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
-                  className={inputClass}
                 />
                 {field.state.meta.errors.map((err, i) => (
                   <p key={i} className="text-destructive text-xs">
@@ -177,16 +162,13 @@ export default function ProfileForm({
             name="links.github"
             children={(field) => (
               <div className="w-full space-y-1.5">
-                <Label htmlFor="github" className={labelClass}>
-                  Github
-                </Label>
+                <Label htmlFor="github">Github</Label>
                 <Input
                   id="github"
                   placeholder="https://github.com/..."
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
-                  className={inputClass}
                 />
                 {field.state.meta.errors.map((err, i) => (
                   <p key={i} className="text-destructive text-xs">
@@ -200,16 +182,13 @@ export default function ProfileForm({
             name="links.linkedin"
             children={(field) => (
               <div className="w-full space-y-1.5">
-                <Label htmlFor="linkedin" className={labelClass}>
-                  LinkedIn
-                </Label>
+                <Label htmlFor="linkedin">LinkedIn</Label>
                 <Input
                   id="linkedin"
                   placeholder="https://linkedin.com/..."
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
-                  className={inputClass}
                 />
                 {field.state.meta.errors.map((err, i) => (
                   <p key={i} className="text-destructive text-xs">
@@ -224,16 +203,13 @@ export default function ProfileForm({
           name="links.portfolio"
           children={(field) => (
             <div className="w-full space-y-1.5">
-              <Label htmlFor="portfolio" className={labelClass}>
-                Portfolio
-              </Label>
+              <Label htmlFor="portfolio">Portfolio</Label>
               <Input
                 id="portfolio"
                 placeholder="https://portfolio.com/..."
                 value={field.state.value}
                 onChange={(e) => field.handleChange(e.target.value)}
                 onBlur={field.handleBlur}
-                className={inputClass}
               />
               {field.state.meta.errors.map((err, i) => (
                 <p key={i} className="text-destructive text-xs">
@@ -247,9 +223,7 @@ export default function ProfileForm({
           name="summary"
           children={(field) => (
             <div className="space-y-1.5">
-              <Label htmlFor="summary" className={labelClass}>
-                Summary
-              </Label>
+              <Label htmlFor="summary">Summary</Label>
               <Textarea
                 id="summary"
                 rows={10}
@@ -257,7 +231,6 @@ export default function ProfileForm({
                 value={field.state.value}
                 onChange={(e) => field.handleChange(e.target.value)}
                 onBlur={field.handleBlur}
-                className={inputClass}
               />
               {field.state.meta.errors.map((err, i) => (
                 <p key={i} className="text-destructive text-xs">
@@ -297,13 +270,12 @@ export default function ProfileForm({
                       name={`experience[${i}].company`}
                       children={(f) => (
                         <div className="w-full space-y-1.5">
-                          <Label className={labelClass}>Company</Label>
+                          <Label>Company</Label>
                           <Input
                             placeholder="Acme Corp"
                             value={f.state.value}
                             onChange={(e) => f.handleChange(e.target.value)}
                             onBlur={f.handleBlur}
-                            className={inputClass}
                           />
                           {f.state.meta.errors.map((err, j) => (
                             <p key={j} className="text-destructive text-xs">
@@ -317,13 +289,12 @@ export default function ProfileForm({
                       name={`experience[${i}].role`}
                       children={(f) => (
                         <div className="w-full space-y-1.5">
-                          <Label className={labelClass}>Role</Label>
+                          <Label>Role</Label>
                           <Input
                             placeholder="Software Engineer"
                             value={f.state.value}
                             onChange={(e) => f.handleChange(e.target.value)}
                             onBlur={f.handleBlur}
-                            className={inputClass}
                           />
                           {f.state.meta.errors.map((err, j) => (
                             <p key={j} className="text-destructive text-xs">
@@ -338,13 +309,12 @@ export default function ProfileForm({
                     name={`experience[${i}].dates`}
                     children={(f) => (
                       <div className="w-1/2 space-y-1.5">
-                        <Label className={labelClass}>Dates</Label>
+                        <Label>Dates</Label>
                         <Input
                           placeholder="Jan 2022 – Present"
                           value={f.state.value}
                           onChange={(e) => f.handleChange(e.target.value)}
                           onBlur={f.handleBlur}
-                          className={inputClass}
                         />
                         {f.state.meta.errors.map((err, j) => (
                           <p key={j} className="text-destructive text-xs">
@@ -358,7 +328,7 @@ export default function ProfileForm({
                     name={`experience[${i}].bullets`}
                     children={(bulletsField) => (
                       <div className="flex flex-col gap-2">
-                        <Label className={labelClass}>Bullet Points</Label>
+                        <Label>Bullet Points</Label>
                         {bulletsField.state.value.map((__, j) => (
                           <div key={j} className="flex items-center gap-2">
                             <form.Field
@@ -371,7 +341,7 @@ export default function ProfileForm({
                                     bf.handleChange(e.target.value)
                                   }
                                   onBlur={bf.handleBlur}
-                                  className={`flex-1 ${inputClass}`}
+                                  className="flex-1"
                                 />
                               )}
                             />
@@ -384,7 +354,7 @@ export default function ProfileForm({
                                     j,
                                   )
                                 }
-                                className="text-muted-foreground hover:text-destructive shrink-0 cursor-pointer"
+                                className="text-muted-foreground hover:text-destructive shrink-0"
                               >
                                 <XIcon className="size-4" />
                               </button>
@@ -395,7 +365,7 @@ export default function ProfileForm({
                           type="button"
                           variant="outline"
                           size="sm"
-                          className="w-fit cursor-pointer text-xs shadow-none"
+                          className="w-fit text-xs shadow-none"
                           onClick={() =>
                             form.pushFieldValue(`experience[${i}].bullets`, '')
                           }
@@ -415,7 +385,7 @@ export default function ProfileForm({
               <Button
                 type="button"
                 variant="outline"
-                className="w-fit cursor-pointer text-sm shadow-none"
+                className="w-fit text-sm shadow-none"
                 onClick={() =>
                   form.pushFieldValue('experience', {
                     company: '',
@@ -478,7 +448,6 @@ export default function ProfileForm({
                       }
                     }
                   }}
-                  className={inputClass}
                 />
                 <Button
                   type="button"
@@ -491,7 +460,7 @@ export default function ProfileForm({
                       setSkillInput('')
                     }
                   }}
-                  className="h-10.5 cursor-pointer shadow-none"
+                  className="h-10.5 shadow-none"
                 >
                   <PlusIcon className="size-4" />
                 </Button>
@@ -529,13 +498,12 @@ export default function ProfileForm({
                     name={`education[${i}].institution`}
                     children={(f) => (
                       <div className="space-y-1.5">
-                        <Label className={labelClass}>University</Label>
+                        <Label>University</Label>
                         <Input
                           placeholder="MIT"
                           value={f.state.value}
                           onChange={(e) => f.handleChange(e.target.value)}
                           onBlur={f.handleBlur}
-                          className={inputClass}
                         />
                         {f.state.meta.errors.map((err, j) => (
                           <p key={j} className="text-destructive text-xs">
@@ -550,13 +518,12 @@ export default function ProfileForm({
                       name={`education[${i}].degree`}
                       children={(f) => (
                         <div className="space-y-1.5">
-                          <Label className={labelClass}>Degree</Label>
+                          <Label>Degree</Label>
                           <Input
                             placeholder="B.S. Computer Science"
                             value={f.state.value}
                             onChange={(e) => f.handleChange(e.target.value)}
                             onBlur={f.handleBlur}
-                            className={inputClass}
                           />
                           {f.state.meta.errors.map((err, j) => (
                             <p key={j} className="text-destructive text-xs">
@@ -570,13 +537,12 @@ export default function ProfileForm({
                       name={`education[${i}].year`}
                       children={(f) => (
                         <div className="space-y-1.5">
-                          <Label className={labelClass}>Year</Label>
+                          <Label>Year</Label>
                           <Input
                             placeholder="2020"
                             value={f.state.value}
                             onChange={(e) => f.handleChange(e.target.value)}
                             onBlur={f.handleBlur}
-                            className={inputClass}
                           />
                           {f.state.meta.errors.map((err, j) => (
                             <p key={j} className="text-destructive text-xs">
@@ -592,7 +558,7 @@ export default function ProfileForm({
               <Button
                 type="button"
                 variant="outline"
-                className="w-fit cursor-pointer text-sm shadow-none"
+                className="w-fit text-sm shadow-none"
                 onClick={() =>
                   form.pushFieldValue('education', {
                     institution: '',
@@ -639,13 +605,12 @@ export default function ProfileForm({
                       name={`certifications[${i}].name`}
                       children={(f) => (
                         <div className="space-y-1.5">
-                          <Label className={labelClass}>Name</Label>
+                          <Label>Name</Label>
                           <Input
                             placeholder="AWS Certified Solutions Architect"
                             value={f.state.value}
                             onChange={(e) => f.handleChange(e.target.value)}
                             onBlur={f.handleBlur}
-                            className={inputClass}
                           />
                           {f.state.meta.errors.map((err, j) => (
                             <p key={j} className="text-destructive text-xs">
@@ -659,13 +624,12 @@ export default function ProfileForm({
                       name={`certifications[${i}].issuer`}
                       children={(f) => (
                         <div className="space-y-1.5">
-                          <Label className={labelClass}>Issuer</Label>
+                          <Label>Issuer</Label>
                           <Input
                             placeholder="Amazon Web Services"
                             value={f.state.value}
                             onChange={(e) => f.handleChange(e.target.value)}
                             onBlur={f.handleBlur}
-                            className={inputClass}
                           />
                           {f.state.meta.errors.map((err, j) => (
                             <p key={j} className="text-destructive text-xs">
@@ -681,13 +645,12 @@ export default function ProfileForm({
                       name={`certifications[${i}].issueDate`}
                       children={(f) => (
                         <div className="space-y-1.5">
-                          <Label className={labelClass}>Issue Date</Label>
+                          <Label>Issue Date</Label>
                           <Input
                             placeholder="2023-06"
                             value={f.state.value}
                             onChange={(e) => f.handleChange(e.target.value)}
                             onBlur={f.handleBlur}
-                            className={inputClass}
                           />
                           {f.state.meta.errors.map((err, j) => (
                             <p key={j} className="text-destructive text-xs">
@@ -701,13 +664,12 @@ export default function ProfileForm({
                       name={`certifications[${i}].expiryDate`}
                       children={(f) => (
                         <div className="space-y-1.5">
-                          <Label className={labelClass}>Expiry Date</Label>
+                          <Label>Expiry Date</Label>
                           <Input
                             placeholder="2026-06 (optional)"
                             value={f.state.value}
                             onChange={(e) => f.handleChange(e.target.value)}
                             onBlur={f.handleBlur}
-                            className={inputClass}
                           />
                           {f.state.meta.errors.map((err, j) => (
                             <p key={j} className="text-destructive text-xs">
@@ -721,13 +683,12 @@ export default function ProfileForm({
                       name={`certifications[${i}].url`}
                       children={(f) => (
                         <div className="space-y-1.5">
-                          <Label className={labelClass}>URL</Label>
+                          <Label>URL</Label>
                           <Input
                             placeholder="https://... (optional)"
                             value={f.state.value}
                             onChange={(e) => f.handleChange(e.target.value)}
                             onBlur={f.handleBlur}
-                            className={inputClass}
                           />
                           {f.state.meta.errors.map((err, j) => (
                             <p key={j} className="text-destructive text-xs">
@@ -743,7 +704,7 @@ export default function ProfileForm({
               <Button
                 type="button"
                 variant="outline"
-                className="w-fit cursor-pointer text-sm shadow-none"
+                className="w-fit text-sm shadow-none"
                 onClick={() =>
                   form.pushFieldValue('certifications', {
                     name: '',
@@ -756,6 +717,96 @@ export default function ProfileForm({
               >
                 <PlusIcon className="size-4" /> Add Certification
               </Button>
+              {field.state.meta.errors.map((err, i) => (
+                <p key={i} className="text-destructive text-xs">
+                  {err?.message as string}
+                </p>
+              ))}
+            </div>
+          )}
+        />
+      </SectionCard>
+
+      <SectionCard
+        order={6}
+        title="Preferences"
+        description="Target roles and salary range Co-Pilot uses to tailor your documents."
+      >
+        <form.Field
+          name="preferences.roles"
+          children={(field) => (
+            <div className="space-y-3">
+              <Label>Preferred Roles</Label>
+              <div className="flex min-h-6 flex-wrap gap-2">
+                {field.state.value.map((role: string, i: number) => (
+                  <span
+                    key={i}
+                    className="bg-secondary text-foreground flex items-center gap-1 rounded-md px-2 py-1 text-[12px] font-medium"
+                  >
+                    {role}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        form.removeFieldValue('preferences.roles', i)
+                      }
+                      className="text-muted-foreground hover:text-destructive"
+                    >
+                      <XIcon className="size-3" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Add a role and press Enter..."
+                  value={roleInput}
+                  onChange={(e) => setRoleInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ',') {
+                      e.preventDefault()
+                      const v = roleInput.trim().replace(/,$/, '')
+                      if (v) {
+                        form.pushFieldValue('preferences.roles', v)
+                        setRoleInput('')
+                      }
+                    }
+                  }}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={() => {
+                    const v = roleInput.trim()
+                    if (v) {
+                      form.pushFieldValue('preferences.roles', v)
+                      setRoleInput('')
+                    }
+                  }}
+                  className="h-10.5 shadow-none"
+                >
+                  <PlusIcon className="size-4" />
+                </Button>
+              </div>
+              {field.state.meta.errors.map((err, i) => (
+                <p key={i} className="text-destructive text-xs">
+                  {err?.message as string}
+                </p>
+              ))}
+            </div>
+          )}
+        />
+        <form.Field
+          name="preferences.salaryRange"
+          children={(field) => (
+            <div className="space-y-1.5">
+              <Label>Salary Range</Label>
+              <Input
+                placeholder="e.g. $120k – $160k"
+                value={field.state.value}
+                onChange={(e) => field.handleChange(e.target.value)}
+                onBlur={field.handleBlur}
+              />
               {field.state.meta.errors.map((err, i) => (
                 <p key={i} className="text-destructive text-xs">
                   {err?.message as string}

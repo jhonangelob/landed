@@ -60,7 +60,7 @@ function RouteComponent() {
               )}
               {status.status == 'spotted' && (
                 <div
-                  className="group hover:border-primary flex cursor-pointer flex-col items-center justify-center rounded-md border border-dashed p-4 text-center hover:bg-white"
+                  className="group hover:border-primary flex flex-col items-center justify-center rounded-md border border-dashed p-4 text-center hover:bg-white"
                   onClick={handleNewApplication}
                 >
                   <PlusIcon className="text-muted-foreground group-hover:text-primary size-4" />

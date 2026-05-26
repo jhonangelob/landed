@@ -1,5 +1,3 @@
-import type z from 'zod'
-
 import { useForm } from '@tanstack/react-form'
 
 import { Button } from '#/components/ui/button'
@@ -7,9 +5,10 @@ import { Input } from '#/components/ui/input'
 import { Label } from '#/components/ui/label'
 
 import { updatePasswordSchema } from '#/validators/account'
+import type { UpdatePasswordInput } from '#/validators/account'
 
 interface PasswordFormProps {
-  onUpdatePassword: (value: z.infer<typeof updatePasswordSchema>) => void
+  onUpdatePassword: (value: UpdatePasswordInput) => void
 }
 
 export default function PasswordForm({ onUpdatePassword }: PasswordFormProps) {
@@ -38,12 +37,7 @@ export default function PasswordForm({ onUpdatePassword }: PasswordFormProps) {
         name="currentPassword"
         children={(field) => (
           <div className="w-full space-y-1.5">
-            <Label
-              htmlFor="currentPassword"
-              className="text-muted font-mono text-[11px] leading-[1.4] font-medium tracking-[1.3px] uppercase"
-            >
-              Current Password
-            </Label>
+            <Label htmlFor="currentPassword">Current Password</Label>
             <Input
               id="currentPassword"
               type="password"
@@ -51,7 +45,6 @@ export default function PasswordForm({ onUpdatePassword }: PasswordFormProps) {
               value={field.state.value}
               onChange={(e) => field.handleChange(e.target.value)}
               onBlur={field.handleBlur}
-              className="h-10.5 rounded-md py-2.75 shadow-none"
             />
             {field.state.meta.errors.map((err, i) => (
               <p key={i} className="text-destructive text-xs">
@@ -66,12 +59,7 @@ export default function PasswordForm({ onUpdatePassword }: PasswordFormProps) {
           name="newPassword"
           children={(field) => (
             <div className="w-full space-y-1.5">
-              <Label
-                htmlFor="newPassword"
-                className="text-muted font-mono text-[11px] leading-[1.4] font-medium tracking-[1.3px] uppercase"
-              >
-                New Password
-              </Label>
+              <Label htmlFor="newPassword">New Password</Label>
               <Input
                 id="newPassword"
                 type="password"
@@ -94,19 +82,13 @@ export default function PasswordForm({ onUpdatePassword }: PasswordFormProps) {
           name="confirmPassword"
           children={(field) => (
             <div className="w-full space-y-1.5">
-              <Label
-                htmlFor="confirmPassword"
-                className="text-muted font-mono text-[11px] leading-[1.4] font-medium tracking-[1.3px] uppercase"
-              >
-                Confirm Password
-              </Label>
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
               <Input
                 id="confirmPassword"
                 placeholder="*****"
                 value={field.state.value}
                 onChange={(e) => field.handleChange(e.target.value)}
                 onBlur={field.handleBlur}
-                className="h-10.5 rounded-md py-2.75 shadow-none"
               />
               {field.state.meta.errors.map((err, i) => (
                 <p key={i} className="text-destructive text-xs">
@@ -130,7 +112,7 @@ export default function PasswordForm({ onUpdatePassword }: PasswordFormProps) {
               <Button
                 type="submit"
                 variant="outline"
-                className="cursor-pointer text-[12px] uppercase shadow-none"
+                className="text-[12px] uppercase shadow-none"
                 disabled={isSubmitting || !hasValues}
               >
                 {isSubmitting ? 'Updating...' : 'Update Password'}

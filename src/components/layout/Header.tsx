@@ -76,7 +76,7 @@ export default function Header() {
 
         <div className="hidden flex-row items-center gap-4 md:flex lg:ml-auto">
           <Button
-            className="bg-primary cursor-pointer rounded-full"
+            className="bg-primary rounded-md"
             onClick={handleNewApplication}
           >
             <PlusIcon />
@@ -86,7 +86,7 @@ export default function Header() {
           <Button
             variant="outline"
             size="icon"
-            className="cursor-pointer rounded-full shadow-none"
+            className="rounded-full shadow-none"
             onClick={handleClickNotification}
           >
             <CircleQuestionMarkIcon className="size-3.5" />
@@ -94,7 +94,7 @@ export default function Header() {
           <Button
             variant="outline"
             size="icon"
-            className="cursor-pointer rounded-full shadow-none"
+            className="rounded-full shadow-none"
             onClick={handleClickLogout}
           >
             <LogOutIcon className="size-3.5" />
@@ -103,7 +103,7 @@ export default function Header() {
 
         <Sheet>
           <SheetTrigger asChild>
-            <MenuIcon className="text-primary h-5.5 w-5.5 cursor-pointer md:hidden" />
+            <MenuIcon className="text-primary h-5.5 w-5.5 md:hidden" />
           </SheetTrigger>
           <SheetContent side="left" className="flex w-72 flex-col p-0">
             <SheetHeader className="border-border border-b px-4 pt-5 pb-3">

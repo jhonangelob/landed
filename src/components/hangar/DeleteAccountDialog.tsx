@@ -62,20 +62,19 @@ export default function DeleteAccountDialog({
             placeholder="DELETE"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            className="shadow-none"
           />
         </div>
         <div className="flex flex-row items-center justify-end gap-2">
           <Button
             variant="outline"
-            className="w-fit cursor-pointer text-[13px] uppercase"
+            className="w-fit text-[13px] uppercase"
             onClick={() => setOpen(false)}
           >
             Keep Account
           </Button>
           <Button
             variant="destructive"
-            className="w-fit cursor-pointer text-[13px] uppercase"
+            className="w-fit text-[13px] uppercase"
             disabled={input !== 'DELETE'}
             onClick={onDelete}
           >

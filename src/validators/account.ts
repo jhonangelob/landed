@@ -54,6 +54,8 @@ export const updateAccountSchema = z.object({
     ),
 })
 
+export type UpdateAccountInput = z.infer<typeof updateAccountSchema>
+
 export const updatePasswordSchema = z
   .object({
     currentPassword: z.string(),
@@ -77,4 +79,4 @@ export const updatePasswordSchema = z
     path: ['newPassword'],
   })
 
-export type UpdateAccountInput = z.infer<typeof updateAccountSchema>
+export type UpdatePasswordInput = z.infer<typeof updatePasswordSchema>

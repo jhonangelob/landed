@@ -1,12 +1,11 @@
 import { CheckIcon } from 'lucide-react'
-import type z from 'zod'
 
 import { cn } from '#/lib/utils'
 
-import type { planSchema } from '#/validators/subscription'
+import type { Plan } from '#/validators/subscription'
 
 interface SubscriptionCardProps {
-  data: z.infer<typeof planSchema>
+  data: Plan
   current: boolean
   onSelect: () => void
 }
@@ -19,7 +18,7 @@ export default function SubscriptionCard({
   return (
     <div
       className={cn(
-        'hover:border-muted-foreground/40 flex w-full cursor-pointer flex-col gap-2 rounded-lg border bg-[#f5f6f8] p-4 shadow-none',
+        'hover:border-muted-foreground/40 flex w-full flex-col gap-2 rounded-lg border bg-[#f5f6f8] p-4 shadow-none',
         current && 'border-primary bg-primary/30 hover:none',
       )}
       onClick={onSelect}

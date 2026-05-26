@@ -80,7 +80,7 @@ export default function KanbanItem({ data }: KanbanItemProps) {
 
   return (
     <div
-      className="hover:border-primary flex w-73 cursor-pointer flex-col space-y-1.5 rounded-lg border bg-white p-4"
+      className="hover:border-primary flex w-73 flex-col space-y-1.5 rounded-lg border bg-white p-4"
       onClick={handleClickApplicationItem}
     >
       <div className="flex flex-row items-center justify-between">
@@ -94,7 +94,7 @@ export default function KanbanItem({ data }: KanbanItemProps) {
           <DropdownMenuTrigger asChild>
             <Button
               variant="outline"
-              className={`h-6 min-h-0 cursor-pointer rounded-full border-none p-0 py-0 font-mono text-[10px] shadow-none ${variantStyles[data.status]}`}
+              className={`h-6 min-h-0 rounded-full border-none p-0 py-0 font-mono text-[10px] shadow-none ${variantStyles[data.status]}`}
             >
               {data.status} <ChevronDown />
             </Button>

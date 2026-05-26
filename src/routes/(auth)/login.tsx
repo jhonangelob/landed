@@ -90,13 +90,13 @@ function RouteComponent() {
 
         {/* <div className="flex flex-col gap-2">
           <Button
-            className="rounded-lg shadow-none cursor-pointer bg-white font-sans"
+            className="rounded-lg shadow-none  bg-white font-sans"
             variant="outline"
           >
             Continue with Google
           </Button>
           <Button
-            className="rounded-lg shadow-none cursor-pointer bg-white font-sans"
+            className="rounded-lg shadow-none  bg-white font-sans"
             variant="outline"
           >
             Continue with Github
@@ -118,19 +118,13 @@ function RouteComponent() {
             name="email"
             children={(field) => (
               <div className="w-full space-y-1.5">
-                <Label
-                  htmlFor="email"
-                  className="text-muted-foreground font-sans text-[13px] font-medium"
-                >
-                  Email
-                </Label>
+                <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   placeholder="juan@email.com"
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
-                  className="bg-white text-sm shadow-none"
                 />
                 {field.state.meta.errors.map((err, i) => (
                   <p key={i} className="text-destructive text-[13px]">
@@ -144,12 +138,7 @@ function RouteComponent() {
             name="password"
             children={(field) => (
               <div className="flex w-full flex-col space-y-1.5">
-                <Label
-                  htmlFor="password"
-                  className="text-muted-foreground font-sans text-[13px] font-medium"
-                >
-                  Password
-                </Label>
+                <Label htmlFor="password">Password</Label>
                 <div className="relative">
                   <Input
                     id="password"
@@ -157,13 +146,12 @@ function RouteComponent() {
                     value={field.state.value}
                     onChange={(e) => field.handleChange(e.target.value)}
                     onBlur={field.handleBlur}
-                    className="bg-white pr-9 text-sm shadow-none"
                     type={showPassword ? 'text' : 'password'}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
-                    className="text-muted-foreground hover:text-foreground absolute top-1/2 right-2.5 -translate-y-1/2 cursor-pointer"
+                    className="text-muted-foreground hover:text-foreground absolute top-1/2 right-2.5 -translate-y-1/2"
                   >
                     {showPassword ? (
                       <EyeOffIcon className="size-4" />
@@ -179,17 +167,12 @@ function RouteComponent() {
                     </p>
                   ))}
 
-                  <Label
-                    className="text-primary ml-auto cursor-pointer font-sans text-[13px] font-normal"
-                    onClick={handleForgotPassword}
-                  >
-                    Forgot Password?
-                  </Label>
+                  <Label onClick={handleForgotPassword}>Forgot Password?</Label>
                 </div>
               </div>
             )}
           />
-          <Button type="submit" className="cursor-pointer">
+          <Button type="submit" className="">
             {isLoading ? 'Loading...' : 'Sign in'}
           </Button>
         </form>
@@ -197,7 +180,7 @@ function RouteComponent() {
         <p className="text-muted-foreground text-center font-sans text-[13px]">
           Don't have an account?{' '}
           <span
-            className="text-primary cursor-pointer font-sans text-[13px] font-medium"
+            className="text-primary font-sans text-[13px] font-medium"
             onClick={handleCreateAccount}
           >
             Create one.

@@ -137,6 +137,7 @@ export const applications = pgTable('applications', {
   jobUrl: text('job_url'),
   jobPostText: text('job_post_text'),
   status: applicationStatusEnum('status').notNull().default('spotted'),
+  subStatus: text('sub_status'),
   notes: text('notes'),
   salaryRange: text('salary_range'),
   location: text('location'),

@@ -15,6 +15,7 @@ export interface Application {
   company: string
   role: string
   status: ApplicationStatus
+  subStatus: string | null
   jobUrl: string | null
   jobPostText: string | null
   notes: string | null

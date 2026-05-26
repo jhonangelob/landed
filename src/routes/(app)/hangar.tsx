@@ -1,5 +1,3 @@
-import type z from 'zod'
-
 import {
   useMutation,
   useQueryClient,
@@ -26,8 +24,8 @@ import {
 import { changePassword, signOut } from '#/lib/auth/client'
 
 import type {
-  updateAccountSchema,
-  updatePasswordSchema,
+  UpdateAccountInput,
+  UpdatePasswordInput,
 } from '#/validators/account'
 
 import { PLANS } from '#/constants/plan'
@@ -51,7 +49,7 @@ function RouteComponent() {
   })
 
   const { mutateAsync: updateAccountPassword } = useMutation({
-    mutationFn: async (value: z.infer<typeof updatePasswordSchema>) => {
+    mutationFn: async (value: UpdatePasswordInput) => {
       await changePassword({
         currentPassword: value.currentPassword,
         newPassword: value.newPassword,
@@ -67,7 +65,7 @@ function RouteComponent() {
   })
 
   const { mutateAsync: updateAccount } = useMutation({
-    mutationFn: async (value: z.infer<typeof updateAccountSchema>) => {
+    mutationFn: async (value: UpdateAccountInput) => {
       await updateAccountDetails({ data: value })
     },
     onSuccess: () => {
@@ -157,7 +155,7 @@ function RouteComponent() {
             </p>
             <DeleteAccountDialog onDelete={deleteUserAccount}>
               <Button
-                className="cursor-pointer rounded-md bg-[#d2484a] font-mono text-[12px] leading-[1.4] font-medium tracking-[0.9px] text-white uppercase hover:bg-[#d2484a]/80"
+                className="rounded-md bg-[#d2484a] font-mono text-[12px] leading-[1.4] font-medium tracking-[0.9px] text-white uppercase hover:bg-[#d2484a]/80"
                 type="reset"
               >
                 Delete Account...

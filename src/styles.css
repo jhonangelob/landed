@@ -391,8 +391,20 @@ header {
     @apply flex min-h-[calc(100vh-160px)] flex-col gap-8;
   }
 
+  button {
+    @apply cursor-pointer;
+  }
+
   input {
-    @apply bg-[#f5f6f8]!;
+    @apply h-10.5! rounded-md! bg-[#f5f6f8]! py-2.75 shadow-none!;
+  }
+
+  textarea {
+    @apply rounded-md! bg-[#f5f6f8]! py-2.75 shadow-none!;
+  }
+
+  label {
+    @apply text-muted-foreground font-mono text-[12px]! leading-[1.4] font-medium tracking-[1.3px] uppercase;
   }
 }
 

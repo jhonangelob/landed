@@ -99,7 +99,7 @@ export default function DeleteApplicationDialog({
         <DialogFooter>
           <DialogClose asChild>
             <Button
-              className="text-muted-foreground border-muted-foreground hover:bg-muted-foreground/40 hover:text-primary-text cursor-pointer border bg-transparent font-sans text-[13px] uppercase"
+              className="text-muted-foreground border-muted-foreground hover:bg-muted-foreground/40 hover:text-primary-text border bg-transparent font-sans text-[13px] uppercase"
               onClick={() => setIsOpen(false)}
             >
               Cancel
@@ -107,7 +107,7 @@ export default function DeleteApplicationDialog({
           </DialogClose>
           <Button
             onClick={handleDeleteApplication}
-            className="bg-destructive hover:bg-destructive cursor-pointer font-sans text-[13px] uppercase hover:opacity-80"
+            className="bg-destructive hover:bg-destructive font-sans text-[13px] uppercase hover:opacity-80"
           >
             <TrashIcon />
             Delete Application
