@@ -84,20 +84,20 @@ export default function FilePreview({
           </div>
         </TabsList>
         <TabsContent value="cv">
-          {documents?.[0] ? (
+          {documents?.[1] ? (
             <div
               className="prose prose-sm max-w-none p-8"
-              dangerouslySetInnerHTML={{ __html: documents[0]?.contentHtml }}
+              dangerouslySetInnerHTML={{ __html: documents[1]?.contentHtml }}
             />
           ) : (
             <EmptyFilePreview />
           )}
         </TabsContent>
         <TabsContent value="cl">
-          {documents?.[1] ? (
+          {documents?.[0] ? (
             <div
               className="prose prose-sm max-w-none p-8"
-              dangerouslySetInnerHTML={{ __html: documents[1]?.contentHtml }}
+              dangerouslySetInnerHTML={{ __html: documents[0]?.contentHtml }}
             />
           ) : (
             <EmptyFilePreview />

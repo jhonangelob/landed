@@ -69,13 +69,14 @@ export default function UpdateApplication({
     validators: {
       onSubmit: updateApplicationSchema,
     },
-    onSubmit: ({ value }) => {
-      updateApplicationDetails(value)
+    onSubmit: async ({ value }) => {
+      await updateApplicationDetails(value)
     },
   })
 
   const handleUpdateStage = (stage: ApplicationStage) => {
     updateStage({ id: applicationId, stage })
+    form.setFieldValue('stage', stage)
   }
 
   const handleRetailorDocument = () => {

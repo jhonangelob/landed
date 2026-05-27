@@ -2,6 +2,7 @@ import { useAccountDetailsQuery } from '#/hooks/useAccountQueries'
 import {
   useProfileQuery,
   useSaveProfileMutation,
+  useUpdateProfileMutation,
 } from '#/hooks/useProfileQueries'
 
 import { createFileRoute } from '@tanstack/react-router'
@@ -41,13 +42,13 @@ function RouteComponent() {
   const { data: account } = useAccountDetailsQuery()
 
   const { mutateAsync: saveProfileDetails } = useSaveProfileMutation()
-  const { mutateAsync: updateProfileDetails } = useSaveProfileMutation()
+  const { mutateAsync: updateProfileDetails } = useUpdateProfileMutation()
 
-  const handleSave = (value: PilotProfileInput) => {
+  const handleSave = async (value: PilotProfileInput) => {
     if (profile?.id) {
-      updateProfileDetails(value)
+      await updateProfileDetails(value)
     } else {
-      saveProfileDetails(value)
+      await saveProfileDetails(value)
     }
   }
 
@@ -59,7 +60,12 @@ function RouteComponent() {
         title2="Profile"
         description="Your master CV data. Co-Pilot uses this to tailor every document it generates."
       />
-      <ProfileForm profile={profile} account={account} onSave={handleSave} />
+      <ProfileForm
+        key={profile?.updatedAt?.getTime() ?? 'new'}
+        profile={profile}
+        account={account}
+        onSave={handleSave}
+      />
     </div>
   )
 }

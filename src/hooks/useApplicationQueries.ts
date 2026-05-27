@@ -19,6 +19,7 @@ import type {
   UpdateApplicationInput,
   UpdateStageInput,
 } from '#/validators/application'
+import { useNavigate } from '@tanstack/react-router'
 
 export const applicationsQueryKey = ['applications'] as const
 export const applicationQueryKey = (id: string) => ['application', id] as const
@@ -82,11 +83,13 @@ export function useUpdateApplicationStageMutation(applicationId: string) {
 
 export function useDeleteApplicationMutation() {
   const queryClient = useQueryClient()
+  const navigate = useNavigate()
 
   return useMutation({
     mutationFn: (id: string) => deleteApplication({ data: { id } }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: applicationsQueryKey })
+      navigate({ to: '/flight-deck' })
     },
   })
 }

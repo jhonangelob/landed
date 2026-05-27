@@ -91,6 +91,7 @@ export const updateApplication = createServerFn({
       .set({
         company: data.company,
         role: data.role,
+        stage: data.stage,
         status: data.status,
         location: data.location,
         salaryRange: data.salaryRange,

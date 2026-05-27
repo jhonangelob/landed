@@ -38,10 +38,6 @@ export default function DeleteApplicationDialog({
 
   const { mutateAsync: deleteApplication } = useDeleteApplicationMutation()
 
-  const handleDeleteApplication = () => {
-    deleteApplication(data.id)
-  }
-
   return (
     <Dialog open={isOpen}>
       <DialogTrigger asChild onClick={() => setIsOpen(true)}>
@@ -87,7 +83,7 @@ export default function DeleteApplicationDialog({
             </Button>
           </DialogClose>
           <Button
-            onClick={handleDeleteApplication}
+            onClick={() => deleteApplication(data.id)}
             className="bg-destructive hover:bg-destructive font-sans text-[13px] uppercase hover:opacity-80"
           >
             <TrashIcon />

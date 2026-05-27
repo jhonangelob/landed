@@ -22,7 +22,7 @@ import type { PilotProfileInput } from '#/validators/profile'
 interface ProfileFormProps {
   profile: PilotProfile | null
   account: any
-  onSave: (value: PilotProfileInput) => void
+  onSave: (value: PilotProfileInput) => Promise<void> | void
 }
 
 export default function ProfileForm({
@@ -58,8 +58,7 @@ export default function ProfileForm({
       onSubmit: pilotProfileSchema,
     },
     onSubmit: async ({ value }) => {
-      onSave(value)
-      form.reset()
+      await onSave(value)
     },
   })
 
