@@ -1,3 +1,4 @@
+import type { CoverLetterContent, CvContent } from '#/validators/documents'
 import { relations } from 'drizzle-orm'
 import {
   boolean,
@@ -20,6 +21,8 @@ export const applicationStatusEnum = pgEnum('application_status', [
   'rejected',
   'withdrawn',
 ])
+
+export const planTypeEnum = pgEnum('plan_id', ['free', 'runway', 'runway_3mo'])
 
 export const docTypeEnum = pgEnum('doc_type', ['cv', 'cover_letter'])
 
@@ -162,7 +165,9 @@ export const generatedDocs = pgTable('generated_docs', {
     .notNull()
     .references(() => applications.id, { onDelete: 'cascade' }),
   type: docTypeEnum('type').notNull(),
-  contentJson: jsonb('content_json').$type<Record<string, unknown>>().notNull(),
+  contentJson: jsonb('content_json')
+    .$type<CvContent | CoverLetterContent>()
+    .notNull(),
   contentHtml: text('content_html').notNull(),
   version: integer('version').notNull().default(1),
   createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -246,7 +251,7 @@ export const subscriptions = pgTable('subscriptions', {
   userId: text('user_id')
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
-  planId: text('plan_id').notNull().default('free'),
+  planId: planTypeEnum('plan_id').notNull().default('free'),
   startedAt: timestamp('started_at').defaultNow().notNull(),
   expiresAt: timestamp('expires_at'), // null = free plan
   isActive: boolean('is_active').notNull().default(true),

@@ -115,7 +115,7 @@ export default function AccountForm({
         <Button
           type="button"
           variant="outline"
-          className="bg-white text-[12px] font-normal uppercase shadow-none"
+          className="bg-white text-[12px] font-normal uppercase"
           onClick={handleDiscard}
         >
           Discard
@@ -129,7 +129,7 @@ export default function AccountForm({
             return (
               <Button
                 type="submit"
-                className="text-[12px] uppercase shadow-none"
+                className="text-[12px] uppercase"
                 disabled={isSubmitting || !hasChanges}
               >
                 {isSubmitting ? 'Saving...' : 'Save Changes'}

@@ -62,10 +62,6 @@ function RouteComponent() {
     },
   })
 
-  // const handleForgotPassword = () => {
-  //   console.log('unimplemented: Forgot Password')
-  // }
-
   const handleCreateAccount = () => {
     navigate({ to: '/signup' })
   }
@@ -94,25 +90,6 @@ function RouteComponent() {
             {errorMessage || 'Sign in to your account to continue'}
           </p>
         </div>
-
-        {/* <div className="flex flex-col gap-2">
-          <Button
-            className="rounded-lg shadow-none  bg-white font-sans"
-            variant="outline"
-          >
-            Continue with Google
-          </Button>
-          <Button
-            className="rounded-lg shadow-none  bg-white font-sans"
-            variant="outline"
-          >
-            Continue with Github
-          </Button>
-        </div>
-
-        <div className="font-mono text-center text-muted-foreground text-[12px]">
-          or
-        </div> */}
 
         <form
           onSubmit={(e) => {

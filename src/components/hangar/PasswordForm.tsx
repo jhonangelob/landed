@@ -67,7 +67,7 @@ export default function PasswordForm({ onUpdatePassword }: PasswordFormProps) {
                 value={field.state.value}
                 onChange={(e) => field.handleChange(e.target.value)}
                 onBlur={field.handleBlur}
-                className="h-10.5 rounded-md py-2.75 shadow-none placeholder:italic"
+                className="h-10.5 rounded-md py-2.75 placeholder:italic"
               />
               {field.state.meta.errors.map((err, i) => (
                 <p key={i} className="text-destructive text-xs">
@@ -112,7 +112,7 @@ export default function PasswordForm({ onUpdatePassword }: PasswordFormProps) {
               <Button
                 type="submit"
                 variant="outline"
-                className="text-[12px] uppercase shadow-none"
+                className="text-[12px] uppercase"
                 disabled={isSubmitting || !hasValues}
               >
                 {isSubmitting ? 'Updating...' : 'Update Password'}

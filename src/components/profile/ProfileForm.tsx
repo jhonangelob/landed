@@ -368,7 +368,7 @@ export default function ProfileForm({
                           type="button"
                           variant="outline"
                           size="sm"
-                          className="w-fit text-xs shadow-none"
+                          className="w-fit text-xs"
                           onClick={() =>
                             form.pushFieldValue(`experience[${i}].bullets`, '')
                           }
@@ -388,7 +388,7 @@ export default function ProfileForm({
               <Button
                 type="button"
                 variant="outline"
-                className="w-fit text-sm shadow-none"
+                className="w-fit text-sm"
                 onClick={() =>
                   form.pushFieldValue('experience', {
                     company: '',
@@ -463,7 +463,7 @@ export default function ProfileForm({
                       setSkillInput('')
                     }
                   }}
-                  className="h-10.5 shadow-none"
+                  className="h-10.5"
                 >
                   <PlusIcon className="size-4" />
                 </Button>
@@ -561,7 +561,7 @@ export default function ProfileForm({
               <Button
                 type="button"
                 variant="outline"
-                className="w-fit text-sm shadow-none"
+                className="w-fit text-sm"
                 onClick={() =>
                   form.pushFieldValue('education', {
                     institution: '',
@@ -707,7 +707,7 @@ export default function ProfileForm({
               <Button
                 type="button"
                 variant="outline"
-                className="w-fit text-sm shadow-none"
+                className="w-fit text-sm"
                 onClick={() =>
                   form.pushFieldValue('certifications', {
                     name: '',
@@ -786,7 +786,7 @@ export default function ProfileForm({
                       setRoleInput('')
                     }
                   }}
-                  className="h-10.5 shadow-none"
+                  className="h-10.5"
                 >
                   <PlusIcon className="size-4" />
                 </Button>

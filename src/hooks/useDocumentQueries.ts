@@ -1,8 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-import { generateDocuments, getDocuments } from '#/server/documents'
+import {
+  exportCvPdf,
+  generateDocuments,
+  getDocuments,
+} from '#/server/documents'
 
-import type { GenerateDocumentInput } from '#/validators/documents'
+import type {
+  ExportDocumentInput,
+  GenerateDocumentInput,
+} from '#/validators/documents'
 
 export const documentsQueryKey = (applicationId: string) =>
   ['generated_docs', applicationId] as const
@@ -25,5 +32,11 @@ export function useGenerateDocumentsMutation(applicationId?: string) {
       const id = applicationId ?? variables.applicationId
       queryClient.invalidateQueries({ queryKey: documentsQueryKey(id) })
     },
+  })
+}
+
+export function useExportDocumentsMutation() {
+  return useMutation({
+    mutationFn: (value: ExportDocumentInput) => exportCvPdf({ data: value }),
   })
 }

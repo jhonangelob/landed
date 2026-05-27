@@ -392,7 +392,7 @@ header {
   }
 
   button {
-    @apply cursor-pointer;
+    @apply cursor-pointer shadow-none!;
   }
 
   input {

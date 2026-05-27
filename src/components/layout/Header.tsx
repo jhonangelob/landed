@@ -82,7 +82,7 @@ export default function Header() {
           <Button
             variant="outline"
             size="icon"
-            className="rounded-full shadow-none"
+            className="rounded-full"
             onClick={handleClickNotification}
           >
             <CircleQuestionMarkIcon className="size-3.5" />
@@ -90,7 +90,7 @@ export default function Header() {
           <Button
             variant="outline"
             size="icon"
-            className="rounded-full shadow-none"
+            className="rounded-full"
             onClick={handleClickLogout}
           >
             <LogOutIcon className="size-3.5" />

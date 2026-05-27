@@ -1,9 +1,11 @@
-import { CopyIcon, DownloadIcon, PlusIcon, SparklesIcon } from 'lucide-react'
+import { DownloadIcon, PlusIcon, SparklesIcon } from 'lucide-react'
 
 import type { Document } from '#/validators/documents'
 
 import { Button } from '../ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
+
+import ExportFileDialog from './ExportFileDialog'
 
 interface FilePreview {
   showRegenerateButton?: boolean
@@ -58,7 +60,7 @@ export default function FilePreview({
           <div className="ml-auto flex flex-row gap-2">
             {showRegenerateButton && (
               <Button
-                className="text-primary-text flex h-fit flex-row gap-1.5 px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase shadow-none"
+                className="text-primary-text flex h-fit flex-row gap-1.5 px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase"
                 variant="outline"
                 onClick={onRetailor}
               >
@@ -67,20 +69,17 @@ export default function FilePreview({
               </Button>
             )}
 
-            <Button
-              className="text-primary-text flex h-fit flex-row gap-1.5 px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase shadow-none"
-              variant="outline"
+            <ExportFileDialog
+              applicationId={documents?.[0].applicationId || ''}
             >
-              <CopyIcon className="size-2.75" />
-              <p className="hidden md:block">Copy</p>
-            </Button>
-            <Button
-              className="text-primary-text flex h-fit flex-row gap-1.5 px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase shadow-none"
-              variant="outline"
-            >
-              <DownloadIcon className="size-2.75" />
-              <p className="hidden md:block">Pdf</p>
-            </Button>
+              <Button
+                className="text-primary-text flex h-fit flex-row gap-1.5 px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase"
+                variant="outline"
+              >
+                <DownloadIcon className="size-2.75" />
+                <p className="hidden md:block">Pdf</p>
+              </Button>
+            </ExportFileDialog>
           </div>
         </TabsList>
         <TabsContent value="cv">

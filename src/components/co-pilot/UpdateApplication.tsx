@@ -138,7 +138,6 @@ export default function UpdateApplication({
                           value={field.state.value}
                           onChange={(e) => field.handleChange(e.target.value)}
                           onBlur={field.handleBlur}
-                          className="bg-white shadow-none placeholder:text-sm"
                         />
                         {field.state.meta.errors.map((err, i) => (
                           <p key={i} className="text-destructive text-xs">
@@ -160,7 +159,6 @@ export default function UpdateApplication({
                         value={field.state.value}
                         onChange={(e) => field.handleChange(e.target.value)}
                         onBlur={field.handleBlur}
-                        className="bg-white shadow-none placeholder:text-sm"
                       />
                       {field.state.meta.errors.map((err, i) => (
                         <p key={i} className="text-destructive text-xs">

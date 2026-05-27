@@ -3,14 +3,27 @@ import { anthropic } from '@ai-sdk/anthropic'
 import { generateText } from 'ai'
 import { and, eq } from 'drizzle-orm'
 import z from 'zod'
+import { isTemplateLocked } from '#/constants/templates'
 
 import { createServerFn } from '@tanstack/react-start'
-
+import { renderToBuffer } from '@react-pdf/renderer'
 import { getSession } from '#/lib/auth/session'
 import { db } from '#/lib/db'
 import { applications, generatedDocs, pilotProfiles } from '#/lib/db/schema'
 
-import { generateDocumentSchema } from '#/validators/documents'
+import { generateDocumentSchema, exportDocumentSchema } from '#/validators/documents'
+import type { CvContent } from '#/validators/documents'
+import { getUserPlan } from '#/lib/auth/subscription'
+
+import { ClassicTemplate } from '#/lib/pdf/templates/classic'
+import { ModernTemplate } from '#/lib/pdf/templates/modern'
+import { MinimalTemplate } from '#/lib/pdf/templates/minimal'
+
+const TEMPLATES = {
+  classic: ClassicTemplate,
+  modern: ModernTemplate,
+  minimal: MinimalTemplate,
+} as const
 
 export const getDocuments = createServerFn({ method: 'GET' })
   .inputValidator((data: unknown) =>
@@ -133,5 +146,45 @@ export const generateDocuments = createServerFn({ method: 'POST' })
       id: application.id,
       cv: parsed.cv,
       coverLetter: parsed.coverLetter,
+    }
+  })
+
+export const exportCvPdf = createServerFn({ method: 'POST' })
+  .inputValidator((data: unknown) => exportDocumentSchema.parse(data))
+  .handler(async ({ data }) => {
+    const session = await getSession()
+    if (!session) throw new Error('Unauthorized')
+
+    const planId = await getUserPlan(session.user.id)
+
+    if (isTemplateLocked(data.template, planId)) {
+      throw new Error('Upgrade to Runway to unlock this template')
+    }
+
+    const [doc] = await db
+      .select({ contentJson: generatedDocs.contentJson })
+      .from(generatedDocs)
+      .where(
+        and(
+          eq(generatedDocs.applicationId, data.applicationId),
+          eq(generatedDocs.userId, session.user.id),
+          eq(generatedDocs.type, 'cv'),
+        ),
+      )
+      .limit(1)
+
+    if (!doc) throw new Error('Document not found')
+
+    const Template = TEMPLATES[data.template]
+    const pdfBuffer = await renderToBuffer(
+      Template({
+        content: doc.contentJson as CvContent,
+        email: session.user.email,
+      }),
+    )
+
+    return {
+      base64: Buffer.from(pdfBuffer).toString('base64'),
+      filename: `cv-${data.template}.pdf`,
     }
   })
