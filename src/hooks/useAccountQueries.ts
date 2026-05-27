@@ -3,6 +3,7 @@ import {
   useQueryClient,
   useSuspenseQuery,
 } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router'
 
 import {
   deleteAccount,
@@ -10,7 +11,12 @@ import {
   updateAccountDetails,
 } from '#/server/account'
 
-import type { UpdateAccountInput } from '#/validators/account'
+import { changePassword, signOut } from '#/lib/auth/client'
+
+import type {
+  UpdateAccountInput,
+  UpdatePasswordInput,
+} from '#/validators/account'
 
 export const accountQueryKey = ['account_details'] as const
 
@@ -34,7 +40,20 @@ export function useUpdateAccountMutation() {
 }
 
 export function useDeleteAccountMutation() {
+  const navigate = useNavigate()
+
   return useMutation({
     mutationFn: () => deleteAccount(),
+    onSuccess: () => {
+      signOut()
+      navigate({ to: '/login' })
+    },
+  })
+}
+
+export function useUpdatePasswordMutation() {
+  return useMutation({
+    mutationFn: (value: UpdatePasswordInput) =>
+      changePassword({ ...value, revokeOtherSessions: true }),
   })
 }

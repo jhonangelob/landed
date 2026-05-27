@@ -3,14 +3,14 @@ import {
   useAccountDetailsQuery,
   useDeleteAccountMutation,
   useUpdateAccountMutation,
+  useUpdatePasswordMutation,
 } from '#/hooks/useAccountQueries'
 import {
   activitiesQueryKey,
   useActivitiesQuery,
 } from '#/hooks/useActivityQueries'
 
-import { useMutation } from '@tanstack/react-query'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 
 import { Button } from '#/components/ui/button'
 
@@ -24,10 +24,6 @@ import SectionHeader from '#/components/layout/SectionHeader'
 
 import { getAccountDetails } from '#/server/account'
 import { getActivities } from '#/server/activity'
-
-import { changePassword, signOut } from '#/lib/auth/client'
-
-import type { UpdatePasswordInput } from '#/validators/account'
 
 import { PLANS } from '#/constants/plan'
 
@@ -54,29 +50,12 @@ export const Route = createFileRoute('/(app)/hangar')({
 })
 
 function RouteComponent() {
-  const navigate = useNavigate()
-
   const { data: activities } = useActivitiesQuery()
   const { data: account } = useAccountDetailsQuery()
 
   const { mutateAsync: updateAccount } = useUpdateAccountMutation()
   const { mutateAsync: deleteUserAccount } = useDeleteAccountMutation()
-
-  const { mutateAsync: updateAccountPassword } = useMutation({
-    mutationFn: async (value: UpdatePasswordInput) => {
-      await changePassword({
-        currentPassword: value.currentPassword,
-        newPassword: value.newPassword,
-        revokeOtherSessions: true,
-      })
-    },
-  })
-
-  const handleDeleteAccount = async () => {
-    await deleteUserAccount()
-    signOut()
-    navigate({ to: '/login' })
-  }
+  const { mutateAsync: updatePassword } = useUpdatePasswordMutation()
 
   return (
     <div className="flex flex-col gap-4">
@@ -103,7 +82,7 @@ function RouteComponent() {
           order={2}
           className="w-full lg:w-2/5"
         >
-          <PasswordForm onUpdatePassword={updateAccountPassword} />
+          <PasswordForm onUpdatePassword={updatePassword} />
         </SectionCard>
       </div>
       <SectionCard
@@ -144,7 +123,7 @@ function RouteComponent() {
             <p className="text-muted font-mono text-[11px] leading-[1.4] font-normal tracking-[1.1px] uppercase">
               This cannot be undone.
             </p>
-            <DeleteAccountDialog onDelete={handleDeleteAccount}>
+            <DeleteAccountDialog onDelete={deleteUserAccount}>
               <Button
                 className="bg-destructive hover:bg-destructive/80 rounded-md font-mono text-[12px] leading-[1.4] font-medium tracking-[0.9px] text-white uppercase"
                 type="reset"
