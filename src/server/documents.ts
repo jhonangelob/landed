@@ -1,23 +1,27 @@
 import { clToHtml, cvToHtml } from '#/helper/document'
 import { anthropic } from '@ai-sdk/anthropic'
+import { renderToBuffer } from '@react-pdf/renderer'
 import { generateText } from 'ai'
 import { and, eq } from 'drizzle-orm'
 import z from 'zod'
-import { isTemplateLocked } from '#/constants/templates'
 
 import { createServerFn } from '@tanstack/react-start'
-import { renderToBuffer } from '@react-pdf/renderer'
+
 import { getSession } from '#/lib/auth/session'
+import { getUserPlan } from '#/lib/auth/subscription'
 import { db } from '#/lib/db'
 import { applications, generatedDocs, pilotProfiles } from '#/lib/db/schema'
-
-import { generateDocumentSchema, exportDocumentSchema } from '#/validators/documents'
-import type { CvContent } from '#/validators/documents'
-import { getUserPlan } from '#/lib/auth/subscription'
-
 import { ClassicTemplate } from '#/lib/pdf/templates/classic'
-import { ModernTemplate } from '#/lib/pdf/templates/modern'
 import { MinimalTemplate } from '#/lib/pdf/templates/minimal'
+import { ModernTemplate } from '#/lib/pdf/templates/modern'
+
+import {
+  exportDocumentSchema,
+  generateDocumentSchema,
+} from '#/validators/documents'
+import type { CvContent } from '#/validators/documents'
+
+import { isTemplateLocked } from '#/constants/templates'
 
 const TEMPLATES = {
   classic: ClassicTemplate,

@@ -1,6 +1,7 @@
+import { eq } from 'drizzle-orm'
+
 import { db } from '#/lib/db'
 import { subscriptions } from '#/lib/db/schema'
-import { eq } from 'drizzle-orm'
 
 export async function getUserPlan(userId: string): Promise<'free' | 'runway'> {
   const result = await db

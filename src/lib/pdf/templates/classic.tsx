@@ -3,8 +3,8 @@
 // FREE PLAN template
 // Single column, traditional layout.
 // Clean and ATS-friendly for any industry.
+import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer'
 
-import { Document, Page, View, Text, StyleSheet } from '@react-pdf/renderer'
 import type { CvContent } from '#/validators/documents'
 
 const s = StyleSheet.create({

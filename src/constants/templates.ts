@@ -1,6 +1,7 @@
 import { ClassicTemplate } from '#/lib/pdf/templates/classic'
 import { MinimalTemplate } from '#/lib/pdf/templates/minimal'
 import { ModernTemplate } from '#/lib/pdf/templates/modern'
+
 import type { CvContent } from '#/validators/documents'
 import type { PlanId } from '#/validators/subscription'
 

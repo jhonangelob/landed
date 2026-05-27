@@ -4,7 +4,6 @@ import type { Document } from '#/validators/documents'
 
 import { Button } from '../ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
-
 import ExportFileDialog from './ExportFileDialog'
 
 interface FilePreview {

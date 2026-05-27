@@ -1,8 +1,10 @@
+import { eq } from 'drizzle-orm'
+
+import { createServerFn } from '@tanstack/react-start'
+
 import { getSession } from '#/lib/auth/session'
 import { db } from '#/lib/db'
 import { subscriptions } from '#/lib/db/schema'
-import { createServerFn } from '@tanstack/react-start'
-import { eq } from 'drizzle-orm'
 
 export const checkGenerationLimit = createServerFn({ method: 'GET' }).handler(
   async () => {

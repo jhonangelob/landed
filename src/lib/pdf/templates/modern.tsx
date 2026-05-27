@@ -4,7 +4,8 @@
 // Two column layout — sidebar on the left for contact,
 // skills and education. Main column for summary and experience.
 // Great for tech and design roles.
-import { Document, Page, View, Text, StyleSheet } from '@react-pdf/renderer'
+import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer'
+
 import type { CvContent } from '#/validators/documents'
 
 const SIDEBAR_WIDTH = 175

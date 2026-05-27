@@ -4,6 +4,7 @@ import {
   useQueryClient,
   useSuspenseQuery,
 } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router'
 
 import {
   createApplication,
@@ -19,7 +20,6 @@ import type {
   UpdateApplicationInput,
   UpdateStageInput,
 } from '#/validators/application'
-import { useNavigate } from '@tanstack/react-router'
 
 export const applicationsQueryKey = ['applications'] as const
 export const applicationQueryKey = (id: string) => ['application', id] as const

@@ -1,4 +1,3 @@
-import type { CoverLetterContent, CvContent } from '#/validators/documents'
 import { relations } from 'drizzle-orm'
 import {
   boolean,
@@ -10,6 +9,8 @@ import {
   timestamp,
   uuid,
 } from 'drizzle-orm/pg-core'
+
+import type { CoverLetterContent, CvContent } from '#/validators/documents'
 
 export const applicationStatusEnum = pgEnum('application_status', [
   'spotted',
