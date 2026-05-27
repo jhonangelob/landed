@@ -1,5 +1,5 @@
+import { formatNumber, parseNumber } from '#/helper/number'
 import { SaveIcon } from 'lucide-react'
-import z from 'zod'
 
 import { useForm } from '@tanstack/react-form'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -18,27 +18,27 @@ import { Textarea } from '#/components/ui/textarea'
 
 import SectionHeader from '#/components/layout/SectionHeader'
 
-import { updateApplication } from '#/server/applications'
+import {
+  updateApplication,
+  updateApplicationStage,
+} from '#/server/applications'
 
-import { applicationStatusSchema } from '#/validators/application'
-
-import type { Application } from '#/types/application'
+import {
+  applicationStageSchema,
+  updateApplicationSchema,
+} from '#/validators/application'
+import type {
+  Application,
+  ApplicationStage,
+  UpdateApplicationInput,
+  UpdateStageInput,
+} from '#/validators/application'
 
 import ApplicationSummary from './ApplicationSummary'
 import DeleteApplicationDialog from './DeleteApplicationDialog'
 import FilePreview from './FilePreview'
 import SectionCard from './SectionCard'
 import StageBar from './StageBar'
-
-const updateFormSchema = z.object({
-  companyName: z.string().min(1, 'Company name is required'),
-  jobTitle: z.string().min(1, 'Job title is required'),
-  jobUrl: z.string().url('Must be a valid URL').or(z.literal('')),
-  salaryRange: z.string(),
-  location: z.string(),
-  notes: z.string(),
-  status: applicationStatusSchema,
-})
 
 interface UpdateApplicationProps {
   applicationId: string
@@ -51,19 +51,31 @@ export default function UpdateApplication({
 }: UpdateApplicationProps) {
   const queryClient = useQueryClient()
 
-  const { mutateAsync: update } = useMutation({
-    mutationFn: async (values: z.infer<typeof updateFormSchema>) => {
+  const { mutateAsync: updateStage } = useMutation({
+    mutationFn: (values: UpdateStageInput) => {
+      return updateApplicationStage({ data: values })
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['application', applicationId],
+      })
+    },
+  })
+
+  const { mutateAsync: updateApplicationDetails } = useMutation({
+    mutationFn: async (values: UpdateApplicationInput) => {
       return await updateApplication({
         data: {
           id: applicationId,
-          companyName: values.companyName,
-          jobTitle: values.jobTitle,
-          jobUrl: values.jobUrl || null,
-          location: values.location || null,
-          salaryRange: values.salaryRange || null,
-          notes: values.notes || null,
+          company: values.company,
+          role: values.role,
+          url: values.url,
+          location: values.location,
+          salaryRange: values.salaryRange,
+          notes: values.notes,
+          stage: values.stage,
           status: values.status,
-          subStatus: application?.subStatus ?? null,
+          description: values.description,
         },
       })
     },
@@ -76,21 +88,30 @@ export default function UpdateApplication({
 
   const form = useForm({
     defaultValues: {
-      companyName: application?.company ?? '',
-      jobTitle: application?.role ?? '',
-      jobUrl: application?.jobUrl ?? '',
-      salaryRange: application?.salaryRange ?? '',
+      id: applicationId,
+      company: application?.company ?? '',
+      role: application?.role ?? '',
+      url: application?.url ?? '',
       location: application?.location ?? '',
+      salaryRange: application?.salaryRange ?? '',
       notes: application?.notes ?? '',
-      status: application?.status ?? 'spotted',
+      stage: application?.stage ?? 'spotted',
+      status: application?.status ?? '',
+      description: application?.description ?? '',
     },
     validators: {
-      onSubmit: updateFormSchema,
+      onSubmit: updateApplicationSchema,
     },
     onSubmit: ({ value }) => {
-      update(value)
+      updateApplicationDetails(value)
     },
   })
+
+  const handleUpdateStage = (stage: ApplicationStage) => {
+    updateStage({ id: applicationId, stage })
+  }
+
+  if (!application) return null
 
   return (
     <>
@@ -100,7 +121,7 @@ export default function UpdateApplication({
         title2="Application"
         description="Changes saved here will update this application on your Flight Deck."
       />
-      <StageBar status="spotted" onChangeStatus={() => console.log('first')} />
+      <StageBar stage={application.stage} onUpdateStage={handleUpdateStage} />
       <div className="flex flex-row gap-4">
         <div className="w-1/2 space-y-4">
           <form
@@ -114,12 +135,12 @@ export default function UpdateApplication({
               <div className="space-y-4">
                 <div className="flex gap-4">
                   <form.Field
-                    name="companyName"
+                    name="company"
                     children={(field) => (
                       <div className="w-full space-y-1.5">
-                        <Label htmlFor="companyName">Company Name</Label>
+                        <Label htmlFor="company">Company Name</Label>
                         <Input
-                          id="companyName"
+                          id="company"
                           placeholder="e.g. Landed"
                           value={field.state.value}
                           onChange={(e) => field.handleChange(e.target.value)}
@@ -135,12 +156,12 @@ export default function UpdateApplication({
                   />
 
                   <form.Field
-                    name="jobTitle"
+                    name="role"
                     children={(field) => (
                       <div className="w-full space-y-1.5">
-                        <Label htmlFor="jobTitle">Job Title</Label>
+                        <Label htmlFor="role">Job Title</Label>
                         <Input
-                          id="jobTitle"
+                          id="role"
                           placeholder="e.g. Software Engineer"
                           value={field.state.value}
                           onChange={(e) => field.handleChange(e.target.value)}
@@ -157,12 +178,12 @@ export default function UpdateApplication({
                   />
                 </div>
                 <form.Field
-                  name="jobUrl"
+                  name="url"
                   children={(field) => (
                     <div className="w-full space-y-1.5">
-                      <Label htmlFor="jobUrl">Job URL</Label>
+                      <Label htmlFor="url">Job URL</Label>
                       <Input
-                        id="jobUrl"
+                        id="url"
                         placeholder="e.g. https://jobs.example.com/12345"
                         value={field.state.value}
                         onChange={(e) => field.handleChange(e.target.value)}
@@ -185,9 +206,11 @@ export default function UpdateApplication({
                         <Label htmlFor="salaryRange">Salary Range</Label>
                         <Input
                           id="salaryRange"
-                          placeholder="e.g. $80k – $100k"
-                          value={field.state.value}
-                          onChange={(e) => field.handleChange(e.target.value)}
+                          placeholder="e.g. 120,000"
+                          value={formatNumber(field.state.value)}
+                          onChange={(e) =>
+                            field.handleChange(parseNumber(e.target.value))
+                          }
                           onBlur={field.handleBlur}
                         />
                         {field.state.meta.errors.map((err, i) => (
@@ -221,17 +244,17 @@ export default function UpdateApplication({
                 </div>
 
                 <form.Field
-                  name="jobDescription"
+                  name="description"
                   children={(field) => (
                     <div className="space-y-1.5">
                       <Label
-                        htmlFor="jobDescription"
+                        htmlFor="description"
                         className="text-muted-foreground font-sans text-[12px] font-medium"
                       >
                         Job Description
                       </Label>
                       <Textarea
-                        id="jobDescription"
+                        id="description"
                         placeholder="Paste the full job requirements and role description here..."
                         rows={10}
                         value={field.state.value}
@@ -252,12 +275,12 @@ export default function UpdateApplication({
             <SectionCard title="Status update" subTitle="status">
               <div className="flex gap-4">
                 <form.Field
-                  name="subStatus"
+                  name="status"
                   children={(field) => (
                     <div className="w-full space-y-1.5">
-                      <Label htmlFor="subStatus">Sub-Status</Label>
+                      <Label htmlFor="status">Sub-Status</Label>
                       <Input
-                        id="subStatus"
+                        id="status"
                         placeholder="e.g. Landed"
                         value={field.state.value}
                         onChange={(e) => field.handleChange(e.target.value)}
@@ -272,23 +295,25 @@ export default function UpdateApplication({
                   )}
                 />
                 <form.Field
-                  name="status"
+                  name="stage"
                   children={(field) => (
                     <div className="w-full space-y-1.5">
-                      <Label htmlFor="status">Stage</Label>
+                      <Label htmlFor="stage">Stage</Label>
                       <Select
                         value={field.state.value}
-                        onValueChange={(v) => field.handleChange(v)}
+                        onValueChange={(v) =>
+                          field.handleChange(v as ApplicationStage)
+                        }
                       >
                         <SelectTrigger
-                          id="status"
+                          id="stage"
                           onBlur={field.handleBlur}
                           className="h-10.5! w-full bg-[#f5f6f8]! shadow-none!"
                         >
                           <SelectValue placeholder="Select stage" />
                         </SelectTrigger>
                         <SelectContent>
-                          {applicationStatusSchema.options.map((s) => (
+                          {applicationStageSchema.options.map((s) => (
                             <SelectItem key={s} value={s}>
                               {s.replace('_', ' ')}
                             </SelectItem>
@@ -330,26 +355,22 @@ export default function UpdateApplication({
               />
             </SectionCard>
 
-            <div className="flex justify-end rounded-lg border bg-white p-4 pt-3.5">
-              <form.Subscribe>
-                <Button>
-                  <form.Subscribe
-                    selector={(s) => [s.isSubmitting, s.isDirty]}
-                    children={([isSubmitting, isDirty]) => (
-                      <Button
-                        type="button"
-                        className="w-full text-[12px] text-white! uppercase md:w-auto"
-                        onClick={() => console.log('red')}
-                        disabled={isSubmitting || !isDirty}
-                      >
-                        <SaveIcon /> Save Changes
-                      </Button>
-                    )}
-                  />
-                </Button>
-              </form.Subscribe>
+            <div className="sticky bottom-4 flex justify-end rounded-lg border bg-white p-4 pt-3.5">
+              <form.Subscribe
+                selector={(s) => [s.isSubmitting, s.isDirty]}
+                children={([isSubmitting, isDirty]) => (
+                  <Button
+                    type="submit"
+                    className="w-full text-[12px] text-white! uppercase md:w-auto"
+                    disabled={isSubmitting || !isDirty}
+                  >
+                    <SaveIcon /> Save Changes
+                  </Button>
+                )}
+              />
             </div>
           </form>
+
           <SectionCard title="Application Summary" subTitle="summary">
             <ApplicationSummary data={application} />
           </SectionCard>
@@ -359,14 +380,14 @@ export default function UpdateApplication({
             subTitle="danger"
             variant="destructive"
           >
-            <div className="space-y-2">
+            <div className="flex flex-col space-y-2">
               <p className="text-primary-text font-sans text-[14px] leading-[1.4]">
                 Permanently removes this application from your Flight Deck along
                 with any generated CV/cover letter for it. This cannot be
                 undone.
               </p>
               <DeleteApplicationDialog data={application}>
-                <Button className="bg-destructive hover:bg-destructive/80 h-8.75 font-mono text-[12px] leading-[1.4] uppercase">
+                <Button className="bg-destructive hover:bg-destructive/80 ml-auto h-8.75 w-fit font-mono text-[12px] leading-[1.4] uppercase">
                   Delete Application...
                 </Button>
               </DeleteApplicationDialog>

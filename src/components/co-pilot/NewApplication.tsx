@@ -1,6 +1,7 @@
 import { SparklesIcon } from 'lucide-react'
 
 import { useForm } from '@tanstack/react-form'
+import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 
 import { Button } from '#/components/ui/button'
@@ -8,29 +9,50 @@ import { Input } from '#/components/ui/input'
 import { Label } from '#/components/ui/label'
 import { Textarea } from '#/components/ui/textarea'
 
+import { createApplication } from '#/server/applications'
+import { generateDocuments } from '#/server/documents'
+
 import { createApplicationSchema } from '#/validators/application'
+import type { GenerateDocumentInput } from '#/validators/co-pilot'
+import type { PilotProfileInput } from '#/validators/profile'
 
 import SectionHeader from '../layout/SectionHeader'
 import FilePreview from './FilePreview'
 
 interface NewApplicationProps {
-  hasProfile: boolean
+  profile?: PilotProfileInput
 }
 
-export default function NewApplication({ hasProfile }: NewApplicationProps) {
+export default function NewApplication({ profile }: NewApplicationProps) {
   const navigate = useNavigate()
+
+  const { mutateAsync: createNewApplication } = useMutation({
+    mutationFn: async (value: typeof form.state.values) => {
+      return await createApplication({ data: value })
+    },
+  })
+
+  const { mutateAsync: generateDocument } = useMutation({
+    mutationFn: async (value: GenerateDocumentInput) => {
+      return await generateDocuments({ data: value })
+    },
+  })
 
   const form = useForm({
     defaultValues: {
-      companyName: '',
-      jobTitle: '',
-      jobDescription: '',
-      jobUrl: '',
-      salaryRange: '',
+      company: '',
+      role: '',
+      description: '',
     },
-    validators: createApplicationSchema,
-    onSubmit: ({ value }) => {
-      console.log(value)
+    validators: { onSubmit: createApplicationSchema },
+    onSubmit: async ({ value }) => {
+      const application = await createNewApplication(value)
+      await generateDocument({ applicationId: application.id })
+      form.reset()
+      navigate({
+        to: '/co-pilot',
+        search: { applicationId: application.id },
+      })
     },
   })
 
@@ -65,12 +87,12 @@ export default function NewApplication({ hasProfile }: NewApplicationProps) {
           >
             <div className="flex flex-row space-x-4">
               <form.Field
-                name="companyName"
+                name="company"
                 children={(field) => (
                   <div className="w-full space-y-1.5">
-                    <Label htmlFor="companyName">Company Name</Label>
+                    <Label htmlFor="company">Company Name</Label>
                     <Input
-                      id="companyName"
+                      id="company"
                       placeholder="e.g. Landed"
                       value={field.state.value}
                       onChange={(e) => field.handleChange(e.target.value)}
@@ -87,12 +109,12 @@ export default function NewApplication({ hasProfile }: NewApplicationProps) {
               />
 
               <form.Field
-                name="jobTitle"
+                name="role"
                 children={(field) => (
                   <div className="w-full space-y-1.5">
-                    <Label htmlFor="jobTitle">Job Title</Label>
+                    <Label htmlFor="role">Job Title</Label>
                     <Input
-                      id="jobTitle"
+                      id="role"
                       placeholder="e.g. Software Engineer"
                       value={field.state.value}
                       onChange={(e) => field.handleChange(e.target.value)}
@@ -108,12 +130,12 @@ export default function NewApplication({ hasProfile }: NewApplicationProps) {
               />
             </div>
             <form.Field
-              name="jobDescription"
+              name="description"
               children={(field) => (
                 <div className="space-y-1.5">
-                  <Label htmlFor="jobDescription">Job Description</Label>
+                  <Label htmlFor="description">Job Description</Label>
                   <Textarea
-                    id="jobDescription"
+                    id="description"
                     placeholder="Paste the full job requirements and role description here..."
                     rows={12}
                     value={field.state.value}
@@ -133,28 +155,23 @@ export default function NewApplication({ hasProfile }: NewApplicationProps) {
               )}
             />
             <div className="flex justify-end border-t border-dashed pt-3.5">
-              {!hasProfile ? (
-                <Button className="" onClick={handleSetupProfile}>
+              {!profile ? (
+                <Button type="button" onClick={handleSetupProfile}>
                   Setup Profile
                 </Button>
               ) : (
-                <form.Subscribe>
-                  <Button>
-                    <form.Subscribe
-                      selector={(s) => [s.isSubmitting, s.isDirty]}
-                      children={([isSubmitting, isDirty]) => (
-                        <Button
-                          type="button"
-                          className="w-full text-[12px] text-white! uppercase md:w-auto"
-                          onClick={() => console.log('red')}
-                          disabled={isSubmitting || !isDirty}
-                        >
-                          <SparklesIcon /> Generate Documents
-                        </Button>
-                      )}
-                    />
-                  </Button>
-                </form.Subscribe>
+                <form.Subscribe
+                  selector={(s) => [s.isSubmitting, s.isDirty]}
+                  children={([isSubmitting, isDirty]) => (
+                    <Button
+                      type="submit"
+                      className="w-full text-[12px] text-white! uppercase md:w-auto"
+                      disabled={isSubmitting || !isDirty}
+                    >
+                      <SparklesIcon /> Generate Documents
+                    </Button>
+                  )}
+                />
               )}
             </div>
           </form>

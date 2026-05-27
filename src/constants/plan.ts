@@ -34,10 +34,29 @@ export const PLANS: Plan[] = [
     ],
     isCurrent: false,
   },
+  {
+    id: 'runway_3mo' as const,
+    name: 'Runway 3 Months',
+    price: 799,
+    currency: 'PHP',
+    duration: 90,
+    generations: 50,
+    applications: null,
+    features: [
+      '50 AI generations/month',
+      'Unlimited applications',
+      'PDF + DOCX export',
+      'Version history',
+      'Priority support',
+      '3-month billing (~₱266/mo)',
+    ],
+    isCurrent: false,
+  },
 ]
 
 export const FREE_PLAN = PLANS[0]
 export const PAID_PLAN = PLANS[1]
+export const PAID_PLAN_3MO = PLANS[2]
 
 export const getPlanById = (id: string) =>
   PLANS.find((p) => p.id === id) ?? FREE_PLAN

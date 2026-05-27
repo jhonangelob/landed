@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const planIdSchema = z.enum(['free', 'runway'])
+export const planIdSchema = z.enum(['free', 'runway', 'runway_3mo'])
 
 export type PlanId = z.infer<typeof planIdSchema>
 

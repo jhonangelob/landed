@@ -1,5 +1,6 @@
-import type { Application } from '#/lib/db/schema'
 import { cn } from '#/lib/utils'
+
+import type { Application } from '#/validators/application'
 
 interface StageTimelineProps {
   data: Application

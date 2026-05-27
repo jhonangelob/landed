@@ -4,19 +4,19 @@ import { CheckIcon } from 'lucide-react'
 
 import { cn } from '#/lib/utils'
 
-import type { ApplicationStatus } from '#/validators/application'
+import type { ApplicationStage } from '#/validators/application'
 
-import { KANBAN_COLUMNS } from '#/types/application'
+import { KANBAN_COLUMNS } from '#/constants/stage'
 
 import { Button } from '../ui/button'
 
 interface StageBarProps {
-  status: string
-  onChangeStatus: (status: ApplicationStatus) => void
+  stage: ApplicationStage
+  onUpdateStage: (stage: ApplicationStage) => void
 }
 
-export default function StageBar({ status, onChangeStatus }: StageBarProps) {
-  const currentIndex = KANBAN_COLUMNS.findIndex((col) => col.status === status)
+export default function StageBar({ stage, onUpdateStage }: StageBarProps) {
+  const currentIndex = KANBAN_COLUMNS.findIndex((col) => col.stage === stage)
 
   return (
     <div className="flex w-full flex-row items-center gap-4 rounded-lg border bg-white px-6 py-2">
@@ -25,12 +25,12 @@ export default function StageBar({ status, onChangeStatus }: StageBarProps) {
         const isCurrent = index === currentIndex
 
         return (
-          <React.Fragment key={item.status}>
+          <React.Fragment key={item.stage}>
             <Button
               type="button"
               className="flex h-fit flex-col hover:bg-transparent"
               variant="ghost"
-              onClick={() => onChangeStatus(item.status)}
+              onClick={() => onUpdateStage(item.stage)}
             >
               <div
                 className={cn(
@@ -51,7 +51,7 @@ export default function StageBar({ status, onChangeStatus }: StageBarProps) {
                   !isCurrent && !isPast && 'text-muted font-normal',
                 )}
               >
-                {item.label}
+                {item.stage}
               </span>
             </Button>
             {index < KANBAN_COLUMNS.length - 1 && (

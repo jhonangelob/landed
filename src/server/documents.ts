@@ -43,12 +43,6 @@ export const generateDocuments = createServerFn({ method: 'POST' })
 
     if (!session) throw new Error('Unauthorized')
 
-    const {
-      companyName: company,
-      jobTitle: role,
-      jobDescription: description,
-    } = data
-
     const [profile] = await db
       .select()
       .from(pilotProfiles)
@@ -56,18 +50,17 @@ export const generateDocuments = createServerFn({ method: 'POST' })
       .limit(1)
 
     const [application] = await db
-      .insert(applications)
-      .values({
-        userId: session.user.id,
-        company,
-        role,
-        jobPostText: description,
-        status: 'spotted',
-      })
-      .returning()
+      .select()
+      .from(applications)
+      .where(
+        and(
+          eq(applications.id, data.applicationId),
+          eq(applications.userId, session.user.id),
+        ),
+      )
 
     const { text } = await generateText({
-      model: anthropic('claude-haiku-4-5-20251001'),
+      model: anthropic(process.env.ANTHROPIC_HAIKU_MODEL!),
       system: `
         You are Co-Pilot, an expert CV writer inside the Landed app.
         Respond ONLY with valid JSON — no markdown, no backticks, no extra text.
@@ -94,11 +87,11 @@ export const generateDocuments = createServerFn({ method: 'POST' })
       `.trim(),
       prompt: `
         Job Details:
-        Company: ${company}
-        Role: ${role}
+        Company: ${application.company}
+        Role: ${application.role}
 
         Job Posting:
-        ${description}
+        ${application.description}
 
         Candidate Profile:
         Name: ${profile.headline}

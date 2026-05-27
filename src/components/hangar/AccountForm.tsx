@@ -98,7 +98,7 @@ export default function AccountForm({
                 onBlur={field.handleBlur}
                 disabled
               />
-              <p className="text-foreground-soft2 font-sans text-[11px]">
+              <p className="text-foreground-soft2 font-sans text-[12px]">
                 Contact support to change your email.
               </p>
               {field.state.meta.errors.map((err, i) => (

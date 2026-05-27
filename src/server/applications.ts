@@ -11,7 +11,7 @@ import {
   createApplicationSchema,
   deleteApplicationSchema,
   updateApplicationSchema,
-  updateStatusSchema,
+  updateStageSchema,
 } from '#/validators/application'
 
 export const getApplications = createServerFn({ method: 'GET' }).handler(
@@ -32,7 +32,7 @@ export const getApplications = createServerFn({ method: 'GET' }).handler(
   },
 )
 
-export const getApplicationDetails = createServerFn({ method: 'GET' })
+export const getApplicationById = createServerFn({ method: 'GET' })
   .inputValidator((data: unknown) =>
     z.object({ id: z.string().uuid() }).parse(data),
   )
@@ -55,7 +55,7 @@ export const getApplicationDetails = createServerFn({ method: 'GET' })
     return result[0] ?? null
   })
 
-export const saveApplication = createServerFn({
+export const createApplication = createServerFn({
   method: 'POST',
 })
   .inputValidator((data: unknown) => createApplicationSchema.parse(data))
@@ -68,10 +68,9 @@ export const saveApplication = createServerFn({
       .insert(applications)
       .values({
         userId: session.user.id,
-        company: data.companyName,
-        role: data.jobTitle,
-        jobPostText: data.jobDescription,
-        status: 'spotted',
+        company: data.company,
+        role: data.role,
+        description: data.description,
       })
       .returning()
 
@@ -90,13 +89,14 @@ export const updateApplication = createServerFn({
     await db
       .update(applications)
       .set({
-        company: data.companyName,
-        role: data.jobTitle,
+        company: data.company,
+        role: data.role,
         status: data.status,
         location: data.location,
         salaryRange: data.salaryRange,
-        jobUrl: data.jobUrl,
+        url: data.url,
         notes: data.notes,
+        updatedAt: new Date(),
       })
       .where(
         and(
@@ -106,10 +106,10 @@ export const updateApplication = createServerFn({
       )
   })
 
-export const updateApplicationStatus = createServerFn({
+export const updateApplicationStage = createServerFn({
   method: 'POST',
 })
-  .inputValidator((data: unknown) => updateStatusSchema.parse(data))
+  .inputValidator((data: unknown) => updateStageSchema.parse(data))
   .handler(async ({ data }) => {
     const session = await getSession()
 
@@ -117,7 +117,7 @@ export const updateApplicationStatus = createServerFn({
 
     await db
       .update(applications)
-      .set({ status: data.status })
+      .set({ stage: data.stage })
       .where(
         and(
           eq(applications.userId, session.user.id),

@@ -20,6 +20,7 @@ import {
   getAccountDetails,
   updateAccountDetails,
 } from '#/server/account'
+import { getActivities } from '#/server/activity'
 
 import { changePassword, signOut } from '#/lib/auth/client'
 
@@ -32,16 +33,27 @@ import { PLANS } from '#/constants/plan'
 
 export const Route = createFileRoute('/(app)/hangar')({
   loader: ({ context: { queryClient } }) =>
-    queryClient.ensureQueryData({
-      queryKey: ['account_details'],
-      queryFn: () => getAccountDetails(),
-    }),
+    Promise.all([
+      queryClient.ensureQueryData({
+        queryKey: ['account_details'],
+        queryFn: () => getAccountDetails(),
+      }),
+      queryClient.ensureQueryData({
+        queryKey: ['activities'],
+        queryFn: () => getActivities(),
+      }),
+    ]),
   component: RouteComponent,
 })
 
 function RouteComponent() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+
+  const { data: activities } = useSuspenseQuery({
+    queryKey: ['activities'],
+    queryFn: () => getActivities(),
+  })
 
   const { data: account } = useSuspenseQuery({
     queryKey: ['account_details'],
@@ -56,12 +68,6 @@ function RouteComponent() {
         revokeOtherSessions: true,
       })
     },
-    onSuccess: () => {
-      console.log('first')
-    },
-    onError: (err) => {
-      console.log(err)
-    },
   })
 
   const { mutateAsync: updateAccount } = useMutation({
@@ -70,9 +76,6 @@ function RouteComponent() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['account_details'] })
-    },
-    onError: (err) => {
-      console.log(err)
     },
   })
 
@@ -84,7 +87,6 @@ function RouteComponent() {
       signOut()
       navigate({ to: '/login' })
     },
-    onError: () => {},
   })
 
   return (
@@ -140,7 +142,7 @@ function RouteComponent() {
           order={4}
           className="w-full lg:w-3/5"
         >
-          <ActivityCardGroup />
+          <ActivityCardGroup data={activities} />
         </SectionCard>
         <SectionCard
           subTitle="Bay 05 · Delete account"
@@ -155,7 +157,7 @@ function RouteComponent() {
             </p>
             <DeleteAccountDialog onDelete={deleteUserAccount}>
               <Button
-                className="rounded-md bg-[#d2484a] font-mono text-[12px] leading-[1.4] font-medium tracking-[0.9px] text-white uppercase hover:bg-[#d2484a]/80"
+                className="bg-destructive hover:bg-destructive/80 rounded-md font-mono text-[12px] leading-[1.4] font-medium tracking-[0.9px] text-white uppercase"
                 type="reset"
               >
                 Delete Account...

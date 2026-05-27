@@ -1,5 +1,7 @@
 import { useState } from 'react'
 
+import { getTimeSince } from '#/helper/date'
+import { formatNumber, parseNumber } from '#/helper/number'
 import { PlusIcon, XIcon } from 'lucide-react'
 
 import { useForm } from '@tanstack/react-form'
@@ -12,6 +14,7 @@ import { Textarea } from '#/components/ui/textarea'
 import SectionCard from '#/components/profile/SectionCard'
 
 import type { PilotProfile } from '#/lib/db/schema'
+import { cn } from '#/lib/utils'
 
 import { pilotProfileSchema } from '#/validators/profile'
 import type { PilotProfileInput } from '#/validators/profile'
@@ -56,6 +59,7 @@ export default function ProfileForm({
     },
     onSubmit: async ({ value }) => {
       onSave(value)
+      form.reset()
     },
   })
 
@@ -100,7 +104,7 @@ export default function ProfileForm({
                 <Label htmlFor="headline">Headline</Label>
                 <Input
                   id="headline"
-                  placeholder="Senior Frontend Engineer"
+                  placeholder="Software Engineer"
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
@@ -123,7 +127,7 @@ export default function ProfileForm({
                 <Input
                   id="email"
                   type="email"
-                  placeholder="jane@example.com"
+                  placeholder="juan@example.com"
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
@@ -143,7 +147,7 @@ export default function ProfileForm({
                 <Label htmlFor="location">Location</Label>
                 <Input
                   id="location"
-                  placeholder="San Francisco, CA"
+                  placeholder="Manila, Philippines"
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
@@ -272,7 +276,7 @@ export default function ProfileForm({
                         <div className="w-full space-y-1.5">
                           <Label>Company</Label>
                           <Input
-                            placeholder="Acme Corp"
+                            placeholder="Company"
                             value={f.state.value}
                             onChange={(e) => f.handleChange(e.target.value)}
                             onBlur={f.handleBlur}
@@ -802,9 +806,12 @@ export default function ProfileForm({
             <div className="space-y-1.5">
               <Label>Salary Range</Label>
               <Input
-                placeholder="e.g. $120k – $160k"
-                value={field.state.value}
-                onChange={(e) => field.handleChange(e.target.value)}
+                id="salaryRange"
+                placeholder="e.g. 120,000"
+                value={formatNumber(field.state.value)}
+                onChange={(e) =>
+                  field.handleChange(parseNumber(e.target.value))
+                }
                 onBlur={field.handleBlur}
               />
               {field.state.meta.errors.map((err, i) => (
@@ -817,23 +824,38 @@ export default function ProfileForm({
         />
       </SectionCard>
 
-      <div className="sticky bottom-4 flex items-center justify-end rounded-lg border bg-white p-4">
-        <form.Subscribe
-          selector={(s) => ({
-            isSubmitting: s.isSubmitting,
-            isDirty: s.isDirty,
-          })}
-          children={({ isSubmitting, isDirty }) => (
+      <form.Subscribe
+        selector={(s) => ({
+          isSubmitting: s.isSubmitting,
+          isDirty: s.isDirty,
+        })}
+        children={({ isSubmitting, isDirty }) => (
+          <div className="sticky bottom-4 flex items-center justify-between rounded-lg border bg-white p-4">
+            <div className="flex flex-row items-center gap-3.5">
+              <div
+                className={cn(
+                  'h-2.5 w-2.5 rounded-full outline-3',
+                  isDirty
+                    ? 'bg-[#e0a11b] outline-[#e0a11b]/20'
+                    : 'bg-primary outline-primary/20',
+                )}
+              />
+              <p className="text-primary-text font-mono text-[11px] leading-[1.4] tracking-[0.9px] uppercase">
+                {isDirty
+                  ? 'Unsaved Changes'
+                  : `All changes saved · ${profile?.updatedAt ? getTimeSince(profile.updatedAt) : ''}`}
+              </p>
+            </div>
             <Button
               type="submit"
-              className="text-[13px] uppercase"
+              className="text-[12px] uppercase"
               disabled={isSubmitting || !isDirty}
             >
               {profile?.id ? 'Save Changes' : 'Submit'}
             </Button>
-          )}
-        />
-      </div>
+          </div>
+        )}
+      />
     </form>
   )
 }

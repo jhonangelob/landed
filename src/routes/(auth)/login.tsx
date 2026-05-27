@@ -55,9 +55,9 @@ function RouteComponent() {
     },
   })
 
-  const handleForgotPassword = () => {
-    console.log('unimplemented: Forgot Password')
-  }
+  // const handleForgotPassword = () => {
+  //   console.log('unimplemented: Forgot Password')
+  // }
 
   const handleCreateAccount = () => {
     navigate({ to: '/signup' })
@@ -167,7 +167,7 @@ function RouteComponent() {
                     </p>
                   ))}
 
-                  <Label onClick={handleForgotPassword}>Forgot Password?</Label>
+                  {/* <div onClick={handleForgotPassword}>Forgot Password?</div> */}
                 </div>
               </div>
             )}
@@ -180,7 +180,7 @@ function RouteComponent() {
         <p className="text-muted-foreground text-center font-sans text-[13px]">
           Don't have an account?{' '}
           <span
-            className="text-primary font-sans text-[13px] font-medium"
+            className="text-primary cursor-pointer font-sans text-[13px] font-medium hover:underline"
             onClick={handleCreateAccount}
           >
             Create one.

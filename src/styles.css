@@ -396,18 +396,17 @@ header {
   }
 
   input {
-    @apply h-10.5! rounded-md! bg-[#f5f6f8]! py-2.75 shadow-none!;
+    @apply h-10.5! rounded-md! bg-[#f5f6f8]! py-2.75 shadow-none! focus:ring-0! focus:ring-offset-0!;
   }
 
   textarea {
-    @apply rounded-md! bg-[#f5f6f8]! py-2.75 shadow-none!;
+    @apply rounded-md! bg-[#f5f6f8]! py-2.75 shadow-none! focus:ring-0! focus:ring-offset-0!;
   }
 
   label {
     @apply text-muted-foreground font-mono text-[12px]! leading-[1.4] font-medium tracking-[1.3px] uppercase;
   }
 }
-
 @keyframes progress {
   0% {
     transform: scaleX(0) translateX(0);

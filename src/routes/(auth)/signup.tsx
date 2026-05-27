@@ -54,8 +54,6 @@ function RouteComponent() {
         callbackURL: '/login',
       })
 
-      console.log(res)
-
       if (res.data) {
         navigate({ to: '/flight-deck' })
       }
@@ -244,7 +242,7 @@ function RouteComponent() {
         <p className="text-muted-foreground text-center font-sans text-[13px]">
           Already have an account?{' '}
           <span
-            className="text-primary font-sans text-[13px] font-medium"
+            className="text-primary cursor-pointer font-sans text-[13px] font-medium hover:underline"
             onClick={handleSignIn}
           >
             Sign in.

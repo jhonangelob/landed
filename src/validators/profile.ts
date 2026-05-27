@@ -101,3 +101,5 @@ export const updatePilotProfileSchema = pilotProfileSchema
   })
 
 export type UpdatePilotProfileInput = z.infer<typeof updatePilotProfileSchema>
+
+export type PilotProfile = z.infer<typeof pilotProfileSchema>

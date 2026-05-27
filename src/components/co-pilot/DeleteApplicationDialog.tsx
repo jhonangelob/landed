@@ -19,13 +19,13 @@ import { useNavigate } from '@tanstack/react-router'
 
 import { deleteApplication } from '#/server/applications'
 
-import type { ApplicationStatus } from '#/lib/db/schema'
+import type { ApplicationStage } from '#/validators/application'
 
 type DisplayDataProps = {
   id: string
   company: string
   role: string
-  status: ApplicationStatus
+  stage: ApplicationStage
   appliedAt: Date | null
 }
 
@@ -48,12 +48,6 @@ export default function DeleteApplicationDialog({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['applications'] })
       navigate({ to: '/flight-deck' })
-    },
-    onError: (err) => {
-      console.log(err)
-    },
-    onSettled: () => {
-      setIsOpen(false)
     },
   })
 
@@ -83,7 +77,7 @@ export default function DeleteApplicationDialog({
           </p>
           <div className="mt-1 flex flex-row items-center gap-2">
             <p className="rounded-full border px-2 py-0.5 font-mono text-[10px]">
-              {data.status}
+              {data.stage}
             </p>
             {data.appliedAt && (
               <p className="text-muted-foreground font-mono text-[11px] font-medium">
