@@ -16,6 +16,13 @@ import type { PilotProfile } from '#/lib/db/schema'
 import type { PilotProfileInput } from '#/validators/profile'
 
 export const Route = createFileRoute('/(app)/profile')({
+  head: () => ({
+    meta: [
+      {
+        title: 'Landed | Profile',
+      },
+    ],
+  }),
   loader: ({ context: { queryClient } }) =>
     Promise.all([
       queryClient.ensureQueryData({

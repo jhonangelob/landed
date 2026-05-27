@@ -32,6 +32,13 @@ import type {
 import { PLANS } from '#/constants/plan'
 
 export const Route = createFileRoute('/(app)/hangar')({
+  head: () => ({
+    meta: [
+      {
+        title: 'Landed | Hangar',
+      },
+    ],
+  }),
   loader: ({ context: { queryClient } }) =>
     Promise.all([
       queryClient.ensureQueryData({

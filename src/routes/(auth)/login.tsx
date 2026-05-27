@@ -18,6 +18,13 @@ import { loginSchema } from '#/validators/account'
 import logo from '/landed.svg'
 
 export const Route = createFileRoute('/(auth)/login')({
+  head: () => ({
+    meta: [
+      {
+        title: 'Landed | Login',
+      },
+    ],
+  }),
   beforeLoad: async () => {
     const session = await getSession()
     if (session) {

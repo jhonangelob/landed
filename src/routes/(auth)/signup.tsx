@@ -18,6 +18,13 @@ import { signupSchema } from '#/validators/account'
 import logo from '/landed.svg'
 
 export const Route = createFileRoute('/(auth)/signup')({
+  head: () => ({
+    meta: [
+      {
+        title: 'Landed | Signup',
+      },
+    ],
+  }),
   beforeLoad: async () => {
     const session = await getSession()
     if (session) {

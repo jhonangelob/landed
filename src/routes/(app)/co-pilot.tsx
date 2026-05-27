@@ -11,6 +11,13 @@ import { getDocuments } from '#/server/documents'
 import { getProfile } from '#/server/profile'
 
 export const Route = createFileRoute('/(app)/co-pilot')({
+  head: () => ({
+    meta: [
+      {
+        title: 'Landed | Co-Pilot',
+      },
+    ],
+  }),
   validateSearch: z.object({
     applicationId: z.string().uuid().optional(),
   }),

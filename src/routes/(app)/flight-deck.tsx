@@ -7,6 +7,13 @@ import SectionHeader from '#/components/layout/SectionHeader'
 import { getApplications } from '#/server/applications'
 
 export const Route = createFileRoute('/(app)/flight-deck')({
+  head: () => ({
+    meta: [
+      {
+        title: 'Landed | Flight Deck',
+      },
+    ],
+  }),
   loader: ({ context: { queryClient } }) =>
     queryClient.ensureQueryData({
       queryKey: ['applications'],
