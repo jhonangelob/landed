@@ -396,15 +396,15 @@ header {
   }
 
   input {
-    @apply h-10.5! rounded-md! bg-[#f5f6f8]! py-2.75 shadow-none! focus:ring-0! focus:ring-offset-0!;
+    @apply h-10.5! rounded-md! bg-[#f5f6f8]! py-2.75 text-[13px]! shadow-none! focus:ring-0! focus:ring-offset-0! md:text-[14px]!;
   }
 
   textarea {
-    @apply rounded-md! bg-[#f5f6f8]! py-2.75 shadow-none! focus:ring-0! focus:ring-offset-0!;
+    @apply rounded-md! bg-[#f5f6f8]! py-2.75 text-[13px]! shadow-none! focus:ring-0! focus:ring-offset-0! md:text-[14px]!;
   }
 
   label {
-    @apply text-muted-foreground font-mono text-[12px]! leading-[1.4] font-medium tracking-[1.3px] uppercase;
+    @apply text-muted-foreground font-mono text-[10px]! leading-[1.4] font-medium tracking-[1.3px] uppercase md:text-[12px]!;
   }
 }
 @keyframes progress {
