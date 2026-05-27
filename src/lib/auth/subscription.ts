@@ -3,7 +3,9 @@ import { eq } from 'drizzle-orm'
 import { db } from '#/lib/db'
 import { subscriptions } from '#/lib/db/schema'
 
-export async function getUserPlan(userId: string): Promise<'free' | 'runway'> {
+export async function getUserPlan(
+  userId: string,
+): Promise<'free' | 'runway' | 'runway_3mo'> {
   const result = await db
     .select()
     .from(subscriptions)
@@ -16,5 +18,5 @@ export async function getUserPlan(userId: string): Promise<'free' | 'runway'> {
 
   if (sub.expiresAt && new Date() > sub.expiresAt) return 'free'
 
-  return sub.planId as 'free' | 'runway'
+  return sub.planId
 }

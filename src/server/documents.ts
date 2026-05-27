@@ -2,7 +2,7 @@ import { clToHtml, cvToHtml } from '#/helper/document'
 import { anthropic } from '@ai-sdk/anthropic'
 import { renderToBuffer } from '@react-pdf/renderer'
 import { generateText } from 'ai'
-import { and, eq } from 'drizzle-orm'
+import { and, desc, eq } from 'drizzle-orm'
 import z from 'zod'
 
 import { createServerFn } from '@tanstack/react-start'
@@ -16,12 +16,14 @@ import { MinimalTemplate } from '#/lib/pdf/templates/minimal'
 import { ModernTemplate } from '#/lib/pdf/templates/modern'
 
 import {
+  aiResponseSchema,
   exportDocumentSchema,
   generateDocumentSchema,
 } from '#/validators/documents'
 import type { CvContent } from '#/validators/documents'
 
 import { isTemplateLocked } from '#/constants/templates'
+import { checkGenerationLimit, increaseGenerationUsed } from './subscription'
 
 const TEMPLATES = {
   classic: ClassicTemplate,
@@ -35,7 +37,6 @@ export const getDocuments = createServerFn({ method: 'GET' })
   )
   .handler(async ({ data }): Promise<any | null> => {
     const session = await getSession()
-
     if (!session) throw new Error('Unauthorized')
 
     const result = await db
@@ -47,7 +48,7 @@ export const getDocuments = createServerFn({ method: 'GET' })
           eq(generatedDocs.userId, session.user.id),
         ),
       )
-      .orderBy(generatedDocs.createdAt)
+      .orderBy(desc(generatedDocs.version), desc(generatedDocs.createdAt))
       .limit(2)
 
     return result
@@ -57,8 +58,10 @@ export const generateDocuments = createServerFn({ method: 'POST' })
   .inputValidator((data: unknown) => generateDocumentSchema.parse(data))
   .handler(async ({ data }) => {
     const session = await getSession()
-
     if (!session) throw new Error('Unauthorized')
+
+    const limit = await checkGenerationLimit()
+    if (limit.hasReached) throw new Error('Limit Reached')
 
     const [profile] = await db
       .select()
@@ -76,8 +79,20 @@ export const generateDocuments = createServerFn({ method: 'POST' })
         ),
       )
 
+    if (!process.env.ANTHROPIC_HAIKU_MODEL)
+      throw new Error('API Key is not defined in the environment variables')
+
+    const [latest] = await db
+      .select({ version: generatedDocs.version })
+      .from(generatedDocs)
+      .where(eq(generatedDocs.applicationId, data.applicationId))
+      .orderBy(desc(generatedDocs.version))
+      .limit(1)
+
+    const nextVersion = latest ? latest.version + 1 : 1
+
     const { text } = await generateText({
-      model: anthropic(process.env.ANTHROPIC_HAIKU_MODEL!),
+      model: anthropic(process.env.ANTHROPIC_HAIKU_MODEL),
       system: `
         You are Co-Pilot, an expert CV writer inside the Landed app.
         Respond ONLY with valid JSON — no markdown, no backticks, no extra text.
@@ -120,12 +135,27 @@ export const generateDocuments = createServerFn({ method: 'POST' })
       maxOutputTokens: 3000,
     })
 
+    await increaseGenerationUsed()
+
     const cleaned = text
       .replace(/```json\n?/g, '')
       .replace(/```\n?/g, '')
       .trim()
 
-    const parsed = JSON.parse(cleaned)
+    let raw: unknown
+    try {
+      raw = JSON.parse(cleaned)
+    } catch {
+      throw new Error('AI returned malformed JSON — please try again')
+    }
+
+    const result = aiResponseSchema.safeParse(raw)
+    if (!result.success) {
+      console.error('AI response validation failed:', result.error.issues)
+      throw new Error('AI response has unexpected structure — please try again')
+    }
+
+    const parsed = result.data
 
     await db.insert(generatedDocs).values([
       {
@@ -134,7 +164,7 @@ export const generateDocuments = createServerFn({ method: 'POST' })
         type: 'cv',
         contentJson: parsed.cv,
         contentHtml: cvToHtml(parsed.cv),
-        version: 1,
+        version: nextVersion,
       },
       {
         userId: session.user.id,
@@ -142,7 +172,7 @@ export const generateDocuments = createServerFn({ method: 'POST' })
         type: 'cover_letter',
         contentJson: parsed.coverLetter,
         contentHtml: clToHtml(parsed.coverLetter),
-        version: 1,
+        version: nextVersion,
       },
     ])
 

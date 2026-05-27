@@ -1,4 +1,4 @@
-import { and, count, eq, max } from 'drizzle-orm'
+import { and, count, eq, isNull, max } from 'drizzle-orm'
 
 import { createServerFn } from '@tanstack/react-start'
 
@@ -26,8 +26,8 @@ export const getActivities = createServerFn({
           total: count(),
           activeInterviews: count(
             and(
-              eq(applications.status, 'interview'),
-              eq(applications.userId, uid),
+              eq(applications.stage, 'interview'),
+              isNull(applications.deletedAt),
             ),
           ),
         })

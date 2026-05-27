@@ -20,7 +20,6 @@ export default function AccountForm({
     defaultValues: {
       fullName: data.name ?? '',
       username: data.username ?? '',
-      email: data.email ?? '',
     },
     validators: { onSubmit: updateAccountSchema },
     onSubmit: async ({ value }) => {
@@ -85,7 +84,7 @@ export default function AccountForm({
         />
 
         <form.Field
-          name="email"
+          name={'email' as Parameters<typeof form.Field>[0]['name']}
           children={(field) => (
             <div className="w-full space-y-1.5">
               <Label htmlFor="email">Email</Label>

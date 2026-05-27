@@ -16,7 +16,10 @@ export type ApplicationStage = z.infer<typeof applicationStageSchema>
 export const createApplicationSchema = z.object({
   company: z.string().min(1, 'Company name is required'),
   role: z.string().min(1, 'Job title is required'),
-  description: z.string().or(z.literal('')),
+  description: z
+    .string()
+    .max(50_000, 'Reached maximum description character limit')
+    .or(z.literal('')),
 })
 
 export type CreateApplicationInput = z.infer<typeof createApplicationSchema>
@@ -31,7 +34,10 @@ export const updateApplicationSchema = z.object({
   notes: z.string().or(z.literal('')),
   stage: applicationStageSchema,
   status: z.string().or(z.literal('')),
-  description: z.string().or(z.literal('')),
+  description: z
+    .string()
+    .max(50_000, 'Reached maximum description character limit')
+    .or(z.literal('')),
 })
 
 export type UpdateApplicationInput = z.infer<typeof updateApplicationSchema>
@@ -44,7 +50,7 @@ export const updateStageSchema = z.object({
 export type UpdateStageInput = z.infer<typeof updateStageSchema>
 
 export const deleteApplicationSchema = z.object({
-  id: z.string(),
+  id: z.string().uuid(),
 })
 
 export type Application = {

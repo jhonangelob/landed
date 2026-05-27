@@ -1,9 +1,3 @@
-// app/lib/pdf/templates/modern.tsx
-//
-// RUNWAY PLAN template
-// Two column layout — sidebar on the left for contact,
-// skills and education. Main column for summary and experience.
-// Great for tech and design roles.
 import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer'
 
 import type { CvContent } from '#/validators/documents'

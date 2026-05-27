@@ -4,7 +4,7 @@ import {
   useSuspenseQuery,
 } from '@tanstack/react-query'
 
-import { getProfile, saveProfile, updateProfile } from '#/server/profile'
+import { getProfile, saveProfile } from '#/server/profile'
 
 import type { PilotProfile } from '#/lib/db/schema'
 
@@ -24,17 +24,6 @@ export function useSaveProfileMutation() {
 
   return useMutation({
     mutationFn: (value: PilotProfileInput) => saveProfile({ data: value }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: profileQueryKey })
-    },
-  })
-}
-
-export function useUpdateProfileMutation() {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: (value: PilotProfileInput) => updateProfile({ data: value }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: profileQueryKey })
     },

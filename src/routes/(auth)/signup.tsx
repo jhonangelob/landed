@@ -17,6 +17,8 @@ import { signupSchema } from '#/validators/account'
 
 import logo from '/landed.svg'
 
+import { useCreateSubscriptionMutation } from '#/hooks/useSubscriptionQueries'
+
 export const Route = createFileRoute('/(auth)/signup')({
   head: () => ({
     meta: [
@@ -42,6 +44,8 @@ function RouteComponent() {
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
 
+  const { mutateAsync: createSubscription } = useCreateSubscriptionMutation()
+
   const form = useForm({
     defaultValues: {
       fullName: '',
@@ -57,11 +61,12 @@ function RouteComponent() {
       const res = await signUp.email({
         email: value.email,
         password: value.password,
-        name: value.fullName,
         callbackURL: '/login',
+        name: value.fullName,
       })
 
       if (res.data) {
+        await createSubscription()
         navigate({ to: '/flight-deck' })
       }
 

@@ -1,9 +1,3 @@
-// app/lib/pdf/templates/minimal.tsx
-//
-// RUNWAY PLAN template
-// Clean lines, generous whitespace, typographic hierarchy.
-// No color accents — lets the content breathe.
-// Works well for senior or executive roles.
 import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer'
 
 import type { CvContent } from '#/validators/documents'

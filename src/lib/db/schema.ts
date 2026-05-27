@@ -99,9 +99,7 @@ interface Links {
 
 interface Preferences {
   roles: string[]
-  remote: boolean
   salaryRange: string
-  interviewReminders: boolean
 }
 
 interface Certifications {
@@ -251,7 +249,8 @@ export const subscriptions = pgTable('subscriptions', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: text('user_id')
     .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
+    .references(() => users.id, { onDelete: 'cascade' })
+    .unique(),
   planId: planTypeEnum('plan_id').notNull().default('free'),
   startedAt: timestamp('started_at').defaultNow().notNull(),
   expiresAt: timestamp('expires_at'), // null = free plan

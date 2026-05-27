@@ -28,7 +28,7 @@ export const PLANS: Plan[] = [
     features: [
       '50 AI generations',
       'Unlimited applications',
-      'PDF + DOCX export',
+      'PDF export',
       'Version history',
       'Priority support',
     ],
@@ -45,7 +45,7 @@ export const PLANS: Plan[] = [
     features: [
       '50 AI generations/month',
       'Unlimited applications',
-      'PDF + DOCX export',
+      'PDF export',
       'Version history',
       'Priority support',
       '3-month billing (~₱266/mo)',

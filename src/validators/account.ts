@@ -41,10 +41,6 @@ export const updateAccountSchema = z.object({
     .min(1, 'Full name is required')
     .max(100, 'Full name must be 100 characters or less')
     .trim(),
-  email: z
-    .string()
-    .min(1, 'Email is required')
-    .email('Must be a valid email address'),
   username: z
     .string()
     .or(z.literal(''))

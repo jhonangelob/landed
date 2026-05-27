@@ -13,11 +13,11 @@ import {
   updateApplicationSchema,
   updateStageSchema,
 } from '#/validators/application'
+import { checkGenerationLimit } from './subscription'
 
 export const getApplications = createServerFn({ method: 'GET' }).handler(
   async () => {
     const session = await getSession()
-
     if (!session) throw new Error('Unauthorized')
 
     return await db
@@ -38,7 +38,6 @@ export const getApplicationById = createServerFn({ method: 'GET' })
   )
   .handler(async ({ data }) => {
     const session = await getSession()
-
     if (!session) throw new Error('Unauthorized')
 
     const result = await db
@@ -48,8 +47,10 @@ export const getApplicationById = createServerFn({ method: 'GET' })
         and(
           eq(applications.id, data.id),
           eq(applications.userId, session.user.id),
+          isNull(applications.deletedAt),
         ),
       )
+
       .limit(1)
 
     return result[0] ?? null
@@ -61,8 +62,10 @@ export const createApplication = createServerFn({
   .inputValidator((data: unknown) => createApplicationSchema.parse(data))
   .handler(async ({ data }) => {
     const session = await getSession()
-
     if (!session) throw new Error('Unauthorized')
+
+    const limit = await checkGenerationLimit()
+    if (limit.hasReached) throw new Error('Limit Reached')
 
     const [application] = await db
       .insert(applications)
@@ -83,7 +86,6 @@ export const updateApplication = createServerFn({
   .inputValidator((data: unknown) => updateApplicationSchema.parse(data))
   .handler(async ({ data }) => {
     const session = await getSession()
-
     if (!session) throw new Error('Unauthorized')
 
     await db
@@ -103,6 +105,7 @@ export const updateApplication = createServerFn({
         and(
           eq(applications.userId, session.user.id),
           eq(applications.id, data.id),
+          isNull(applications.deletedAt),
         ),
       )
   })
@@ -113,12 +116,11 @@ export const updateApplicationStage = createServerFn({
   .inputValidator((data: unknown) => updateStageSchema.parse(data))
   .handler(async ({ data }) => {
     const session = await getSession()
-
     if (!session) throw new Error('Unauthorized')
 
     await db
       .update(applications)
-      .set({ stage: data.stage })
+      .set({ stage: data.stage, updatedAt: new Date() })
       .where(
         and(
           eq(applications.userId, session.user.id),
@@ -131,7 +133,6 @@ export const deleteApplication = createServerFn({ method: 'POST' })
   .inputValidator((data: unknown) => deleteApplicationSchema.parse(data))
   .handler(async ({ data }) => {
     const session = await getSession()
-
     if (!session) throw new Error('Unauthorized')
 
     await db

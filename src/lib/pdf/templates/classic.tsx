@@ -1,8 +1,3 @@
-// app/lib/pdf/templates/classic.tsx
-//
-// FREE PLAN template
-// Single column, traditional layout.
-// Clean and ATS-friendly for any industry.
 import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer'
 
 import type { CvContent } from '#/validators/documents'

@@ -5,6 +5,9 @@ import { tanstackStartCookies } from 'better-auth/tanstack-start'
 import { db } from '#/lib/db'
 import { accounts, sessions, users, verifications } from '#/lib/db/schema'
 
+if (!process.env.BETTER_AUTH_SECRET || !process.env.BETTER_AUTH_URL)
+  throw new Error('API Key is not defined in the environment variables')
+
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: 'pg',
@@ -20,6 +23,8 @@ export const auth = betterAuth({
     enabled: true,
   },
 
+  requireEmailVerification: true,
+
   user: {
     additionalFields: {
       username: {
@@ -30,8 +35,14 @@ export const auth = betterAuth({
     },
   },
 
-  secret: process.env.BETTER_AUTH_SECRET!,
-  baseURL: process.env.BETTER_AUTH_URL!,
+  rateLimit: {
+    enabled: true,
+    window: 10,
+    max: 100,
+  },
+
+  secret: process.env.BETTER_AUTH_SECRET,
+  baseURL: process.env.BETTER_AUTH_URL,
 
   plugins: [tanstackStartCookies()],
 })

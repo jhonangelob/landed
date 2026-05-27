@@ -1,7 +1,6 @@
 import { z } from 'zod'
 
 export const experienceSchema = z.object({
-  id: z.string().optional(),
   company: z.string().min(1, 'Company name is required'),
   role: z.string().min(1, 'Role is required'),
   dates: z.string().min(1, 'Date range is required'),
@@ -14,7 +13,6 @@ export const experienceSchema = z.object({
 export type ExperienceInput = z.infer<typeof experienceSchema>
 
 export const educationSchema = z.object({
-  id: z.string().optional(),
   institution: z.string().min(1, 'Institution is required'),
   degree: z.string().min(1, 'Degree is required'),
   year: z.string().min(1, 'Year is required'),
