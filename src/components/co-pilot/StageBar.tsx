@@ -19,7 +19,7 @@ export default function StageBar({ stage, onUpdateStage }: StageBarProps) {
   const currentIndex = KANBAN_COLUMNS.findIndex((col) => col.stage === stage)
 
   return (
-    <div className="flex w-full flex-row items-center gap-4 rounded-lg border bg-white px-6 py-2">
+    <div className="hidden w-full flex-row items-center gap-4 rounded-lg border bg-white px-6 py-2 md:flex">
       {KANBAN_COLUMNS.map((item, index) => {
         const isPast = index < currentIndex
         const isCurrent = index === currentIndex

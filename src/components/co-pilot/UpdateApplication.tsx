@@ -122,8 +122,8 @@ export default function UpdateApplication({
         description="Changes saved here will update this application on your Flight Deck."
       />
       <StageBar stage={application.stage} onUpdateStage={handleUpdateStage} />
-      <div className="flex flex-row gap-4">
-        <div className="w-1/2 space-y-4">
+      <div className="flex flex-col gap-4 lg:flex-row">
+        <div className="w-full space-y-4 md:w-1/2">
           <form
             onSubmit={(e) => {
               e.preventDefault()
@@ -133,7 +133,7 @@ export default function UpdateApplication({
           >
             <SectionCard title="Application details" subTitle="details">
               <div className="space-y-4">
-                <div className="flex gap-4">
+                <div className="flex flex-col gap-4 md:flex-row">
                   <form.Field
                     name="company"
                     children={(field) => (
@@ -198,7 +198,7 @@ export default function UpdateApplication({
                     </div>
                   )}
                 />
-                <div className="flex gap-4">
+                <div className="flex flex-col gap-4 md:flex-row">
                   <form.Field
                     name="salaryRange"
                     children={(field) => (
@@ -394,7 +394,7 @@ export default function UpdateApplication({
             </div>
           </SectionCard>
         </div>
-        <div className="w-1/2">
+        <div className="w-full md:w-1/2">
           <FilePreview />
         </div>
       </div>

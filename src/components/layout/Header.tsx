@@ -46,11 +46,7 @@ export default function Header() {
     <header className="fixed top-0 left-0 z-91 w-full border-b bg-white">
       <div className="max-w-8xl mx-auto flex h-16 flex-row items-center justify-between gap-8 px-4 md:px-8">
         <div className="flex flex-row items-center gap-0.5 lg:mr-14">
-          <img
-            src={logo}
-            alt="FlightDeck Logo"
-            className="h-6 min-w-fit md:h-8"
-          />
+          <img src={logo} alt="FlightDeck Logo" className="h-8 min-w-fit" />
 
           <p className="text-muted hidden font-mono text-[10px] font-medium tracking-[1.4px] text-nowrap uppercase md:block">
             Your job search, Navigated

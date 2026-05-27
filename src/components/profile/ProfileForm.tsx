@@ -76,7 +76,7 @@ export default function ProfileForm({
         title="Identity"
         description="How Co-Pilot refers to you on every document."
       >
-        <div className="flex gap-4">
+        <div className="flex flex-col gap-4 md:flex-row">
           <form.Field
             name="fullName"
             children={(field) => (
@@ -118,7 +118,7 @@ export default function ProfileForm({
             )}
           />
         </div>
-        <div className="flex gap-4">
+        <div className="flex flex-col gap-4 md:flex-row">
           <form.Field
             name="email"
             children={(field) => (
@@ -161,7 +161,7 @@ export default function ProfileForm({
             )}
           />
         </div>
-        <div className="flex gap-4">
+        <div className="flex flex-col gap-4 md:flex-row">
           <form.Field
             name="links.github"
             children={(field) => (
@@ -269,7 +269,7 @@ export default function ProfileForm({
                       <XIcon className="size-4" />
                     </button>
                   )}
-                  <div className="flex gap-4">
+                  <div className="flex flex-col gap-4 md:flex-row">
                     <form.Field
                       name={`experience[${i}].company`}
                       children={(f) => (
@@ -312,7 +312,7 @@ export default function ProfileForm({
                   <form.Field
                     name={`experience[${i}].dates`}
                     children={(f) => (
-                      <div className="w-1/2 space-y-1.5">
+                      <div className="w-full space-y-1.5 md:w-1/2">
                         <Label>Dates</Label>
                         <Input
                           placeholder="Jan 2022 – Present"

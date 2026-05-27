@@ -3,6 +3,10 @@ import { CopyIcon, DownloadIcon, PlusIcon, SparklesIcon } from 'lucide-react'
 import { Button } from '../ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
 
+interface EmptyFilePreviewProps {
+  showRegenerateButton?: boolean
+}
+
 function EmptyFilePreview() {
   return (
     <div className="mt-2 flex items-center justify-center rounded-lg border border-dashed py-20">
@@ -26,7 +30,9 @@ function EmptyFilePreview() {
   )
 }
 
-export default function FilePreview() {
+export default function FilePreview({
+  showRegenerateButton = false,
+}: EmptyFilePreviewProps) {
   return (
     <div className="w-full rounded-lg border bg-[#fafbfd] p-5.5">
       <Tabs defaultValue="cv">
@@ -44,26 +50,29 @@ export default function FilePreview() {
             Cover Letter
           </TabsTrigger>
           <div className="ml-auto flex flex-row gap-2">
-            <Button
-              className="text-primary-text flex h-fit flex-row gap-1.5 px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase shadow-none"
-              variant="outline"
-            >
-              <SparklesIcon className="size-2.75" />
-              Retailor
-            </Button>
+            {showRegenerateButton && (
+              <Button
+                className="text-primary-text flex h-fit flex-row gap-1.5 px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase shadow-none"
+                variant="outline"
+              >
+                <SparklesIcon className="size-2.75" />
+                Retailor
+              </Button>
+            )}
+
             <Button
               className="text-primary-text flex h-fit flex-row gap-1.5 px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase shadow-none"
               variant="outline"
             >
               <CopyIcon className="size-2.75" />
-              Copy
+              <p className="hidden md:block">Copy</p>
             </Button>
             <Button
               className="text-primary-text flex h-fit flex-row gap-1.5 px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase shadow-none"
               variant="outline"
             >
               <DownloadIcon className="size-2.75" />
-              Pdf
+              <p className="hidden md:block">Pdf</p>
             </Button>
           </div>
         </TabsList>

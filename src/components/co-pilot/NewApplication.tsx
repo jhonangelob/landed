@@ -68,7 +68,7 @@ export default function NewApplication({ profile }: NewApplicationProps) {
         title2="Pilot"
         description="Paste a job posting and we'll tailor your CV and cover letter using your Pilot Profile."
       />
-      <div className="flex flex-row gap-4">
+      <div className="flex flex-col gap-4 lg:flex-row">
         <div className="flex min-w-1/2 flex-col gap-4 rounded-lg border bg-white p-6">
           <div className="flex flex-row items-center justify-between border-b border-dashed pb-3.5">
             <p className="text-muted font-mono text-[11px] leading-[1.4] font-normal tracking-[1.5px] uppercase">
@@ -85,7 +85,7 @@ export default function NewApplication({ profile }: NewApplicationProps) {
             }}
             className="w-full space-y-4"
           >
-            <div className="flex flex-row space-x-4">
+            <div className="flex flex-col gap-4 lg:flex-row">
               <form.Field
                 name="company"
                 children={(field) => (
@@ -97,7 +97,6 @@ export default function NewApplication({ profile }: NewApplicationProps) {
                       value={field.state.value}
                       onChange={(e) => field.handleChange(e.target.value)}
                       onBlur={field.handleBlur}
-                      className="bg-white shadow-none placeholder:text-sm"
                     />
                     {field.state.meta.errors.map((err, i) => (
                       <p key={i} className="text-destructive text-xs">
@@ -141,7 +140,6 @@ export default function NewApplication({ profile }: NewApplicationProps) {
                     value={field.state.value}
                     onChange={(e) => field.handleChange(e.target.value)}
                     onBlur={field.handleBlur}
-                    className="bg-white shadow-none placeholder:text-sm"
                   />
                   <p className="text-muted font-mono text-[12px] leading-[1.4]">
                     0 chars - 0 words
