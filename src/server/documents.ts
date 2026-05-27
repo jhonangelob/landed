@@ -10,7 +10,7 @@ import { getSession } from '#/lib/auth/session'
 import { db } from '#/lib/db'
 import { applications, generatedDocs, pilotProfiles } from '#/lib/db/schema'
 
-import { generateDocumentSchema } from '#/validators/co-pilot'
+import { generateDocumentSchema } from '#/validators/documents'
 
 export const getDocuments = createServerFn({ method: 'GET' })
   .inputValidator((data: unknown) =>

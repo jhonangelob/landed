@@ -1,6 +1,7 @@
 import type React from 'react'
 import { useState } from 'react'
 
+import { useDeleteApplicationMutation } from '#/hooks/useApplicationQueries'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -13,11 +14,6 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { TrashIcon } from 'lucide-react'
-
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useNavigate } from '@tanstack/react-router'
-
-import { deleteApplication } from '#/server/applications'
 
 import type { ApplicationStage } from '#/validators/application'
 
@@ -38,21 +34,12 @@ export default function DeleteApplicationDialog({
   children,
   data,
 }: DeleteApplicationDialogProps) {
-  const navigate = useNavigate()
-  const queryClient = useQueryClient()
-
   const [isOpen, setIsOpen] = useState(false)
 
-  const { mutateAsync: deleteApplicationItem } = useMutation({
-    mutationFn: (value: string) => deleteApplication({ data: { id: value } }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['applications'] })
-      navigate({ to: '/flight-deck' })
-    },
-  })
+  const { mutateAsync: deleteApplication } = useDeleteApplicationMutation()
 
   const handleDeleteApplication = () => {
-    deleteApplicationItem(data.id)
+    deleteApplication(data.id)
   }
 
   return (

@@ -1,6 +1,8 @@
+import { useApplicationQuery } from '#/hooks/useApplicationQueries'
+import { useDocumentsQuery } from '#/hooks/useDocumentQueries'
+import { useProfileQuery } from '#/hooks/useProfileQueries'
 import z from 'zod'
 
-import { useQuery, useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 
 import NewApplication from '#/components/co-pilot/NewApplication'
@@ -56,22 +58,16 @@ function RouteComponent() {
 
   const isEditMode = !!applicationId
 
-  const { data: profile } = useSuspenseQuery({
-    queryKey: ['profile'],
-    queryFn: () => getProfile(),
-  })
-
-  const { data: application } = useQuery({
-    queryKey: ['application', applicationId],
-    queryFn: () => getApplicationById({ data: { id: applicationId! } }),
-    enabled: !!applicationId,
-  })
+  const { data: profile } = useProfileQuery()
+  const { data: application } = useApplicationQuery(applicationId)
+  const { data: documents } = useDocumentsQuery(applicationId)
 
   return (
     <div className="section">
       {isEditMode ? (
         <UpdateApplication
           applicationId={applicationId}
+          documents={documents}
           application={application}
         />
       ) : (

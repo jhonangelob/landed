@@ -1,17 +1,16 @@
+import { useAccountDetailsQuery } from '#/hooks/useAccountQueries'
 import {
-  useMutation,
-  useQueryClient,
-  useSuspenseQuery,
-} from '@tanstack/react-query'
+  useProfileQuery,
+  useSaveProfileMutation,
+} from '#/hooks/useProfileQueries'
+
 import { createFileRoute } from '@tanstack/react-router'
 
 import SectionHeader from '#/components/layout/SectionHeader'
 import ProfileForm from '#/components/profile/ProfileForm'
 
 import { getAccountDetails } from '#/server/account'
-import { getProfile, saveProfile, updateProfile } from '#/server/profile'
-
-import type { PilotProfile } from '#/lib/db/schema'
+import { getProfile } from '#/server/profile'
 
 import type { PilotProfileInput } from '#/validators/profile'
 
@@ -38,35 +37,11 @@ export const Route = createFileRoute('/(app)/profile')({
 })
 
 function RouteComponent() {
-  const queryClient = useQueryClient()
+  const { data: profile } = useProfileQuery()
+  const { data: account } = useAccountDetailsQuery()
 
-  const { data: profile } = useSuspenseQuery({
-    queryKey: ['profile'],
-    queryFn: (): Promise<PilotProfile | null> => getProfile(),
-  })
-
-  const { data: account } = useSuspenseQuery({
-    queryKey: ['account_details'],
-    queryFn: () => getAccountDetails(),
-  })
-
-  const { mutateAsync: saveProfileDetails } = useMutation({
-    mutationFn: async (value: PilotProfileInput) => {
-      await saveProfile({ data: value })
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['profile'] })
-    },
-  })
-
-  const { mutateAsync: updateProfileDetails } = useMutation({
-    mutationFn: async (value: PilotProfileInput) => {
-      await updateProfile({ data: value })
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['profile'] })
-    },
-  })
+  const { mutateAsync: saveProfileDetails } = useSaveProfileMutation()
+  const { mutateAsync: updateProfileDetails } = useSaveProfileMutation()
 
   const handleSave = (value: PilotProfileInput) => {
     if (profile?.id) {

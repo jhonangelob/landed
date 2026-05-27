@@ -1,10 +1,14 @@
 import { CopyIcon, DownloadIcon, PlusIcon, SparklesIcon } from 'lucide-react'
 
+import type { Document } from '#/validators/documents'
+
 import { Button } from '../ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
 
-interface EmptyFilePreviewProps {
+interface FilePreview {
   showRegenerateButton?: boolean
+  documents?: Document[]
+  onRetailor?: () => void
 }
 
 function EmptyFilePreview() {
@@ -32,7 +36,9 @@ function EmptyFilePreview() {
 
 export default function FilePreview({
   showRegenerateButton = false,
-}: EmptyFilePreviewProps) {
+  documents,
+  onRetailor,
+}: FilePreview) {
   return (
     <div className="w-full rounded-lg border bg-[#fafbfd] p-5.5">
       <Tabs defaultValue="cv">
@@ -54,6 +60,7 @@ export default function FilePreview({
               <Button
                 className="text-primary-text flex h-fit flex-row gap-1.5 px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase shadow-none"
                 variant="outline"
+                onClick={onRetailor}
               >
                 <SparklesIcon className="size-2.75" />
                 Retailor
@@ -77,10 +84,24 @@ export default function FilePreview({
           </div>
         </TabsList>
         <TabsContent value="cv">
-          <EmptyFilePreview />
+          {documents?.[0] ? (
+            <div
+              className="prose prose-sm max-w-none p-8"
+              dangerouslySetInnerHTML={{ __html: documents[0]?.contentHtml }}
+            />
+          ) : (
+            <EmptyFilePreview />
+          )}
         </TabsContent>
         <TabsContent value="cl">
-          <EmptyFilePreview />
+          {documents?.[1] ? (
+            <div
+              className="prose prose-sm max-w-none p-8"
+              dangerouslySetInnerHTML={{ __html: documents[1]?.contentHtml }}
+            />
+          ) : (
+            <EmptyFilePreview />
+          )}
         </TabsContent>
       </Tabs>
     </div>

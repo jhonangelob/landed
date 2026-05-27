@@ -1,7 +1,8 @@
+import { useCreateApplicationMutation } from '#/hooks/useApplicationQueries'
+import { useGenerateDocumentsMutation } from '#/hooks/useDocumentQueries'
 import { SparklesIcon } from 'lucide-react'
 
 import { useForm } from '@tanstack/react-form'
-import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 
 import { Button } from '#/components/ui/button'
@@ -9,34 +10,22 @@ import { Input } from '#/components/ui/input'
 import { Label } from '#/components/ui/label'
 import { Textarea } from '#/components/ui/textarea'
 
-import { createApplication } from '#/server/applications'
-import { generateDocuments } from '#/server/documents'
+import type { PilotProfile } from '#/lib/db/schema'
 
 import { createApplicationSchema } from '#/validators/application'
-import type { GenerateDocumentInput } from '#/validators/co-pilot'
-import type { PilotProfileInput } from '#/validators/profile'
 
 import SectionHeader from '../layout/SectionHeader'
 import FilePreview from './FilePreview'
 
 interface NewApplicationProps {
-  profile?: PilotProfileInput
+  profile?: PilotProfile | null
 }
 
 export default function NewApplication({ profile }: NewApplicationProps) {
   const navigate = useNavigate()
 
-  const { mutateAsync: createNewApplication } = useMutation({
-    mutationFn: async (value: typeof form.state.values) => {
-      return await createApplication({ data: value })
-    },
-  })
-
-  const { mutateAsync: generateDocument } = useMutation({
-    mutationFn: async (value: GenerateDocumentInput) => {
-      return await generateDocuments({ data: value })
-    },
-  })
+  const { mutateAsync: createApplication } = useCreateApplicationMutation()
+  const { mutateAsync: generateDocuments } = useGenerateDocumentsMutation()
 
   const form = useForm({
     defaultValues: {
@@ -46,8 +35,8 @@ export default function NewApplication({ profile }: NewApplicationProps) {
     },
     validators: { onSubmit: createApplicationSchema },
     onSubmit: async ({ value }) => {
-      const application = await createNewApplication(value)
-      await generateDocument({ applicationId: application.id })
+      const application = await createApplication(value)
+      await generateDocuments({ applicationId: application.id })
       form.reset()
       navigate({
         to: '/co-pilot',

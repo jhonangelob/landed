@@ -1,8 +1,15 @@
 import {
-  useMutation,
-  useQueryClient,
-  useSuspenseQuery,
-} from '@tanstack/react-query'
+  accountQueryKey,
+  useAccountDetailsQuery,
+  useDeleteAccountMutation,
+  useUpdateAccountMutation,
+} from '#/hooks/useAccountQueries'
+import {
+  activitiesQueryKey,
+  useActivitiesQuery,
+} from '#/hooks/useActivityQueries'
+
+import { useMutation } from '@tanstack/react-query'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 
 import { Button } from '#/components/ui/button'
@@ -15,19 +22,12 @@ import SectionCard from '#/components/hangar/SectionCard'
 import SubscriptionCard from '#/components/hangar/SubscriptionCard'
 import SectionHeader from '#/components/layout/SectionHeader'
 
-import {
-  deleteAccount,
-  getAccountDetails,
-  updateAccountDetails,
-} from '#/server/account'
+import { getAccountDetails } from '#/server/account'
 import { getActivities } from '#/server/activity'
 
 import { changePassword, signOut } from '#/lib/auth/client'
 
-import type {
-  UpdateAccountInput,
-  UpdatePasswordInput,
-} from '#/validators/account'
+import type { UpdatePasswordInput } from '#/validators/account'
 
 import { PLANS } from '#/constants/plan'
 
@@ -42,11 +42,11 @@ export const Route = createFileRoute('/(app)/hangar')({
   loader: ({ context: { queryClient } }) =>
     Promise.all([
       queryClient.ensureQueryData({
-        queryKey: ['account_details'],
+        queryKey: accountQueryKey,
         queryFn: () => getAccountDetails(),
       }),
       queryClient.ensureQueryData({
-        queryKey: ['activities'],
+        queryKey: activitiesQueryKey,
         queryFn: () => getActivities(),
       }),
     ]),
@@ -55,17 +55,12 @@ export const Route = createFileRoute('/(app)/hangar')({
 
 function RouteComponent() {
   const navigate = useNavigate()
-  const queryClient = useQueryClient()
 
-  const { data: activities } = useSuspenseQuery({
-    queryKey: ['activities'],
-    queryFn: () => getActivities(),
-  })
+  const { data: activities } = useActivitiesQuery()
+  const { data: account } = useAccountDetailsQuery()
 
-  const { data: account } = useSuspenseQuery({
-    queryKey: ['account_details'],
-    queryFn: () => getAccountDetails(),
-  })
+  const { mutateAsync: updateAccount } = useUpdateAccountMutation()
+  const { mutateAsync: deleteUserAccount } = useDeleteAccountMutation()
 
   const { mutateAsync: updateAccountPassword } = useMutation({
     mutationFn: async (value: UpdatePasswordInput) => {
@@ -77,24 +72,11 @@ function RouteComponent() {
     },
   })
 
-  const { mutateAsync: updateAccount } = useMutation({
-    mutationFn: async (value: UpdateAccountInput) => {
-      await updateAccountDetails({ data: value })
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['account_details'] })
-    },
-  })
-
-  const { mutateAsync: deleteUserAccount } = useMutation({
-    mutationFn: async () => {
-      await deleteAccount()
-    },
-    onSuccess: () => {
-      signOut()
-      navigate({ to: '/login' })
-    },
-  })
+  const handleDeleteAccount = async () => {
+    await deleteUserAccount()
+    signOut()
+    navigate({ to: '/login' })
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -162,7 +144,7 @@ function RouteComponent() {
             <p className="text-muted font-mono text-[11px] leading-[1.4] font-normal tracking-[1.1px] uppercase">
               This cannot be undone.
             </p>
-            <DeleteAccountDialog onDelete={deleteUserAccount}>
+            <DeleteAccountDialog onDelete={handleDeleteAccount}>
               <Button
                 className="bg-destructive hover:bg-destructive/80 rounded-md font-mono text-[12px] leading-[1.4] font-medium tracking-[0.9px] text-white uppercase"
                 type="reset"

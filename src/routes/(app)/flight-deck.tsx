@@ -1,4 +1,5 @@
-import { useSuspenseQuery } from '@tanstack/react-query'
+import { useApplicationsQuery } from '#/hooks/useApplicationQueries'
+
 import { createFileRoute } from '@tanstack/react-router'
 
 import KanbanBoard from '#/components/flight-deck/KanbanBoard'
@@ -23,10 +24,7 @@ export const Route = createFileRoute('/(app)/flight-deck')({
 })
 
 function RouteComponent() {
-  const { data: applications } = useSuspenseQuery({
-    queryKey: ['applications'],
-    queryFn: () => getApplications(),
-  })
+  const { data: applications } = useApplicationsQuery()
 
   return (
     <div className="section">

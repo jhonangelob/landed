@@ -1,8 +1,12 @@
 import { formatNumber, parseNumber } from '#/helper/number'
+import {
+  useUpdateApplicationMutation,
+  useUpdateApplicationStageMutation,
+} from '#/hooks/useApplicationQueries'
+import { useGenerateDocumentsMutation } from '#/hooks/useDocumentQueries'
 import { SaveIcon } from 'lucide-react'
 
 import { useForm } from '@tanstack/react-form'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
@@ -19,20 +23,11 @@ import { Textarea } from '#/components/ui/textarea'
 import SectionHeader from '#/components/layout/SectionHeader'
 
 import {
-  updateApplication,
-  updateApplicationStage,
-} from '#/server/applications'
-
-import {
   applicationStageSchema,
   updateApplicationSchema,
 } from '#/validators/application'
-import type {
-  Application,
-  ApplicationStage,
-  UpdateApplicationInput,
-  UpdateStageInput,
-} from '#/validators/application'
+import type { Application, ApplicationStage } from '#/validators/application'
+import type { Document } from '#/validators/documents'
 
 import ApplicationSummary from './ApplicationSummary'
 import DeleteApplicationDialog from './DeleteApplicationDialog'
@@ -43,48 +38,20 @@ import StageBar from './StageBar'
 interface UpdateApplicationProps {
   applicationId: string
   application?: Application
+  documents?: Document[]
 }
 
 export default function UpdateApplication({
   applicationId,
   application,
+  documents,
 }: UpdateApplicationProps) {
-  const queryClient = useQueryClient()
-
-  const { mutateAsync: updateStage } = useMutation({
-    mutationFn: (values: UpdateStageInput) => {
-      return updateApplicationStage({ data: values })
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['application', applicationId],
-      })
-    },
-  })
-
-  const { mutateAsync: updateApplicationDetails } = useMutation({
-    mutationFn: async (values: UpdateApplicationInput) => {
-      return await updateApplication({
-        data: {
-          id: applicationId,
-          company: values.company,
-          role: values.role,
-          url: values.url,
-          location: values.location,
-          salaryRange: values.salaryRange,
-          notes: values.notes,
-          stage: values.stage,
-          status: values.status,
-          description: values.description,
-        },
-      })
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['application', applicationId],
-      })
-    },
-  })
+  const { mutateAsync: updateStage } =
+    useUpdateApplicationStageMutation(applicationId)
+  const { mutateAsync: updateApplicationDetails } =
+    useUpdateApplicationMutation(applicationId)
+  const { mutateAsync: generateDocuments } =
+    useGenerateDocumentsMutation(applicationId)
 
   const form = useForm({
     defaultValues: {
@@ -109,6 +76,10 @@ export default function UpdateApplication({
 
   const handleUpdateStage = (stage: ApplicationStage) => {
     updateStage({ id: applicationId, stage })
+  }
+
+  const handleRetailorDocument = () => {
+    generateDocuments({ applicationId })
   }
 
   if (!application) return null
@@ -395,7 +366,11 @@ export default function UpdateApplication({
           </SectionCard>
         </div>
         <div className="w-full md:w-1/2">
-          <FilePreview />
+          <FilePreview
+            documents={documents}
+            showRegenerateButton
+            onRetailor={handleRetailorDocument}
+          />
         </div>
       </div>
     </>
