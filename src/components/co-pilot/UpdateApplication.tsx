@@ -88,7 +88,7 @@ export default function UpdateApplication({
   return (
     <>
       <SectionHeader
-        subTitle="Edit Application"
+        subTitle={`${application.role} @ ${application.company}`}
         title1="Update"
         title2="Application"
         description="Changes saved here will update this application on your Flight Deck."
