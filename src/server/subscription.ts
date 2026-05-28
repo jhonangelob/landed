@@ -31,33 +31,35 @@ export const createSubscription = createServerFn({ method: 'POST' }).handler(
   },
 )
 
-// HELPERS
+export const checkGenerationLimit = createServerFn({ method: 'GET' }).handler(
+  async () => {
+    const session = await ensureSession()
 
-export const checkGenerationLimit = async () => {
-  const session = await ensureSession()
+    const sub = await db
+      .select()
+      .from(subscriptions)
+      .where(eq(subscriptions.userId, session.user.id))
+      .limit(1)
+      .then((r) => r[0] ?? null)
 
-  const sub = await db
-    .select()
-    .from(subscriptions)
-    .where(eq(subscriptions.userId, session.user.id))
-    .limit(1)
-    .then((r) => r[0] ?? null)
+    const used = sub.generationsUsed
+    const limit = sub.generationsLimit
 
-  if (!sub)
-    throw new AppError('SUBSCRIPTION_NOT_FOUND', 'Error fetching subscription')
+    if (used >= limit)
+      throw new AppError('GENERATION_LIMIT_REACHED', 'Limit Reached')
 
-  const used = sub.generationsUsed
-  const limit = sub.generationsLimit
+    return {
+      used,
+      limit,
+      remaining: limit - used,
+      hasReached: used >= limit,
+    }
+  },
+)
 
-  return {
-    used,
-    limit,
-    remaining: limit - used,
-    hasReached: used >= limit,
-  }
-}
-
-export const increaseGenerationUsed = async () => {
+export const increaseGenerationUsed = createServerFn({
+  method: 'POST',
+}).handler(async () => {
   const session = await ensureSession()
 
   const updated = await db
@@ -82,4 +84,4 @@ export const increaseGenerationUsed = async () => {
   }
 
   return { success: true }
-}
+})

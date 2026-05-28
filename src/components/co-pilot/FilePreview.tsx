@@ -6,7 +6,7 @@ import { Button } from '../ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
 import ExportFileDialog from './ExportFileDialog'
 
-interface FilePreview {
+interface FilePreviewProps {
   showRegenerateButton?: boolean
   documents?: Document[]
   onRetailor?: () => void
@@ -39,7 +39,11 @@ export default function FilePreview({
   showRegenerateButton = false,
   documents,
   onRetailor,
-}: FilePreview) {
+}: FilePreviewProps) {
+  const cvDoc = documents?.find((d) => d.type === 'cv')
+  const clDoc = documents?.find((d) => d.type === 'cover_letter')
+  const hasDocuments = documents && documents.length > 0
+
   return (
     <div className="w-full rounded-lg border bg-[#fafbfd] p-5.5">
       <Tabs defaultValue="cv">
@@ -56,6 +60,7 @@ export default function FilePreview({
           >
             Cover Letter
           </TabsTrigger>
+
           <div className="ml-auto flex flex-row gap-2">
             {showRegenerateButton && (
               <Button
@@ -68,34 +73,38 @@ export default function FilePreview({
               </Button>
             )}
 
-            <ExportFileDialog
-              applicationId={documents?.[0].applicationId || ''}
-            >
-              <Button
-                className="text-primary-text flex h-fit flex-row gap-1.5 px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase"
-                variant="outline"
-              >
-                <DownloadIcon className="size-2.75" />
-                <p className="hidden md:block">Pdf</p>
-              </Button>
-            </ExportFileDialog>
+            {hasDocuments && (
+              <ExportFileDialog applicationId={documents[0].applicationId}>
+                <Button
+                  className="text-primary-text flex h-fit flex-row gap-1.5 px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase"
+                  variant="outline"
+                >
+                  <DownloadIcon className="size-2.75" />
+                  <p className="hidden md:block">Pdf</p>
+                </Button>
+              </ExportFileDialog>
+            )}
           </div>
         </TabsList>
+
+        {/* CV tab */}
         <TabsContent value="cv">
-          {documents?.[1] ? (
+          {cvDoc?.contentHtml ? (
             <div
               className="prose prose-sm max-w-none p-8"
-              dangerouslySetInnerHTML={{ __html: documents[1].contentHtml }}
+              dangerouslySetInnerHTML={{ __html: cvDoc.contentHtml }}
             />
           ) : (
             <EmptyFilePreview />
           )}
         </TabsContent>
+
+        {/* Cover letter tab */}
         <TabsContent value="cl">
-          {documents?.[0] ? (
+          {clDoc?.contentHtml ? (
             <div
               className="prose prose-sm max-w-none p-8"
-              dangerouslySetInnerHTML={{ __html: documents[0].contentHtml }}
+              dangerouslySetInnerHTML={{ __html: clDoc.contentHtml }}
             />
           ) : (
             <EmptyFilePreview />

@@ -61,9 +61,7 @@ export const generateDocuments = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const session = await ensureSession()
 
-    const limit = await checkGenerationLimit()
-    if (limit.hasReached)
-      throw new AppError('GENERATION_LIMIT_REACHED', 'Limit Reached')
+    await checkGenerationLimit()
 
     const [profile] = await db
       .select()

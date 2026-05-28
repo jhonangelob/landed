@@ -7,7 +7,6 @@ import { ensureSession } from '#/server/session'
 
 import { db } from '#/lib/db/index.server'
 import { applications } from '#/lib/db/schema'
-import { AppError } from '#/lib/utils'
 
 import {
   createApplicationSchema,
@@ -64,9 +63,7 @@ export const createApplication = createServerFn({
   .handler(async ({ data }) => {
     const session = await ensureSession()
 
-    const limit = await checkGenerationLimit()
-    if (limit.hasReached)
-      throw new AppError('GENERATION_LIMIT_REACHED', 'Limit Reached')
+    await checkGenerationLimit()
 
     const [application] = await db
       .insert(applications)
