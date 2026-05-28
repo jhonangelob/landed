@@ -14,6 +14,7 @@ import { applications, generatedDocs, pilotProfiles } from '#/lib/db/schema'
 import { ClassicTemplate } from '#/lib/pdf/templates/classic'
 import { MinimalTemplate } from '#/lib/pdf/templates/minimal'
 import { ModernTemplate } from '#/lib/pdf/templates/modern'
+import { AppError } from '#/lib/utils'
 
 import {
   aiResponseSchema,
@@ -23,9 +24,8 @@ import {
 import type { CvContent } from '#/validators/documents'
 
 import { isTemplateLocked } from '#/constants/templates'
-import { checkGenerationLimit, increaseGenerationUsed } from './subscription'
 
-import { AppError } from '#/lib/utils'
+import { checkGenerationLimit, increaseGenerationUsed } from './subscription'
 
 const TEMPLATES = {
   classic: ClassicTemplate,

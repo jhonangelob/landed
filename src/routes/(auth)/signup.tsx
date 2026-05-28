@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import { useCreateSubscriptionMutation } from '#/hooks/useSubscriptionQueries'
 import { EyeIcon, EyeOffIcon } from 'lucide-react'
 
 import { useForm } from '@tanstack/react-form'
@@ -16,8 +17,6 @@ import { cn } from '#/lib/utils'
 import { signupSchema } from '#/validators/account'
 
 import logo from '/landed.svg'
-
-import { useCreateSubscriptionMutation } from '#/hooks/useSubscriptionQueries'
 
 export const Route = createFileRoute('/(auth)/signup')({
   head: () => ({

@@ -9,6 +9,10 @@ import {
   activitiesQueryKey,
   useActivitiesQuery,
 } from '#/hooks/useActivityQueries'
+import {
+  subscriptionQueryKey,
+  useSubscriptionQuery,
+} from '#/hooks/useSubscriptionQueries'
 
 import { createFileRoute } from '@tanstack/react-router'
 
@@ -24,13 +28,9 @@ import SectionHeader from '#/components/layout/SectionHeader'
 
 import { getAccountDetails } from '#/server/account'
 import { getActivities } from '#/server/activity'
+import { getSubscription } from '#/server/subscription'
 
 import { PLANS } from '#/constants/plan'
-import {
-  subscriptionQueryKey,
-  useSubscriptionQuery,
-} from '#/hooks/useSubscriptionQueries'
-import { getSubscription } from '#/server/subscription'
 
 export const Route = createFileRoute('/(app)/hangar')({
   head: () => ({

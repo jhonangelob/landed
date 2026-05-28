@@ -1,5 +1,6 @@
-import { createSubscription, getSubscription } from '#/server/subscription'
 import { useMutation, useSuspenseQuery } from '@tanstack/react-query'
+
+import { createSubscription, getSubscription } from '#/server/subscription'
 
 export const subscriptionQueryKey = ['subscription'] as const
 

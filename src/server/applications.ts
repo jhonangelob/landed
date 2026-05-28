@@ -6,6 +6,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { ensureSession } from '#/lib/auth/session'
 import { db } from '#/lib/db'
 import { applications } from '#/lib/db/schema'
+import { AppError } from '#/lib/utils'
 
 import {
   createApplicationSchema,
@@ -13,8 +14,8 @@ import {
   updateApplicationSchema,
   updateStageSchema,
 } from '#/validators/application'
+
 import { checkGenerationLimit } from './subscription'
-import { AppError } from '#/lib/utils'
 
 export const getApplications = createServerFn({ method: 'GET' }).handler(
   async () => {
