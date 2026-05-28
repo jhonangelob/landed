@@ -2,11 +2,16 @@ import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { tanstackStartCookies } from 'better-auth/tanstack-start'
 
-import { db } from '#/lib/db'
+import { db } from '#/lib/db/index.server'
 import { accounts, sessions, users, verifications } from '#/lib/db/schema'
 
+import { AppError } from '../utils'
+
 if (!process.env.BETTER_AUTH_SECRET || !process.env.BETTER_AUTH_URL)
-  throw new Error('API Key is not defined in the environment variables')
+  throw new AppError(
+    'MISSING_ENV',
+    'API Key is not defined in the environment variables',
+  )
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {

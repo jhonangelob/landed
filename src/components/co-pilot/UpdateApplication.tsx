@@ -3,7 +3,10 @@ import {
   useUpdateApplicationMutation,
   useUpdateApplicationStageMutation,
 } from '#/hooks/useApplicationQueries'
-import { useGenerateDocumentsMutation } from '#/hooks/useDocumentQueries'
+import {
+  useDocumentsQuery,
+  useGenerateDocumentsMutation,
+} from '#/hooks/useDocumentQueries'
 import { SaveIcon } from 'lucide-react'
 
 import { useForm } from '@tanstack/react-form'
@@ -27,7 +30,6 @@ import {
   updateApplicationSchema,
 } from '#/validators/application'
 import type { Application, ApplicationStage } from '#/validators/application'
-import type { Document } from '#/validators/documents'
 
 import ApplicationSummary from './ApplicationSummary'
 import DeleteApplicationDialog from './DeleteApplicationDialog'
@@ -38,13 +40,11 @@ import StageBar from './StageBar'
 interface UpdateApplicationProps {
   applicationId: string
   application?: Application
-  documents?: Document[]
 }
 
 export default function UpdateApplication({
   applicationId,
   application,
-  documents,
 }: UpdateApplicationProps) {
   const { mutateAsync: updateStage } =
     useUpdateApplicationStageMutation(applicationId)
@@ -52,6 +52,8 @@ export default function UpdateApplication({
     useUpdateApplicationMutation(applicationId)
   const { mutateAsync: generateDocuments } =
     useGenerateDocumentsMutation(applicationId)
+
+  const { data: documents } = useDocumentsQuery(applicationId)
 
   const form = useForm({
     defaultValues: {

@@ -2,8 +2,9 @@ import { and, eq, sql } from 'drizzle-orm'
 
 import { createServerFn } from '@tanstack/react-start'
 
-import { ensureSession } from '#/lib/auth/session'
-import { db } from '#/lib/db'
+import { ensureSession } from '#/server/session'
+
+import { db } from '#/lib/db/index.server'
 import { subscriptions } from '#/lib/db/schema'
 import { AppError } from '#/lib/utils'
 

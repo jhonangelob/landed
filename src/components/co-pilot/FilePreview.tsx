@@ -85,7 +85,7 @@ export default function FilePreview({
           {documents?.[1] ? (
             <div
               className="prose prose-sm max-w-none p-8"
-              dangerouslySetInnerHTML={{ __html: documents[1]?.contentHtml }}
+              dangerouslySetInnerHTML={{ __html: documents[1].contentHtml }}
             />
           ) : (
             <EmptyFilePreview />
@@ -95,7 +95,7 @@ export default function FilePreview({
           {documents?.[0] ? (
             <div
               className="prose prose-sm max-w-none p-8"
-              dangerouslySetInnerHTML={{ __html: documents[0]?.contentHtml }}
+              dangerouslySetInnerHTML={{ __html: documents[0].contentHtml }}
             />
           ) : (
             <EmptyFilePreview />

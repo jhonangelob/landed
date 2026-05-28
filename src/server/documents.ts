@@ -7,9 +7,10 @@ import z from 'zod'
 
 import { createServerFn } from '@tanstack/react-start'
 
-import { ensureSession } from '#/lib/auth/session'
+import { ensureSession } from '#/server/session'
+
 import { getUserPlan } from '#/lib/auth/subscription'
-import { db } from '#/lib/db'
+import { db } from '#/lib/db/index.server'
 import { applications, generatedDocs, pilotProfiles } from '#/lib/db/schema'
 import { ClassicTemplate } from '#/lib/pdf/templates/classic'
 import { MinimalTemplate } from '#/lib/pdf/templates/minimal'
@@ -49,7 +50,7 @@ export const getDocuments = createServerFn({ method: 'GET' })
           eq(generatedDocs.userId, session.user.id),
         ),
       )
-      .orderBy(desc(generatedDocs.version), desc(generatedDocs.createdAt))
+      .orderBy(desc(generatedDocs.createdAt))
       .limit(2)
 
     return result
@@ -92,7 +93,7 @@ export const generateDocuments = createServerFn({ method: 'POST' })
       .orderBy(desc(generatedDocs.version))
       .limit(1)
 
-    const nextVersion = latest ? latest.version + 1 : 1
+    const nextVersion = latest.version + 1
 
     if (!application) throw new AppError('NOT_FOUND', 'Application not found')
     if (!profile)

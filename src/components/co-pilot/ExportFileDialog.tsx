@@ -68,7 +68,9 @@ export default function ExportFileDialog({
                 template === item.id && 'border-primary',
               )}
               key={item.id}
-              onClick={() => setTemplate(item.id as CvTemplateId)}
+              onClick={() =>
+                setTemplate(item.id as 'classic' | 'modern' | 'minimal')
+              }
             >
               <div className="flex h-40 items-center justify-center rounded-sm bg-gray-200 text-white">
                 <FileIcon />

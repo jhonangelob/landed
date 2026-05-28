@@ -1,5 +1,4 @@
 import { useApplicationQuery } from '#/hooks/useApplicationQueries'
-import { useDocumentsQuery } from '#/hooks/useDocumentQueries'
 import { useProfileQuery } from '#/hooks/useProfileQueries'
 import z from 'zod'
 
@@ -9,7 +8,6 @@ import NewApplication from '#/components/co-pilot/NewApplication'
 import UpdateApplication from '#/components/co-pilot/UpdateApplication'
 
 import { getApplicationById } from '#/server/applications'
-import { getDocuments } from '#/server/documents'
 import { getProfile } from '#/server/profile'
 
 export const Route = createFileRoute('/(app)/co-pilot')({
@@ -40,12 +38,6 @@ export const Route = createFileRoute('/(app)/co-pilot')({
           queryFn: () => getApplicationById({ data: { id: applicationId } }),
         }),
       )
-      queries.push(
-        queryClient.ensureQueryData({
-          queryKey: ['generated_docs', applicationId],
-          queryFn: () => getDocuments({ data: { id: applicationId } }),
-        }),
-      )
     }
 
     return Promise.all(queries)
@@ -60,7 +52,6 @@ function RouteComponent() {
 
   const { data: profile } = useProfileQuery()
   const { data: application } = useApplicationQuery(applicationId)
-  const { data: documents } = useDocumentsQuery(applicationId)
 
   return (
     <div className="section">
@@ -68,7 +59,6 @@ function RouteComponent() {
         <UpdateApplication
           key={application?.updatedAt?.getTime()}
           applicationId={applicationId}
-          documents={documents}
           application={application}
         />
       ) : (

@@ -11,13 +11,13 @@ import type {
   GenerateDocumentInput,
 } from '#/validators/documents'
 
-export const documentsQueryKey = (applicationId: string) =>
+export const documentsQueryKey = (applicationId: string | undefined) =>
   ['generated_docs', applicationId] as const
 
 export function useDocumentsQuery(applicationId: string | undefined) {
   return useQuery({
-    queryKey: documentsQueryKey(applicationId ?? ''),
-    queryFn: () => getDocuments({ data: { id: applicationId! } }),
+    queryKey: documentsQueryKey(applicationId),
+    queryFn: () => getDocuments({ data: { id: applicationId } }),
     enabled: !!applicationId,
   })
 }

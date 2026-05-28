@@ -17,7 +17,7 @@ export type Document = {
   userId: string
   applicationId: string
   type: 'cv' | 'cover_letter'
-  contentJson: Record<string, unknown>
+  contentJson: CvContent | CoverLetterContent
   contentHtml: string
   version: number
   createdAt: Date

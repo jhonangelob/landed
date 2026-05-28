@@ -2,8 +2,9 @@ import { and, count, eq, isNull, max } from 'drizzle-orm'
 
 import { createServerFn } from '@tanstack/react-start'
 
-import { ensureSession } from '#/lib/auth/session'
-import { db } from '#/lib/db'
+import { ensureSession } from '#/server/session'
+
+import { db } from '#/lib/db/index.server'
 import { applications, generatedDocs } from '#/lib/db/schema'
 
 export const getActivities = createServerFn({

@@ -10,8 +10,9 @@ import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
 import { Label } from '#/components/ui/label'
 
+import { getSession } from '#/server/session'
+
 import { signUp } from '#/lib/auth/client'
-import { getSession } from '#/lib/auth/session'
 import { cn } from '#/lib/utils'
 
 import { signupSchema } from '#/validators/account'

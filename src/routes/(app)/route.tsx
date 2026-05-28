@@ -3,7 +3,7 @@ import { Outlet, createFileRoute, redirect } from '@tanstack/react-router'
 import Footer from '#/components/layout/Footer'
 import Header from '#/components/layout/Header'
 
-import { getSession } from '#/lib/auth/session'
+import { getSession } from '#/server/session'
 
 export const Route = createFileRoute('/(app)')({
   beforeLoad: async () => {

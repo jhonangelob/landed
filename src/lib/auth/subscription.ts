@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm'
 
-import { db } from '#/lib/db'
+import { db } from '#/lib/db/index.server'
 import { subscriptions } from '#/lib/db/schema'
 
 export async function getUserPlan(

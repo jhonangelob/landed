@@ -2,8 +2,9 @@ import { eq } from 'drizzle-orm'
 
 import { createServerFn } from '@tanstack/react-start'
 
-import { ensureSession } from '#/lib/auth/session'
-import { db } from '#/lib/db'
+import { ensureSession } from '#/server/session'
+
+import { db } from '#/lib/db/index.server'
 import { pilotProfiles, users } from '#/lib/db/schema'
 
 import { pilotProfileSchema } from '#/validators/profile'
