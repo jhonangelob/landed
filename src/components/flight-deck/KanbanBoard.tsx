@@ -18,7 +18,7 @@ export default function KanbanBoard({ applications }: KanbanBoardProps) {
   }
 
   return (
-    <div className="flex max-h-[calc(100vh-250px)] max-w-full flex-1 flex-row gap-4 overflow-scroll pr-24">
+    <div className="flex max-h-[calc(100vh-250px)] max-w-full flex-1 flex-row gap-4 overflow-scroll pr-12">
       {KANBAN_COLUMNS.map((stage, index) => (
         <div className="flex flex-col gap-4.5" key={index}>
           <div className="flex flex-row items-center gap-2">
@@ -29,23 +29,22 @@ export default function KanbanBoard({ applications }: KanbanBoardProps) {
               {applications.filter((a) => a.stage === stage.stage).length}
             </div>
           </div>
-          <div className="flex w-73 flex-col gap-3">
+          <div className="flex w-60 flex-col gap-3">
             {applications.map(
               (application, i) =>
                 application.stage === stage.stage && (
                   <KanbanItem data={application} key={i} />
                 ),
             )}
-            {stage.stage == 'spotted' && (
-              <div
-                className="group hover:border-primary flex cursor-pointer flex-col items-center justify-center rounded-md border border-dashed p-4 text-center hover:bg-white"
-                onClick={handleNewApplication}
-              >
-                <p className="text-muted group-hover:text-primary font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase">
-                  New Application
-                </p>
-              </div>
-            )}
+
+            <div
+              className="group hover:border-primary flex cursor-pointer flex-col items-center justify-center rounded-md border border-dashed px-4 py-2 text-center hover:bg-white"
+              onClick={handleNewApplication}
+            >
+              <p className="text-muted group-hover:text-primary font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase">
+                Add
+              </p>
+            </div>
           </div>
         </div>
       ))}

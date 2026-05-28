@@ -91,7 +91,7 @@ export const generateDocuments = createServerFn({ method: 'POST' })
       .orderBy(desc(generatedDocs.version))
       .limit(1)
 
-    const nextVersion = latest.version + 1
+    const nextVersion = (latest?.version ?? 0) + 1
 
     if (!application) throw new AppError('NOT_FOUND', 'Application not found')
     if (!profile)

@@ -28,28 +28,16 @@ export const saveProfile = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const session = await ensureSession()
 
-    await db
-      .update(users)
-      .set({ name: data.fullName, updatedAt: new Date() })
-      .where(eq(users.id, session.user.id))
+    await db.transaction(async (tx) => {
+      await tx
+        .update(users)
+        .set({ name: data.fullName, updatedAt: new Date() })
+        .where(eq(users.id, session.user.id))
 
-    await db
-      .insert(pilotProfiles)
-      .values({
-        userId: session.user.id,
-        headline: data.headline,
-        summary: data.summary,
-        location: data.location,
-        skills: data.skills,
-        experience: data.experience,
-        education: data.education,
-        links: data.links,
-        preferences: data.preferences,
-        updatedAt: new Date(),
-      })
-      .onConflictDoUpdate({
-        target: pilotProfiles.userId,
-        set: {
+      await tx
+        .insert(pilotProfiles)
+        .values({
+          userId: session.user.id,
           headline: data.headline,
           summary: data.summary,
           location: data.location,
@@ -59,8 +47,21 @@ export const saveProfile = createServerFn({ method: 'POST' })
           links: data.links,
           preferences: data.preferences,
           updatedAt: new Date(),
-        },
-      })
-
+        })
+        .onConflictDoUpdate({
+          target: pilotProfiles.userId,
+          set: {
+            headline: data.headline,
+            summary: data.summary,
+            location: data.location,
+            skills: data.skills,
+            experience: data.experience,
+            education: data.education,
+            links: data.links,
+            preferences: data.preferences,
+            updatedAt: new Date(),
+          },
+        })
+    })
     return { success: true }
   })

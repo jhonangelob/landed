@@ -42,8 +42,8 @@ export const auth = betterAuth({
 
   rateLimit: {
     enabled: true,
-    window: 10,
-    max: 100,
+    window: 900,
+    max: 5,
   },
 
   secret: process.env.BETTER_AUTH_SECRET,

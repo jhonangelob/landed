@@ -28,7 +28,7 @@ export const updateApplicationSchema = z.object({
   id: z.string().uuid(),
   company: z.string().min(1, 'Company name is required'),
   role: z.string().min(1, 'Job title is required'),
-  url: z.string().or(z.literal('')),
+  url: z.string().url('Must be a valid URL').or(z.literal('')),
   location: z.string().or(z.literal('')),
   salaryRange: z.string().or(z.literal('')),
   notes: z.string().or(z.literal('')),

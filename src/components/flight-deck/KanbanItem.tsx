@@ -38,7 +38,7 @@ export default function KanbanItem({ data }: KanbanItemProps) {
             })}
         </p>
       </div>
-      <p className="font-display text-primary-text text-[15px]Activity pb-2.5 leading-[1.3] font-bold tracking-[-0.1px]">
+      <p className="font-display text-primary-text max-w-3/4 pb-2.5 text-[15px] leading-[1.3] font-bold tracking-[-0.1px]">
         {data.role}
       </p>
 

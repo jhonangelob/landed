@@ -16,6 +16,8 @@ export async function getUserPlan(
 
   const sub = result[0]
 
+  if (!sub.isActive) return 'free'
+
   if (sub.expiresAt && new Date() > sub.expiresAt) return 'free'
 
   return sub.planId
