@@ -66,8 +66,16 @@ function RouteComponent() {
       })
 
       if (res.data) {
-        await createSubscription()
-        navigate({ to: '/flight-deck' })
+        try {
+          await createSubscription()
+          navigate({ to: '/flight-deck' })
+        } catch {
+          setErrorMessage(
+            'Account created but setup failed. Please contact support.',
+          )
+        } finally {
+          setIsLoading(false)
+        }
       }
 
       if (res.error) {

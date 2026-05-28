@@ -13,7 +13,6 @@ export const planSchema = z.object({
   generations: z.number().positive(),
   applications: z.number().positive().nullable(),
   features: z.array(z.string()),
-  isCurrent: z.boolean(),
 })
 
 export type Plan = z.infer<typeof planSchema>

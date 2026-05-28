@@ -15,7 +15,6 @@ export const PLANS: Plan[] = [
       'PDF export',
       'Flight Deck kanban',
     ],
-    isCurrent: true,
   },
   {
     id: 'runway' as const,
@@ -32,7 +31,6 @@ export const PLANS: Plan[] = [
       'Version history',
       'Priority support',
     ],
-    isCurrent: false,
   },
   {
     id: 'runway_3mo' as const,
@@ -50,7 +48,6 @@ export const PLANS: Plan[] = [
       'Priority support',
       '3-month billing (~₱266/mo)',
     ],
-    isCurrent: false,
   },
 ]
 

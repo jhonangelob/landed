@@ -2,9 +2,8 @@ import { config } from 'dotenv'
 import { defineConfig } from 'drizzle-kit'
 
 config({ path: ['.env.local', '.env'] })
-
-if (!process.env.DATABASE_URL) {
-  throw new Error('DATABASE_URL is not set in the .env file')
+if (!process.env.NEON_DATABASE_URL) {
+  throw new Error('NEON_DATABASE_URL is not set in the .env file')
 }
 
 export default defineConfig({
@@ -12,6 +11,6 @@ export default defineConfig({
   schema: './src/lib/db/schema.ts',
   dialect: 'postgresql',
   dbCredentials: {
-    url: process.env.DATABASE_URL,
+    url: process.env.NEON_DATABASE_URL,
   },
 })

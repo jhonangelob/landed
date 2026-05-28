@@ -26,7 +26,7 @@ export default function KanbanBoard({ applications }: KanbanBoardProps) {
               {stage.label}
             </p>
             <div className="text-muted-foreground ml-auto rounded-md bg-white px-1.5 py-0.5 font-mono text-[11px] leading-4">
-              2
+              {applications.filter((a) => a.stage === stage.stage).length}
             </div>
           </div>
           <div className="flex w-73 flex-col gap-3">

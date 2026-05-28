@@ -7,7 +7,7 @@ import z from 'zod'
 
 import { createServerFn } from '@tanstack/react-start'
 
-import { getSession } from '#/lib/auth/session'
+import { ensureSession } from '#/lib/auth/session'
 import { getUserPlan } from '#/lib/auth/subscription'
 import { db } from '#/lib/db'
 import { applications, generatedDocs, pilotProfiles } from '#/lib/db/schema'
@@ -25,6 +25,8 @@ import type { CvContent } from '#/validators/documents'
 import { isTemplateLocked } from '#/constants/templates'
 import { checkGenerationLimit, increaseGenerationUsed } from './subscription'
 
+import { AppError } from '#/lib/utils'
+
 const TEMPLATES = {
   classic: ClassicTemplate,
   modern: ModernTemplate,
@@ -35,9 +37,8 @@ export const getDocuments = createServerFn({ method: 'GET' })
   .inputValidator((data: unknown) =>
     z.object({ id: z.string().uuid() }).parse(data),
   )
-  .handler(async ({ data }): Promise<any | null> => {
-    const session = await getSession()
-    if (!session) throw new Error('Unauthorized')
+  .handler(async ({ data }) => {
+    const session = await ensureSession()
 
     const result = await db
       .select()
@@ -57,11 +58,11 @@ export const getDocuments = createServerFn({ method: 'GET' })
 export const generateDocuments = createServerFn({ method: 'POST' })
   .inputValidator((data: unknown) => generateDocumentSchema.parse(data))
   .handler(async ({ data }) => {
-    const session = await getSession()
-    if (!session) throw new Error('Unauthorized')
+    const session = await ensureSession()
 
     const limit = await checkGenerationLimit()
-    if (limit.hasReached) throw new Error('Limit Reached')
+    if (limit.hasReached)
+      throw new AppError('GENERATION_LIMIT_REACHED', 'Limit Reached')
 
     const [profile] = await db
       .select()
@@ -79,20 +80,29 @@ export const generateDocuments = createServerFn({ method: 'POST' })
         ),
       )
 
-    if (!process.env.ANTHROPIC_HAIKU_MODEL)
-      throw new Error('API Key is not defined in the environment variables')
-
     const [latest] = await db
       .select({ version: generatedDocs.version })
       .from(generatedDocs)
-      .where(eq(generatedDocs.applicationId, data.applicationId))
+      .where(
+        and(
+          eq(generatedDocs.applicationId, data.applicationId),
+          eq(generatedDocs.userId, session.user.id),
+        ),
+      )
       .orderBy(desc(generatedDocs.version))
       .limit(1)
 
     const nextVersion = latest ? latest.version + 1 : 1
 
+    if (!application) throw new AppError('NOT_FOUND', 'Application not found')
+    if (!profile)
+      throw new AppError(
+        'NOT_FOUND',
+        'Profile not found — complete your Pilot Profile first',
+      )
+
     const { text } = await generateText({
-      model: anthropic(process.env.ANTHROPIC_HAIKU_MODEL),
+      model: anthropic(process.env.ANTHROPIC_HAIKU_MODEL!),
       system: `
         You are Co-Pilot, an expert CV writer inside the Landed app.
         Respond ONLY with valid JSON — no markdown, no backticks, no extra text.
@@ -117,6 +127,7 @@ export const generateDocuments = createServerFn({ method: 'POST' })
         - Use numbers and outcomes wherever the profile has them
         - Do NOT invent experience or skills not in the profile
       `.trim(),
+
       prompt: `
         Job Details:
         Company: ${application.company}
@@ -146,13 +157,19 @@ export const generateDocuments = createServerFn({ method: 'POST' })
     try {
       raw = JSON.parse(cleaned)
     } catch {
-      throw new Error('AI returned malformed JSON — please try again')
+      throw new AppError(
+        'AI_PARSE_ERROR',
+        'AI returned malformed JSON — please try again',
+      )
     }
 
     const result = aiResponseSchema.safeParse(raw)
     if (!result.success) {
       console.error('AI response validation failed:', result.error.issues)
-      throw new Error('AI response has unexpected structure — please try again')
+      throw new AppError(
+        'AI_VALIDATION_ERROR',
+        'AI response has unexpected structure — please try again',
+      )
     }
 
     const parsed = result.data
@@ -186,13 +203,15 @@ export const generateDocuments = createServerFn({ method: 'POST' })
 export const exportCvPdf = createServerFn({ method: 'POST' })
   .inputValidator((data: unknown) => exportDocumentSchema.parse(data))
   .handler(async ({ data }) => {
-    const session = await getSession()
-    if (!session) throw new Error('Unauthorized')
+    const session = await ensureSession()
 
     const planId = await getUserPlan(session.user.id)
 
     if (isTemplateLocked(data.template, planId)) {
-      throw new Error('Upgrade to Runway to unlock this template')
+      throw new AppError(
+        'SUBSCRIPTION_NOT_FOUND',
+        'Upgrade to Runway to unlock this template',
+      )
     }
 
     const [doc] = await db
@@ -207,7 +226,7 @@ export const exportCvPdf = createServerFn({ method: 'POST' })
       )
       .limit(1)
 
-    if (!doc) throw new Error('Document not found')
+    if (!doc) throw new AppError('DOCUMENT_NOT_FOUND', 'Document not found')
 
     const Template = TEMPLATES[data.template]
     const pdfBuffer = await renderToBuffer(

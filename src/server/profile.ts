@@ -2,16 +2,15 @@ import { eq } from 'drizzle-orm'
 
 import { createServerFn } from '@tanstack/react-start'
 
-import { getSession } from '#/lib/auth/session'
+import { ensureSession } from '#/lib/auth/session'
 import { db } from '#/lib/db'
 import { pilotProfiles, users } from '#/lib/db/schema'
 
 import { pilotProfileSchema } from '#/validators/profile'
 
 export const getProfile = createServerFn({ method: 'GET' }).handler(
-  async (): Promise<any | null> => {
-    const session = await getSession()
-    if (!session) throw new Error('Unauthorized')
+  async () => {
+    const session = await ensureSession()
 
     const result = await db
       .select()
@@ -26,8 +25,7 @@ export const getProfile = createServerFn({ method: 'GET' }).handler(
 export const saveProfile = createServerFn({ method: 'POST' })
   .inputValidator((data: unknown) => pilotProfileSchema.parse(data))
   .handler(async ({ data }) => {
-    const session = await getSession()
-    if (!session) throw new Error('Unauthorized')
+    const session = await ensureSession()
 
     await db
       .update(users)

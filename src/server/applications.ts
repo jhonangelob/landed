@@ -3,7 +3,7 @@ import z from 'zod'
 
 import { createServerFn } from '@tanstack/react-start'
 
-import { getSession } from '#/lib/auth/session'
+import { ensureSession } from '#/lib/auth/session'
 import { db } from '#/lib/db'
 import { applications } from '#/lib/db/schema'
 
@@ -14,11 +14,11 @@ import {
   updateStageSchema,
 } from '#/validators/application'
 import { checkGenerationLimit } from './subscription'
+import { AppError } from '#/lib/utils'
 
 export const getApplications = createServerFn({ method: 'GET' }).handler(
   async () => {
-    const session = await getSession()
-    if (!session) throw new Error('Unauthorized')
+    const session = await ensureSession()
 
     return await db
       .select()
@@ -37,8 +37,7 @@ export const getApplicationById = createServerFn({ method: 'GET' })
     z.object({ id: z.string().uuid() }).parse(data),
   )
   .handler(async ({ data }) => {
-    const session = await getSession()
-    if (!session) throw new Error('Unauthorized')
+    const session = await ensureSession()
 
     const result = await db
       .select()
@@ -61,11 +60,11 @@ export const createApplication = createServerFn({
 })
   .inputValidator((data: unknown) => createApplicationSchema.parse(data))
   .handler(async ({ data }) => {
-    const session = await getSession()
-    if (!session) throw new Error('Unauthorized')
+    const session = await ensureSession()
 
     const limit = await checkGenerationLimit()
-    if (limit.hasReached) throw new Error('Limit Reached')
+    if (limit.hasReached)
+      throw new AppError('GENERATION_LIMIT_REACHED', 'Limit Reached')
 
     const [application] = await db
       .insert(applications)
@@ -85,8 +84,7 @@ export const updateApplication = createServerFn({
 })
   .inputValidator((data: unknown) => updateApplicationSchema.parse(data))
   .handler(async ({ data }) => {
-    const session = await getSession()
-    if (!session) throw new Error('Unauthorized')
+    const session = await ensureSession()
 
     await db
       .update(applications)
@@ -115,8 +113,7 @@ export const updateApplicationStage = createServerFn({
 })
   .inputValidator((data: unknown) => updateStageSchema.parse(data))
   .handler(async ({ data }) => {
-    const session = await getSession()
-    if (!session) throw new Error('Unauthorized')
+    const session = await ensureSession()
 
     await db
       .update(applications)
@@ -125,6 +122,7 @@ export const updateApplicationStage = createServerFn({
         and(
           eq(applications.userId, session.user.id),
           eq(applications.id, data.id),
+          isNull(applications.deletedAt),
         ),
       )
   })
@@ -132,8 +130,7 @@ export const updateApplicationStage = createServerFn({
 export const deleteApplication = createServerFn({ method: 'POST' })
   .inputValidator((data: unknown) => deleteApplicationSchema.parse(data))
   .handler(async ({ data }) => {
-    const session = await getSession()
-    if (!session) throw new Error('Unauthorized')
+    const session = await ensureSession()
 
     await db
       .update(applications)

@@ -26,6 +26,11 @@ import { getAccountDetails } from '#/server/account'
 import { getActivities } from '#/server/activity'
 
 import { PLANS } from '#/constants/plan'
+import {
+  subscriptionQueryKey,
+  useSubscriptionQuery,
+} from '#/hooks/useSubscriptionQueries'
+import { getSubscription } from '#/server/subscription'
 
 export const Route = createFileRoute('/(app)/hangar')({
   head: () => ({
@@ -45,6 +50,10 @@ export const Route = createFileRoute('/(app)/hangar')({
         queryKey: activitiesQueryKey,
         queryFn: () => getActivities(),
       }),
+      queryClient.ensureQueryData({
+        queryKey: subscriptionQueryKey,
+        queryFn: () => getSubscription(),
+      }),
     ]),
   component: RouteComponent,
 })
@@ -52,6 +61,7 @@ export const Route = createFileRoute('/(app)/hangar')({
 function RouteComponent() {
   const { data: activities } = useActivitiesQuery()
   const { data: account } = useAccountDetailsQuery()
+  const { data: subscription } = useSubscriptionQuery()
 
   const { mutateAsync: updateAccount } = useUpdateAccountMutation()
   const { mutateAsync: deleteUserAccount } = useDeleteAccountMutation()
@@ -95,7 +105,7 @@ function RouteComponent() {
           {PLANS.map((item) => (
             <SubscriptionCard
               data={item}
-              current={item.isCurrent}
+              current={subscription.planId === item.id}
               onSelect={() => console.log('unimplemented: select')}
               key={item.id}
             />

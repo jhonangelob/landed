@@ -2,7 +2,7 @@ import { and, count, eq, isNull, max } from 'drizzle-orm'
 
 import { createServerFn } from '@tanstack/react-start'
 
-import { getSession } from '#/lib/auth/session'
+import { ensureSession } from '#/lib/auth/session'
 import { db } from '#/lib/db'
 import { applications, generatedDocs } from '#/lib/db/schema'
 
@@ -15,8 +15,7 @@ export const getActivities = createServerFn({
     documentCount: number
     lastDocGenerated: Date | null
   }> => {
-    const session = await getSession()
-    if (!session) throw new Error('Unauthorized')
+    const session = await ensureSession()
 
     const uid = session.user.id
 

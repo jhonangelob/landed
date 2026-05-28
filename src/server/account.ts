@@ -2,16 +2,15 @@ import { eq } from 'drizzle-orm'
 
 import { createServerFn } from '@tanstack/react-start'
 
-import { getSession } from '#/lib/auth/session'
+import { ensureSession } from '#/lib/auth/session'
 import { db } from '#/lib/db'
 import { users } from '#/lib/db/schema'
 
 import { updateAccountSchema } from '#/validators/account'
 
 export const getAccountDetails = createServerFn({ method: 'GET' }).handler(
-  async (): Promise<any | null> => {
-    const session = await getSession()
-    if (!session) throw new Error('Unauthorized')
+  async () => {
+    const session = await ensureSession()
 
     const result = await db
       .select()
@@ -26,8 +25,7 @@ export const getAccountDetails = createServerFn({ method: 'GET' }).handler(
 export const updateAccountDetails = createServerFn({ method: 'POST' })
   .inputValidator((data: unknown) => updateAccountSchema.parse(data))
   .handler(async ({ data }) => {
-    const session = await getSession()
-    if (!session) throw new Error('Unauthorized')
+    const session = await ensureSession()
 
     await db
       .update(users)
@@ -43,8 +41,7 @@ export const updateAccountDetails = createServerFn({ method: 'POST' })
 
 export const deleteAccount = createServerFn({ method: 'POST' }).handler(
   async () => {
-    const session = await getSession()
-    if (!session) throw new Error('Unauthorized')
+    const session = await ensureSession()
 
     await db.delete(users).where(eq(users.id, session.user.id))
 
