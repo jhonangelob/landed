@@ -20,7 +20,6 @@ import { Button } from '#/components/ui/button'
 
 import AccountForm from '#/components/hangar/AccountForm'
 import ActivityCardGroup from '#/components/hangar/ActivityCardGroup'
-import DeleteAccountDialog from '#/components/hangar/DeleteAccountDialog'
 import PasswordForm from '#/components/hangar/PasswordForm'
 import SectionCard from '#/components/hangar/SectionCard'
 import SubscriptionCard from '#/components/hangar/SubscriptionCard'
@@ -29,6 +28,8 @@ import SectionHeader from '#/components/layout/SectionHeader'
 import { getAccountDetails } from '#/server/account'
 import { getActivities } from '#/server/activity'
 import { getSubscription } from '#/server/subscription'
+
+import { useModal } from '#/lib/store/modal'
 
 import { PLANS } from '#/constants/plan'
 
@@ -66,6 +67,8 @@ function RouteComponent() {
   const { mutateAsync: updateAccount } = useUpdateAccountMutation()
   const { mutateAsync: deleteUserAccount } = useDeleteAccountMutation()
   const { mutateAsync: updatePassword } = useUpdatePasswordMutation()
+
+  const { open } = useModal()
 
   return (
     <div className="flex flex-col gap-4">
@@ -133,14 +136,15 @@ function RouteComponent() {
             <p className="text-muted font-mono text-[11px] leading-[1.4] font-normal tracking-[1.1px] uppercase">
               This cannot be undone.
             </p>
-            <DeleteAccountDialog onDelete={deleteUserAccount}>
-              <Button
-                className="bg-destructive hover:bg-destructive/80 rounded-md font-mono text-[12px] leading-[1.4] font-medium tracking-[0.9px] text-white uppercase"
-                type="reset"
-              >
-                Delete Account...
-              </Button>
-            </DeleteAccountDialog>
+            <Button
+              className="bg-destructive hover:bg-destructive/80 rounded-md font-mono text-[12px] leading-[1.4] font-medium tracking-[0.9px] text-white uppercase"
+              type="reset"
+              onClick={() =>
+                open('deleteAccount', { onDelete: deleteUserAccount })
+              }
+            >
+              Delete Account...
+            </Button>
           </div>
         </SectionCard>
       </div>

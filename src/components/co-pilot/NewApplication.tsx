@@ -131,8 +131,11 @@ export default function NewApplication({ profile }: NewApplicationProps) {
                     onBlur={field.handleBlur}
                   />
                   <p className="text-muted font-mono text-[12px] leading-[1.4]">
-                    {field.state.value.length} chars -{" "}
-                    {field.state.value.trim() === "" ? 0 : field.state.value.trim().split(/\s+/).length} words
+                    {field.state.value.length} chars -{' '}
+                    {field.state.value.trim() === ''
+                      ? 0
+                      : field.state.value.trim().split(/\s+/).length}{' '}
+                    words
                   </p>
                   {field.state.meta.errors.map((err, i) => (
                     <p key={i} className="text-destructive text-xs">

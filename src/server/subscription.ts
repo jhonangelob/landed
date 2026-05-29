@@ -31,6 +31,41 @@ export const createSubscription = createServerFn({ method: 'POST' }).handler(
   },
 )
 
+export const updateSubscription = createServerFn({ method: 'POST' }).handler(
+  async () => {
+    const session = await ensureSession()
+
+    const expiresAt = new Date()
+    expiresAt.setDate(expiresAt.getDate() + 30)
+
+    await db
+      .insert(subscriptions)
+      .values({
+        userId: session.user.id,
+        planId: 'runway',
+        generationsUsed: 0,
+        generationsLimit: 50,
+        startedAt: new Date(),
+        expiresAt,
+        isActive: true,
+      })
+      .onConflictDoUpdate({
+        target: subscriptions.userId,
+        set: {
+          planId: 'runway',
+          generationsUsed: 0,
+          generationsLimit: 50,
+          startedAt: new Date(),
+          expiresAt,
+          isActive: true,
+          updatedAt: new Date(),
+        },
+      })
+
+    return { success: true }
+  },
+)
+
 export const checkGenerationLimit = createServerFn({ method: 'GET' }).handler(
   async () => {
     const session = await ensureSession()

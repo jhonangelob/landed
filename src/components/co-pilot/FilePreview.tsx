@@ -1,10 +1,11 @@
 import { DownloadIcon, PlusIcon, SparklesIcon } from 'lucide-react'
 
+import { useModal } from '#/lib/store/modal'
+
 import type { Document } from '#/validators/documents'
 
 import { Button } from '../ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
-import ExportFileDialog from './ExportFileDialog'
 
 interface FilePreviewProps {
   showRegenerateButton?: boolean
@@ -40,6 +41,7 @@ export default function FilePreview({
   documents,
   onRetailor,
 }: FilePreviewProps) {
+  const { open } = useModal()
   const cvDoc = documents?.find((d) => d.type === 'cv')
   const clDoc = documents?.find((d) => d.type === 'cover_letter')
   const hasDocuments = documents && documents.length > 0
@@ -74,15 +76,18 @@ export default function FilePreview({
             )}
 
             {hasDocuments && (
-              <ExportFileDialog applicationId={documents[0].applicationId}>
-                <Button
-                  className="text-primary-text flex h-fit flex-row gap-1.5 px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase"
-                  variant="outline"
-                >
-                  <DownloadIcon className="size-2.75" />
-                  <p className="hidden md:block">Pdf</p>
-                </Button>
-              </ExportFileDialog>
+              <Button
+                className="text-primary-text flex h-fit flex-row gap-1.5 px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase"
+                variant="outline"
+                onClick={() =>
+                  open('exportFile', {
+                    applicationId: documents[0].applicationId,
+                  })
+                }
+              >
+                <DownloadIcon className="size-2.75" />
+                <p className="hidden md:block">Pdf</p>
+              </Button>
             )}
           </div>
         </TabsList>

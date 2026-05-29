@@ -1,5 +1,6 @@
 import { Outlet, createFileRoute, redirect } from '@tanstack/react-router'
 
+import { ModalRegistry } from '#/components/ModalRegistry'
 import Footer from '#/components/layout/Footer'
 import Header from '#/components/layout/Header'
 
@@ -24,6 +25,7 @@ function AppLayout() {
         <Outlet />
       </main>
       <Footer />
+      <ModalRegistry />
     </div>
   )
 }

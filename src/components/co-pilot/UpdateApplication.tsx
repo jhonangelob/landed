@@ -25,6 +25,8 @@ import { Textarea } from '#/components/ui/textarea'
 
 import SectionHeader from '#/components/layout/SectionHeader'
 
+import { useModal } from '#/lib/store/modal'
+
 import {
   applicationStageSchema,
   updateApplicationSchema,
@@ -32,7 +34,6 @@ import {
 import type { Application, ApplicationStage } from '#/validators/application'
 
 import ApplicationSummary from './ApplicationSummary'
-import DeleteApplicationDialog from './DeleteApplicationDialog'
 import FilePreview from './FilePreview'
 import SectionCard from './SectionCard'
 import StageBar from './StageBar'
@@ -46,6 +47,8 @@ export default function UpdateApplication({
   applicationId,
   application,
 }: UpdateApplicationProps) {
+  const { open } = useModal()
+
   const { mutateAsync: updateStage } =
     useUpdateApplicationStageMutation(applicationId)
   const { mutateAsync: updateApplicationDetails } =
@@ -358,11 +361,20 @@ export default function UpdateApplication({
                 with any generated CV/cover letter for it. This cannot be
                 undone.
               </p>
-              <DeleteApplicationDialog data={application}>
-                <Button className="bg-destructive hover:bg-destructive/80 ml-auto h-8.75 w-fit font-mono text-[12px] leading-[1.4] uppercase">
-                  Delete Application...
-                </Button>
-              </DeleteApplicationDialog>
+              <Button
+                className="bg-destructive hover:bg-destructive/80 ml-auto h-8.75 w-fit font-mono text-[12px] leading-[1.4] uppercase"
+                onClick={() =>
+                  open('deleteApplication', {
+                    id: application.id,
+                    company: application.company,
+                    role: application.role,
+                    stage: application.stage,
+                    appliedAt: application.appliedAt,
+                  })
+                }
+              >
+                Delete Application...
+              </Button>
             </div>
           </SectionCard>
         </div>
