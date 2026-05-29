@@ -23,7 +23,11 @@ export const applicationStatusEnum = pgEnum('application_status', [
   'withdrawn',
 ])
 
-export const planTypeEnum = pgEnum('plan_id', ['free', 'runway', 'runway_3mo'])
+export const planTypeEnum = pgEnum('plan_id', [
+  'economy',
+  'premium',
+  'business',
+])
 
 export const docTypeEnum = pgEnum('doc_type', ['cv', 'cover_letter'])
 
@@ -251,13 +255,13 @@ export const subscriptions = pgTable('subscriptions', {
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' })
     .unique(),
-  planId: planTypeEnum('plan_id').notNull().default('free'),
+  planId: planTypeEnum('plan_id').notNull().default('economy'),
   startedAt: timestamp('started_at').defaultNow().notNull(),
-  expiresAt: timestamp('expires_at'), // null = free plan
+  expiresAt: timestamp('expires_at'),
   isActive: boolean('is_active').notNull().default(true),
   generationsUsed: integer('generations_used').notNull().default(0),
-  generationsLimit: integer('generations_limit').notNull().default(10),
-  paymentRef: text('payment_ref'), // PayMongo payment ID
+  generationsLimit: integer('generations_limit'),
+  paymentRef: text('payment_ref'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 })

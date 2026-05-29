@@ -2,7 +2,7 @@ import { clToHtml, cvToHtml } from '#/helper/document'
 import { anthropic } from '@ai-sdk/anthropic'
 import { renderToBuffer } from '@react-pdf/renderer'
 import { generateText } from 'ai'
-import { and, desc, eq } from 'drizzle-orm'
+import { and, count, desc, eq, gte } from 'drizzle-orm'
 import z from 'zod'
 
 import { createServerFn } from '@tanstack/react-start'
@@ -62,6 +62,7 @@ export const generateDocuments = createServerFn({ method: 'POST' })
     const session = await ensureSession()
 
     await checkGenerationLimit()
+    await checkRateLimit()
 
     const [profile] = await db
       .select()
@@ -209,7 +210,7 @@ export const exportCvPdf = createServerFn({ method: 'POST' })
     if (isTemplateLocked(data.template, planId)) {
       throw new AppError(
         'SUBSCRIPTION_NOT_FOUND',
-        'Upgrade to Runway to unlock this template',
+        'Upgrade to Premium to unlock this template',
       )
     }
 
@@ -240,3 +241,35 @@ export const exportCvPdf = createServerFn({ method: 'POST' })
       filename: `cv-${data.template}.pdf`,
     }
   })
+
+export const checkRateLimit = createServerFn({ method: 'GET' }).handler(
+  async () => {
+    const session = await ensureSession()
+
+    const windowStart = new Date(Date.now() - 30 * 60 * 1000)
+
+    const result = await db
+      .select({ total: count() })
+      .from(generatedDocs)
+      .where(
+        and(
+          eq(generatedDocs.userId, session.user.id),
+          gte(generatedDocs.createdAt, windowStart),
+        ),
+      )
+
+    const generations = Math.floor((result[0]?.total ?? 0) / 2)
+    const limit = 10
+    const remaining = Math.max(0, limit - generations)
+    const exceeded = generations >= limit
+
+    if (exceeded) {
+      throw new AppError(
+        'RATE_LIMIT_EXCEEDED',
+        `You've generated ${limit} documents in the last 30 minutes. Please wait before generating again.`,
+      )
+    }
+
+    return { generations, limit, remaining, exceeded }
+  },
+)

@@ -42,7 +42,7 @@ export const updateSubscription = createServerFn({ method: 'POST' }).handler(
       .insert(subscriptions)
       .values({
         userId: session.user.id,
-        planId: 'runway',
+        planId: 'premium',
         generationsUsed: 0,
         generationsLimit: 50,
         startedAt: new Date(),
@@ -52,7 +52,7 @@ export const updateSubscription = createServerFn({ method: 'POST' }).handler(
       .onConflictDoUpdate({
         target: subscriptions.userId,
         set: {
-          planId: 'runway',
+          planId: 'premium',
           generationsUsed: 0,
           generationsLimit: 50,
           startedAt: new Date(),
@@ -78,7 +78,7 @@ export const checkGenerationLimit = createServerFn({ method: 'GET' }).handler(
       .then((r) => r[0] ?? null)
 
     const used = sub.generationsUsed
-    const limit = sub.generationsLimit
+    const limit = sub.generationsLimit ?? 0
 
     if (used >= limit)
       throw new AppError('GENERATION_LIMIT_REACHED', 'Limit Reached')

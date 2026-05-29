@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const planIdSchema = z.enum(['free', 'runway', 'runway_3mo'])
+export const planIdSchema = z.enum(['economy', 'premium', 'business'])
 
 export type PlanId = z.infer<typeof planIdSchema>
 
@@ -10,7 +10,7 @@ export const planSchema = z.object({
   price: z.number().min(0),
   currency: z.string(),
   duration: z.number().positive().nullable(),
-  generations: z.number().positive(),
+  generations: z.number().positive().nullable(),
   applications: z.number().positive().nullable(),
   features: z.array(z.string()),
 })

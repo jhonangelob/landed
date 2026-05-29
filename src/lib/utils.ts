@@ -18,6 +18,7 @@ export type ErrorCode =
   | 'DOCUMENT_NOT_FOUND'
   | 'MISSING_ENV'
   | 'INTERNAL_ERROR'
+  | 'RATE_LIMIT_EXCEEDED'
 
 export class AppError extends Error {
   code: ErrorCode

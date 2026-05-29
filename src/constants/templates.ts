@@ -19,7 +19,7 @@ export const CV_TEMPLATES: CvTemplate[] = [
     name: 'Classic',
     description:
       'Single column, traditional layout. ATS-friendly and safe for any industry.',
-    plan: 'free',
+    plan: 'economy',
     preview: '📄',
   },
   {
@@ -27,22 +27,22 @@ export const CV_TEMPLATES: CvTemplate[] = [
     name: 'Modern',
     description:
       'Two column with sidebar. Visually distinct, great for tech and design roles.',
-    plan: 'runway',
+    plan: 'premium',
     preview: '📋',
   },
   {
     id: 'minimal',
     name: 'Minimal',
     description: 'Clean lines, generous whitespace. Lets your content breathe.',
-    plan: 'runway',
+    plan: 'premium',
     preview: '🗒️',
   },
 ] as const
 
 export type CvTemplateId = (typeof CV_TEMPLATES)[number]['id']
 
-export const FREE_TEMPLATES = CV_TEMPLATES.filter((t) => t.plan === 'free')
-export const PAID_TEMPLATES = CV_TEMPLATES.filter((t) => t.plan !== 'free')
+export const FREE_TEMPLATES = CV_TEMPLATES.filter((t) => t.plan === 'economy')
+export const PAID_TEMPLATES = CV_TEMPLATES.filter((t) => t.plan !== 'economy')
 
 export const getTemplateById = (id: string): CvTemplate | undefined =>
   CV_TEMPLATES.find((t) => t.id === id)
@@ -53,8 +53,8 @@ export const isTemplateLocked = (
 ): boolean => {
   const template = getTemplateById(templateId)
   if (!template) return true
-  if (template.plan === 'free') return false
-  return planId === 'free'
+  if (template.plan === 'economy') return false
+  return planId === 'economy'
 }
 
 export const TEMPLATE_MAP: Record<

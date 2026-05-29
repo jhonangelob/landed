@@ -36,8 +36,8 @@ export default function ExportFileModal({
 
   const { mutateAsync: exportDocuments } = useExportDocumentsMutation()
 
-  const handleClickRunway = () => {
-    console.log('unimplemented: runway')
+  const handleClickPremium = () => {
+    console.log('unimplemented: premium')
   }
 
   const handleExport = async () => {
@@ -96,9 +96,9 @@ export default function ExportFileModal({
           Unlock Premium templates with
           <span
             className="text-primary ml-1 cursor-pointer font-medium"
-            onClick={handleClickRunway}
+            onClick={handleClickPremium}
           >
-            Runway
+            Premium
           </span>
         </div>
         <DialogFooter>
