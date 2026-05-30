@@ -64,13 +64,14 @@ export const generateDocuments = createServerFn({ method: 'POST' })
     await checkGenerationLimit()
     await checkRateLimit()
 
-    const [profile] = await db
+    const profile = await db
       .select()
       .from(pilotProfiles)
       .where(eq(pilotProfiles.userId, session.user.id))
       .limit(1)
+      .then((r) => r.at(0))
 
-    const [application] = await db
+    const application = await db
       .select()
       .from(applications)
       .where(
@@ -79,8 +80,9 @@ export const generateDocuments = createServerFn({ method: 'POST' })
           eq(applications.userId, session.user.id),
         ),
       )
+      .then((r) => r.at(0))
 
-    const [latest] = await db
+    const latest = await db
       .select({ version: generatedDocs.version })
       .from(generatedDocs)
       .where(
@@ -91,6 +93,7 @@ export const generateDocuments = createServerFn({ method: 'POST' })
       )
       .orderBy(desc(generatedDocs.version))
       .limit(1)
+      .then((r) => r.at(0))
 
     const nextVersion = (latest?.version ?? 0) + 1
 
@@ -138,6 +141,9 @@ export const generateDocuments = createServerFn({ method: 'POST' })
 
         Candidate Profile:
         Name: ${profile.headline}
+        Github: ${profile.links?.github}
+        Linkedin: ${profile.links?.linkedin}
+        Portfolio: ${profile.links?.portfolio}
         Summary: ${profile.summary}
         Skills: ${(profile.skills ?? []).join(', ')}
         Experience: ${JSON.stringify(profile.experience, null, 2)}
@@ -214,7 +220,7 @@ export const exportCvPdf = createServerFn({ method: 'POST' })
       )
     }
 
-    const [doc] = await db
+    const doc = await db
       .select({ contentJson: generatedDocs.contentJson })
       .from(generatedDocs)
       .where(
@@ -225,6 +231,7 @@ export const exportCvPdf = createServerFn({ method: 'POST' })
         ),
       )
       .limit(1)
+      .then((r) => r.at(0))
 
     if (!doc) throw new AppError('DOCUMENT_NOT_FOUND', 'Document not found')
 

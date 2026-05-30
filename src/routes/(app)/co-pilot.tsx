@@ -57,7 +57,7 @@ function RouteComponent() {
     <div className="section">
       {isEditMode ? (
         <UpdateApplication
-          key={application?.updatedAt?.getTime()}
+          key={application?.updatedAt.getTime()}
           applicationId={applicationId}
           application={application}
         />

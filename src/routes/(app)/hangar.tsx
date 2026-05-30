@@ -109,7 +109,15 @@ function RouteComponent() {
             <SubscriptionCard
               data={item}
               current={subscription.planId === item.id}
-              onSelect={() => console.log('unimplemented: select')}
+              onSelect={() =>
+                subscription.planId !== item.id &&
+                open('updateSubscription', {
+                  currentPlan: PLANS.find(
+                    (it) => it.id === subscription.planId,
+                  )!,
+                  newPlan: item,
+                })
+              }
               key={item.id}
             />
           ))}

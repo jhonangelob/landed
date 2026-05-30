@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 
 import type { ApplicationStage } from '#/validators/application'
+import type { Plan } from '#/validators/subscription'
 
 export type DeleteAccountPayload = {
   onDelete: () => void
@@ -18,10 +19,16 @@ export type ExportFilePayload = {
   applicationId: string
 }
 
+export type UpdateSubscriptionPayload = {
+  currentPlan: Plan
+  newPlan: Plan
+}
+
 type ModalMap = {
   deleteAccount: DeleteAccountPayload
   deleteApplication: DeleteApplicationPayload
   exportFile: ExportFilePayload
+  updateSubscription: UpdateSubscriptionPayload
 }
 
 export type ModalId = keyof ModalMap
@@ -29,7 +36,10 @@ export type ModalId = keyof ModalMap
 interface ModalStore {
   activeModal: ModalId | null
   payload: Partial<ModalMap>
-  open: <K extends ModalId>(id: K, data: ModalMap[K]) => void
+  open: <TModalId extends ModalId>(
+    id: TModalId,
+    data: ModalMap[TModalId],
+  ) => void
   close: () => void
 }
 

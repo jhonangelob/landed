@@ -3,6 +3,7 @@ import { useModalStore } from '#/lib/store/modal'
 import DeleteAccountModal from './modals/DeleteAccountModal'
 import DeleteApplicationModal from './modals/DeleteApplicationModal'
 import ExportFileModal from './modals/ExportFileModal'
+import UpdateSubscriptionModal from './modals/UpdateSubscriptionModal'
 
 const noop = () => {}
 
@@ -34,6 +35,14 @@ export function ModalRegistry() {
         onOpenChange={handleClose}
         applicationId={payload.exportFile?.applicationId ?? ''}
       />
+      {payload.updateSubscription && (
+        <UpdateSubscriptionModal
+          open={activeModal === 'updateSubscription'}
+          onOpenChange={handleClose}
+          currentPlan={payload.updateSubscription.currentPlan}
+          newPlan={payload.updateSubscription.newPlan}
+        />
+      )}
     </>
   )
 }

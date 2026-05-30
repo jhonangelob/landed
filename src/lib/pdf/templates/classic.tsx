@@ -1,98 +1,173 @@
 import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer'
-
 import type { CvContent } from '#/validators/documents'
+
+/**
+ * Harvard CV template (Harvard FAS Mignone Center for Career Success layout).
+ *
+ * Layout characteristics faithfully reproduced from the source PDF:
+ *  - Centered name at the top, centered contact line beneath it.
+ *  - Each section opens with a left-aligned, capitalized heading that spans
+ *    the full content width with a hairline rule beneath it.
+ *  - Each entry has a two-column header row: bold organization on the left,
+ *    location on the right; then italic position/role on the left with the
+ *    date range on the right.
+ *  - Bulleted descriptions use a round "•" marker, hanging indent.
+ *
+ * Single-page safety: tight, deterministic spacing, no min-heights, wrap
+ * disabled on logical blocks so a row never splits across a page break.
+ */
+
+const COLORS = {
+  ink: '#000000',
+  rule: '#000000',
+}
 
 const s = StyleSheet.create({
   page: {
-    fontSize: 10,
-    color: '#0c1f35',
-    paddingTop: 48,
-    paddingBottom: 48,
-    paddingHorizontal: 52,
-    lineHeight: 1.5,
-    fontFamily: 'Helvetica',
+    fontSize: 11,
+    color: COLORS.ink,
+    paddingTop: 40,
+    paddingBottom: 40,
+    paddingHorizontal: 54,
+    lineHeight: 1.2,
+    fontFamily: 'Times-Roman',
   },
 
-  // ── header
+  // ── header ────────────────────────────────────────────────
   header: {
-    marginBottom: 18,
-    paddingBottom: 14,
-    borderBottom: '1pt solid #c8e0f4',
+    marginBottom: 10,
   },
   name: {
-    fontSize: 20,
-    fontFamily: 'Helvetica-Bold',
-    color: '#0c1f35',
+    fontSize: 17,
+    fontFamily: 'Times-Bold',
+    textAlign: 'center',
     marginBottom: 3,
   },
-  contactRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
-    fontSize: 9,
-    color: '#5a7a99',
-  },
-  contactSep: {
-    color: '#c8e0f4',
+  contactLine: {
+    fontSize: 10,
+    textAlign: 'center',
   },
 
-  // ── section
+  // ── section ───────────────────────────────────────────────
   section: {
-    marginBottom: 14,
+    marginBottom: 6,
   },
   sectionTitle: {
-    fontSize: 8,
-    fontFamily: 'Helvetica-Bold',
-    color: '#0284c7',
-    letterSpacing: 1.4,
-    textTransform: 'uppercase',
+    fontSize: 12,
+    fontFamily: 'Times-Bold',
+    borderBottom: `1pt solid ${COLORS.rule}`,
+    paddingBottom: 1,
+    marginBottom: 3,
+  },
+
+  // ── entry ─────────────────────────────────────────────────
+  entry: {
     marginBottom: 6,
-    borderBottom: '0.5pt solid #e0f2fe',
-    paddingBottom: 3,
   },
-
-  // ── summary
-  summary: {
-    fontSize: 9.5,
-    color: '#3d6080',
-    lineHeight: 1.65,
-  },
-
-  // ── experience
-  expBlock: { marginBottom: 10 },
-  expHeader: {
+  rowBetween: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 1,
+    alignItems: 'flex-start',
   },
-  expRole: { fontSize: 10.5, fontFamily: 'Helvetica-Bold', color: '#0c1f35' },
-  expDates: { fontSize: 9, color: '#5a7a99' },
-  expCompany: { fontSize: 9.5, color: '#3d6080', marginBottom: 4 },
-  bullet: { flexDirection: 'row', marginBottom: 2, paddingLeft: 6 },
-  bulletDot: { width: 10, fontSize: 9, color: '#0ea5e9' },
-  bulletText: { flex: 1, fontSize: 9.5, color: '#3d6080' },
-
-  // ── skills
-  skillsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 5, marginTop: 2 },
-  skillPill: {
-    backgroundColor: '#e0f2fe',
-    color: '#0284c7',
-    fontSize: 8.5,
-    paddingVertical: 2,
-    paddingHorizontal: 8,
-    borderRadius: 10,
+  orgLeft: {
+    fontSize: 11,
+    fontFamily: 'Times-Bold',
+    flex: 1,
+    paddingRight: 8,
+  },
+  orgRight: {
+    fontSize: 11,
+    fontFamily: 'Times-Bold',
+    textAlign: 'right',
+  },
+  roleLeft: {
+    fontSize: 11,
+    fontFamily: 'Times-Italic',
+    flex: 1,
+    paddingRight: 8,
+  },
+  roleRight: {
+    fontSize: 11,
+    fontFamily: 'Times-Italic',
+    textAlign: 'right',
+  },
+  // single-line entry (e.g. study abroad / coursework line)
+  plainLine: {
+    fontSize: 11,
+    marginTop: 1,
   },
 
-  // ── education
-  eduHeader: {
+  // ── bullets ───────────────────────────────────────────────
+  bullets: {
+    marginTop: 2,
+  },
+  bullet: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    marginBottom: 1,
+    paddingLeft: 12,
+  },
+  bulletDot: {
+    width: 10,
+    fontSize: 11,
+  },
+  bulletText: {
+    flex: 1,
+    fontSize: 11,
+    textAlign: 'justify',
+  },
+
+  // ── skills & interests ────────────────────────────────────
+  skillRow: {
+    flexDirection: 'row',
     marginBottom: 1,
   },
-  eduDegree: { fontSize: 10, fontFamily: 'Helvetica-Bold', color: '#0c1f35' },
-  eduYear: { fontSize: 9, color: '#5a7a99' },
-  eduInst: { fontSize: 9.5, color: '#3d6080' },
+  skillLabel: {
+    fontFamily: 'Times-Bold',
+    fontSize: 11,
+  },
+  skillValue: {
+    fontSize: 11,
+    flex: 1,
+  },
 })
+
+interface EntryHeaderProps {
+  org: string
+  location?: string
+  role?: string
+  dates?: string
+}
+
+function EntryHeader({ org, location, role, dates }: EntryHeaderProps) {
+  return (
+    <>
+      <View style={s.rowBetween}>
+        <Text style={s.orgLeft}>{org}</Text>
+        {location ? <Text style={s.orgRight}>{location}</Text> : null}
+      </View>
+      {(role || dates) && (
+        <View style={s.rowBetween}>
+          <Text style={s.roleLeft}>{role}</Text>
+          {dates ? <Text style={s.roleRight}>{dates}</Text> : null}
+        </View>
+      )}
+    </>
+  )
+}
+
+function Bullets({ items }: { items: string[] }) {
+  if (!items.length) return null
+  return (
+    <View style={s.bullets}>
+      {items.map((b, j) => (
+        <View key={j} style={s.bullet} wrap={false}>
+          <Text style={s.bulletDot}>•</Text>
+          <Text style={s.bulletText}>{b}</Text>
+        </View>
+      ))}
+    </View>
+  )
+}
 
 interface Props {
   content: CvContent
@@ -100,24 +175,40 @@ interface Props {
 }
 
 export function ClassicTemplate({ content, email }: Props) {
+  const contactParts = [
+    content.contact?.address,
+    email,
+    content.contact?.phone,
+  ].filter(Boolean) as string[]
+
   return (
     <Document title="CV — Landed" creator="Landed App">
-      <Page size="A4" style={s.page}>
+      <Page size="LETTER" style={s.page}>
         {/* Header */}
         <View style={s.header}>
           <Text style={s.name}>{content.headline}</Text>
-          <View style={s.contactRow}>
-            {email && <Text>{email}</Text>}
-            {email && <Text style={s.contactSep}>·</Text>}
-            <Text>Open to remote</Text>
-          </View>
+          {contactParts.length > 0 && (
+            <Text style={s.contactLine}>{contactParts.join('  •  ')}</Text>
+          )}
         </View>
 
-        {/* Summary */}
-        {content.summary && (
+        {/* Education */}
+        {content.education.length > 0 && (
           <View style={s.section}>
-            <Text style={s.sectionTitle}>Summary</Text>
-            <Text style={s.summary}>{content.summary}</Text>
+            <Text style={s.sectionTitle}>Education</Text>
+            {content.education.map((edu, i) => (
+              <View key={i} style={s.entry} wrap={false}>
+                <EntryHeader
+                  org={edu.institution}
+                  location={edu.location}
+                  role={edu.degree}
+                  dates={edu.year}
+                />
+                {edu.detail ? (
+                  <Text style={s.plainLine}>{edu.detail}</Text>
+                ) : null}
+              </View>
+            ))}
           </View>
         )}
 
@@ -126,50 +217,59 @@ export function ClassicTemplate({ content, email }: Props) {
           <View style={s.section}>
             <Text style={s.sectionTitle}>Experience</Text>
             {content.experience.map((exp, i) => (
-              <View key={i} style={s.expBlock}>
-                <View style={s.expHeader}>
-                  <Text style={s.expRole}>{exp.role}</Text>
-                  <Text style={s.expDates}>{exp.dates}</Text>
-                </View>
-                <Text style={s.expCompany}>{exp.company}</Text>
-                {exp.bullets.map((b, j) => (
-                  <View key={j} style={s.bullet}>
-                    <Text style={s.bulletDot}>▸</Text>
-                    <Text style={s.bulletText}>{b}</Text>
-                  </View>
-                ))}
+              <View key={i} style={s.entry} wrap={false}>
+                <EntryHeader
+                  org={exp.company}
+                  location={exp.location}
+                  role={exp.role}
+                  dates={exp.dates}
+                />
+                <Bullets items={exp.bullets} />
               </View>
             ))}
           </View>
         )}
 
-        {/* Skills */}
-        {content.skills.length > 0 && (
+        {/* Leadership and Activities */}
+        {content.leadership && content.leadership.length > 0 && (
           <View style={s.section}>
-            <Text style={s.sectionTitle}>Skills</Text>
-            <View style={s.skillsRow}>
-              {content.skills.map((skill, i) => (
-                <View key={i} style={s.skillPill}>
-                  <Text>{skill}</Text>
-                </View>
-              ))}
-            </View>
+            <Text style={s.sectionTitle}>Leadership and Activities</Text>
+            {content.leadership.map((act, i) => (
+              <View key={i} style={s.entry} wrap={false}>
+                <EntryHeader
+                  org={act.organization}
+                  location={act.location}
+                  role={act.role}
+                  dates={act.dates}
+                />
+                <Bullets items={act.bullets ?? []} />
+              </View>
+            ))}
           </View>
         )}
 
-        {/* Education */}
-        {content.education.length > 0 && (
+        {/* Skills & Interests */}
+        {(content.skills.length > 0 ||
+          (content.skillGroups && content.skillGroups.length > 0)) && (
           <View style={s.section}>
-            <Text style={s.sectionTitle}>Education</Text>
-            {content.education.map((edu, i) => (
-              <View key={i} style={{ marginBottom: 6 }}>
-                <View style={s.eduHeader}>
-                  <Text style={s.eduDegree}>{edu.degree}</Text>
-                  <Text style={s.eduYear}>{edu.year}</Text>
+            <Text style={s.sectionTitle}>Skills &amp; Interests</Text>
+            {content.skillGroups && content.skillGroups.length > 0 ? (
+              content.skillGroups.map((g, i) => (
+                <View key={i} style={s.skillRow}>
+                  <Text style={s.skillValue}>
+                    <Text style={s.skillLabel}>{g.label}: </Text>
+                    {g.value}
+                  </Text>
                 </View>
-                <Text style={s.eduInst}>{edu.institution}</Text>
+              ))
+            ) : (
+              <View style={s.skillRow}>
+                <Text style={s.skillValue}>
+                  <Text style={s.skillLabel}>Skills: </Text>
+                  {content.skills.join(', ')}
+                </Text>
               </View>
-            ))}
+            )}
           </View>
         )}
       </Page>

@@ -8,6 +8,10 @@ import { db } from '#/lib/db/index.server'
 import { subscriptions } from '#/lib/db/schema'
 import { AppError } from '#/lib/utils'
 
+import { upgradeSchema } from '#/validators/subscription'
+
+import { getPlanById } from '#/constants/plan'
+
 export const getSubscription = createServerFn({ method: 'GET' }).handler(
   async () => {
     const session = await ensureSession()
@@ -31,31 +35,37 @@ export const createSubscription = createServerFn({ method: 'POST' }).handler(
   },
 )
 
-export const updateSubscription = createServerFn({ method: 'POST' }).handler(
-  async () => {
+export const updateSubscription = createServerFn({ method: 'POST' })
+  .inputValidator((data: unknown) => upgradeSchema.parse(data))
+  .handler(async ({ data }) => {
     const session = await ensureSession()
+    const plan = getPlanById(data.planId)
 
-    const expiresAt = new Date()
-    expiresAt.setDate(expiresAt.getDate() + 30)
+    const startedAt = new Date()
+    const expiresAt = plan.duration
+      ? new Date(startedAt.getTime() + plan.duration * 24 * 60 * 60 * 1000)
+      : null
+
+    const generationsLimit = plan.generations ?? 999999
 
     await db
       .insert(subscriptions)
       .values({
         userId: session.user.id,
-        planId: 'premium',
+        planId: plan.id,
         generationsUsed: 0,
-        generationsLimit: 50,
-        startedAt: new Date(),
+        generationsLimit,
+        startedAt,
         expiresAt,
         isActive: true,
       })
       .onConflictDoUpdate({
         target: subscriptions.userId,
         set: {
-          planId: 'premium',
+          planId: plan.id,
           generationsUsed: 0,
-          generationsLimit: 50,
-          startedAt: new Date(),
+          generationsLimit,
+          startedAt,
           expiresAt,
           isActive: true,
           updatedAt: new Date(),
@@ -63,8 +73,7 @@ export const updateSubscription = createServerFn({ method: 'POST' }).handler(
       })
 
     return { success: true }
-  },
-)
+  })
 
 export const checkGenerationLimit = createServerFn({ method: 'GET' }).handler(
   async () => {
