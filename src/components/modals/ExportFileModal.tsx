@@ -41,16 +41,20 @@ export default function ExportFileModal({
   }
 
   const handleExport = async () => {
-    const result = await exportDocuments({ applicationId, template })
-    const bytes = Uint8Array.from(atob(result.base64), (c) => c.charCodeAt(0))
-    const blob = new Blob([bytes], { type: 'application/pdf' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = result.filename
-    a.click()
-    URL.revokeObjectURL(url)
-    onOpenChange(false)
+    try {
+      const result = await exportDocuments({ applicationId, template })
+      const bytes = Uint8Array.from(atob(result.base64), (c) => c.charCodeAt(0))
+      const blob = new Blob([bytes], { type: 'application/pdf' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = result.filename
+      a.click()
+      URL.revokeObjectURL(url)
+      onOpenChange(false)
+    } catch {
+      // Surfaced by the mutation's onError handler (e.g. locked template).
+    }
   }
 
   return (

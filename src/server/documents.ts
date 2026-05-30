@@ -152,8 +152,6 @@ export const generateDocuments = createServerFn({ method: 'POST' })
       maxOutputTokens: 3000,
     })
 
-    await increaseGenerationUsed()
-
     const cleaned = text
       .replace(/```json\n?/g, '')
       .replace(/```\n?/g, '')
@@ -180,6 +178,9 @@ export const generateDocuments = createServerFn({ method: 'POST' })
 
     const parsed = result.data
 
+    // Only consume a generation once we have a valid result to store.
+    const usage = await increaseGenerationUsed()
+
     await db.insert(generatedDocs).values([
       {
         userId: session.user.id,
@@ -203,6 +204,7 @@ export const generateDocuments = createServerFn({ method: 'POST' })
       id: application.id,
       cv: parsed.cv,
       coverLetter: parsed.coverLetter,
+      usage,
     }
   })
 

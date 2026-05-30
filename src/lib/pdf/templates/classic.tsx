@@ -1,4 +1,5 @@
 import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer'
+
 import type { CvContent } from '#/validators/documents'
 
 /**

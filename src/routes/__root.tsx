@@ -7,6 +7,8 @@ import {
 } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 
+import { Toaster } from '#/components/ui/sonner'
+
 import { NavigationProgress } from '#/components/layout/NavigationProgress'
 
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
@@ -49,6 +51,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <body>
         <NavigationProgress />
         {children}
+        <Toaster richColors position="bottom-right" closeButton />
         <TanStackDevtools
           config={{
             position: 'bottom-right',

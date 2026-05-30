@@ -1,3 +1,4 @@
+import { getUsageInfo } from '#/helper/usage'
 import { and, eq, sql } from 'drizzle-orm'
 
 import { createServerFn } from '@tanstack/react-start'
@@ -10,7 +11,7 @@ import { AppError } from '#/lib/utils'
 
 import { upgradeSchema } from '#/validators/subscription'
 
-import { getPlanById } from '#/constants/plan'
+import { FREE_PLAN, getPlanById } from '#/constants/plan'
 
 export const getSubscription = createServerFn({ method: 'GET' }).handler(
   async () => {
@@ -29,9 +30,15 @@ export const createSubscription = createServerFn({ method: 'POST' }).handler(
   async () => {
     const session = await ensureSession()
 
-    await db.insert(subscriptions).values({
-      userId: session.user.id,
-    })
+    await db
+      .insert(subscriptions)
+      .values({
+        userId: session.user.id,
+        planId: FREE_PLAN.id,
+        generationsUsed: 0,
+        generationsLimit: FREE_PLAN.generations,
+      })
+      .onConflictDoNothing({ target: subscriptions.userId })
   },
 )
 
@@ -86,18 +93,21 @@ export const checkGenerationLimit = createServerFn({ method: 'GET' }).handler(
       .limit(1)
       .then((r) => r[0] ?? null)
 
-    const used = sub.generationsUsed
-    const limit = sub.generationsLimit ?? 0
+    if (!sub)
+      throw new AppError(
+        'SUBSCRIPTION_NOT_FOUND',
+        'No active subscription found — please refresh and try again',
+      )
 
-    if (used >= limit)
-      throw new AppError('GENERATION_LIMIT_REACHED', 'Limit Reached')
+    const usage = getUsageInfo(sub)
 
-    return {
-      used,
-      limit,
-      remaining: limit - used,
-      hasReached: used >= limit,
-    }
+    if (!usage.unlimited && usage.remaining <= 0)
+      throw new AppError(
+        'GENERATION_LIMIT_REACHED',
+        'You have used all of your generations on the Economy plan',
+      )
+
+    return usage
   },
 )
 
@@ -115,10 +125,12 @@ export const increaseGenerationUsed = createServerFn({
     .where(
       and(
         eq(subscriptions.userId, session.user.id),
-        sql`${subscriptions.generationsUsed} < ${subscriptions.generationsLimit}`,
+        // Unlimited plans store a NULL limit, so this guard only bites the
+        // metered Economy plan.
+        sql`(${subscriptions.generationsLimit} IS NULL OR ${subscriptions.generationsUsed} < ${subscriptions.generationsLimit})`,
       ),
     )
-    .returning({ generationsUsed: subscriptions.generationsUsed })
+    .returning()
 
   if (updated.length === 0) {
     throw new AppError(
@@ -127,5 +139,5 @@ export const increaseGenerationUsed = createServerFn({
     )
   }
 
-  return { success: true }
+  return getUsageInfo(updated[0])
 })

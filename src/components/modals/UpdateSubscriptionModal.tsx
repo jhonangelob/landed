@@ -38,8 +38,12 @@ export default function UpdateSubscriptionModal({
   const { mutateAsync: upgrade, isPending } = useUpdateSubscriptionMutation()
 
   async function handleUpgrade() {
-    await upgrade(newPlan.id)
-    close()
+    try {
+      await upgrade(newPlan.id)
+      close()
+    } catch {
+      // Surfaced by the mutation's onError handler.
+    }
   }
 
   return (

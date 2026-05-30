@@ -10,7 +10,11 @@ import {
   updateSubscription,
 } from '#/server/subscription'
 
+import { notify } from '#/lib/toast'
+
 import type { PlanId } from '#/validators/subscription'
+
+import { getPlanById } from '#/constants/plan'
 
 export const subscriptionQueryKey = ['subscription'] as const
 
@@ -31,8 +35,15 @@ export function useUpdateSubscriptionMutation() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (planId: PlanId) => updateSubscription({ data: { planId } }),
-    onSuccess: () => {
+    onSuccess: (_, planId) => {
       queryClient.invalidateQueries({ queryKey: subscriptionQueryKey })
+      notify.success(
+        `You're now on ${getPlanById(planId).name}`,
+        'Welcome aboard — enjoy your upgraded cabin.',
+      )
+    },
+    onError: (error) => {
+      notify.fromError(error, 'Could not update your subscription')
     },
   })
 }

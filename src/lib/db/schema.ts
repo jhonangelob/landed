@@ -285,3 +285,6 @@ export type NewGeneratedDoc = typeof generatedDocs.$inferInsert
 
 export type TouchdownShare = typeof touchdownShares.$inferSelect
 export type NewTouchdownShare = typeof touchdownShares.$inferInsert
+
+export type Subscription = typeof subscriptions.$inferSelect
+export type NewSubscription = typeof subscriptions.$inferInsert

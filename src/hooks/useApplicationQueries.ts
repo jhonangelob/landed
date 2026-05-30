@@ -15,6 +15,11 @@ import {
   updateApplicationStage,
 } from '#/server/applications'
 
+import { parseError } from '#/lib/error'
+import { maybeCelebrateLanded } from '#/lib/store/landed'
+import { openUsageLimitModal } from '#/lib/store/usage-limit'
+import { notify } from '#/lib/toast'
+
 import type {
   CreateApplicationInput,
   UpdateApplicationInput,
@@ -48,6 +53,13 @@ export function useCreateApplicationMutation() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: applicationsQueryKey })
     },
+    onError: (error) => {
+      if (parseError(error).code === 'GENERATION_LIMIT_REACHED') {
+        openUsageLimitModal(queryClient, 'application')
+        return
+      }
+      notify.fromError(error, 'Could not add application')
+    },
   })
 }
 
@@ -57,11 +69,22 @@ export function useUpdateApplicationMutation(applicationId: string) {
   return useMutation({
     mutationFn: (values: UpdateApplicationInput) =>
       updateApplication({ data: { ...values, id: applicationId } }),
-    onSuccess: () => {
+    onSuccess: (_, values) => {
+      const celebrated = maybeCelebrateLanded(
+        queryClient,
+        applicationId,
+        values.stage,
+      )
+
       queryClient.invalidateQueries({
         queryKey: applicationQueryKey(applicationId),
       })
       queryClient.invalidateQueries({ queryKey: applicationsQueryKey })
+
+      if (!celebrated) notify.success('Application updated')
+    },
+    onError: (error) => {
+      notify.fromError(error, 'Could not update application')
     },
   })
 }
@@ -72,11 +95,24 @@ export function useUpdateApplicationStageMutation(applicationId: string) {
   return useMutation({
     mutationFn: (values: UpdateStageInput) =>
       updateApplicationStage({ data: values }),
-    onSuccess: () => {
+    onSuccess: (_, values) => {
+      const celebrated = maybeCelebrateLanded(
+        queryClient,
+        applicationId,
+        values.stage,
+      )
+
       queryClient.invalidateQueries({
         queryKey: applicationQueryKey(applicationId),
       })
       queryClient.invalidateQueries({ queryKey: applicationsQueryKey })
+
+      if (!celebrated) {
+        notify.success(`Moved to ${values.stage.replace('_', ' ')}`)
+      }
+    },
+    onError: (error) => {
+      notify.fromError(error, 'Could not update stage')
     },
   })
 }
@@ -90,6 +126,10 @@ export function useDeleteApplicationMutation() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: applicationsQueryKey })
       navigate({ to: '/flight-deck' })
+      notify.success('Application deleted')
+    },
+    onError: (error) => {
+      notify.fromError(error, 'Could not delete application')
     },
   })
 }

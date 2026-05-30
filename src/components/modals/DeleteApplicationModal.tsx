@@ -36,8 +36,12 @@ export default function DeleteApplicationModal({
   const { mutateAsync: deleteApplication } = useDeleteApplicationMutation()
 
   const handleDelete = async () => {
-    await deleteApplication(id)
-    onOpenChange(false)
+    try {
+      await deleteApplication(id)
+      onOpenChange(false)
+    } catch {
+      // Surfaced by the mutation's onError handler.
+    }
   }
 
   return (

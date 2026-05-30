@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 
 import type { ApplicationStage } from '#/validators/application'
-import type { Plan } from '#/validators/subscription'
+import type { Plan, PlanId } from '#/validators/subscription'
 
 export type DeleteAccountPayload = {
   onDelete: () => void
@@ -24,11 +24,29 @@ export type UpdateSubscriptionPayload = {
   newPlan: Plan
 }
 
+export type ApplicationLandedPayload = {
+  applicationId: string
+  company: string
+  role: string
+}
+
+export type UsageLimitReason = 'generation' | 'application'
+
+export type UsageLimitPayload = {
+  reason: UsageLimitReason
+  planId: PlanId
+  used: number
+  limit: number
+  resetAt: Date | null
+}
+
 type ModalMap = {
   deleteAccount: DeleteAccountPayload
   deleteApplication: DeleteApplicationPayload
   exportFile: ExportFilePayload
   updateSubscription: UpdateSubscriptionPayload
+  applicationLanded: ApplicationLandedPayload
+  usageLimit: UsageLimitPayload
 }
 
 export type ModalId = keyof ModalMap

@@ -75,17 +75,23 @@ export default function UpdateApplication({
       onSubmit: updateApplicationSchema,
     },
     onSubmit: async ({ value }) => {
-      await updateApplicationDetails(value)
+      try {
+        await updateApplicationDetails(value)
+      } catch {
+        // Surfaced by the mutation's onError handler.
+      }
     },
   })
 
   const handleUpdateStage = (stage: ApplicationStage) => {
-    updateStage({ id: applicationId, stage })
+    // Errors surface via the mutation's onError (toast); landed transitions
+    // trigger the celebration modal from the mutation's onSuccess.
+    updateStage({ id: applicationId, stage }).catch(() => {})
     form.setFieldValue('stage', stage)
   }
 
   const handleRetailorDocument = () => {
-    generateDocuments({ applicationId })
+    generateDocuments({ applicationId }).catch(() => {})
   }
 
   if (!application) return null
