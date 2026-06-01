@@ -48,6 +48,7 @@ export function ModalRegistry({ userName }: ModalRegistryProps) {
           onOpenChange={handleClose}
           currentPlan={payload.updateSubscription.currentPlan}
           newPlan={payload.updateSubscription.newPlan}
+          currentExpiresAt={payload.updateSubscription.currentExpiresAt}
         />
       )}
       {payload.applicationLanded && (

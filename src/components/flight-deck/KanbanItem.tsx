@@ -43,7 +43,7 @@ export default function KanbanItem({ data }: KanbanItemProps) {
       </p>
 
       <p className="text-primary-text items-center border-t pt-2 font-mono text-[13px] leading-[1.4] font-medium">
-        <span>P{formatNumberCompact(Number(data.salaryRange))} - </span>
+        <span>₱{formatNumberCompact(Number(data.salaryRange))} - </span>
 
         <span className="text-muted font-sans text-[12px] leading-[1.4] font-normal">
           {data.status || ''}

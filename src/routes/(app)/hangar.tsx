@@ -116,6 +116,7 @@ function RouteComponent() {
                     (it) => it.id === subscription.planId,
                   )!,
                   newPlan: item,
+                  currentExpiresAt: subscription.expiresAt,
                 })
               }
               key={item.id}

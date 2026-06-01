@@ -4,7 +4,6 @@ import {
   CopyIcon,
   DownloadIcon,
   LinkedinIcon,
-  PlayCircleIcon,
   TwitterIcon,
 } from 'lucide-react'
 
@@ -149,9 +148,7 @@ export default function ApplicationLandedModal({
                   {previousRole ?? '—'}
                 </p>
               </div>
-              <div className="w-1/3">
-                <PlayCircleIcon />
-              </div>
+              <img src="/assets/airplane-1.svg" className="my-auto h-14" />
               <div className="w-1/3 space-y-1 text-end">
                 <p className="text-primary font-mono text-[42px] leading-none font-medium tracking-[1.7px] uppercase">
                   {getCompanyCode(company)}

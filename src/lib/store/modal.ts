@@ -22,6 +22,7 @@ export type ExportFilePayload = {
 export type UpdateSubscriptionPayload = {
   currentPlan: Plan
   newPlan: Plan
+  currentExpiresAt?: Date | string | null
 }
 
 export type ApplicationLandedPayload = {

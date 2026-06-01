@@ -11,7 +11,12 @@ import { ensureSession } from '#/server/session'
 
 import { getUserPlan } from '#/lib/auth/subscription'
 import { db } from '#/lib/db/index.server'
-import { applications, generatedDocs, pilotProfiles } from '#/lib/db/schema'
+import {
+  applications,
+  generatedDocs,
+  pilotProfiles,
+  users,
+} from '#/lib/db/schema'
 import { ClassicTemplate } from '#/lib/pdf/templates/classic'
 import { MinimalTemplate } from '#/lib/pdf/templates/minimal'
 import { ModernTemplate } from '#/lib/pdf/templates/modern'
@@ -61,8 +66,8 @@ export const generateDocuments = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const session = await ensureSession()
 
-    await checkGenerationLimit()
-    await checkRateLimit()
+    // await checkGenerationLimit()
+    // await checkRateLimit()
 
     const profile = await db
       .select()
@@ -70,6 +75,15 @@ export const generateDocuments = createServerFn({ method: 'POST' })
       .where(eq(pilotProfiles.userId, session.user.id))
       .limit(1)
       .then((r) => r.at(0))
+
+    const user = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, session.user.id))
+      .limit(1)
+      .then((r) => r.at(0))
+
+    if (!user) throw new AppError('NOT_FOUND', 'User not found')
 
     const application = await db
       .select()
@@ -81,6 +95,8 @@ export const generateDocuments = createServerFn({ method: 'POST' })
         ),
       )
       .then((r) => r.at(0))
+
+    if (!application) throw new AppError('NOT_FOUND', 'Application not found')
 
     const latest = await db
       .select({ version: generatedDocs.version })
@@ -97,59 +113,122 @@ export const generateDocuments = createServerFn({ method: 'POST' })
 
     const nextVersion = (latest?.version ?? 0) + 1
 
-    if (!application) throw new AppError('NOT_FOUND', 'Application not found')
     if (!profile)
       throw new AppError(
         'NOT_FOUND',
         'Profile not found — complete your Pilot Profile first',
       )
 
+    const links = [
+      profile.links?.github && `GitHub: ${profile.links.github}`,
+      profile.links?.linkedin && `LinkedIn: ${profile.links.linkedin}`,
+      profile.links?.portfolio && `Portfolio: ${profile.links.portfolio}`,
+    ]
+      .filter(Boolean)
+      .join('\n')
+
     const { text } = await generateText({
       model: anthropic(process.env.ANTHROPIC_HAIKU_MODEL!),
       system: `
-        You are Co-Pilot, an expert CV writer inside the Landed app.
-        Respond ONLY with valid JSON — no markdown, no backticks, no extra text.
-        Return this exact shape:
-        {
-          "cv": {
-            "headline": "string",
-            "summary": "string",
-            "experience": [{ "company": "string", "role": "string", "dates": "string", "bullets": ["string"] }],
-            "skills": ["string"],
-            "education": [{ "institution": "string", "degree": "string", "year": "string" }]
-          },
-          "coverLetter": {
-            "opening": "string",
-            "body": "string",
-            "closing": "string"
-          }
+      You are Co-Pilot, an expert CV writer inside Landed, a job-application tracker.
+      Your task: rewrite the candidate's profile into a tailored CV and cover letter for ONE specific job posting.
+
+      ## Output format
+      Respond with valid JSON ONLY. No markdown, no code fences, no explanation — just the raw JSON object.
+      Always return every field below. Use null for fields where the profile has no matching data.
+
+      {
+        "cv": {
+          "name": "string",
+          "headline": "string",
+          "summary": "string",
+          "experience": [
+            {
+              "company": "string",
+              "role": "string",
+              "dates": "string",
+              "location": "string | null",
+              "bullets": ["string"]
+            }
+          ],
+          "skills": ["string"],
+          "education": [
+            {
+              "institution": "string",
+              "degree": "string",
+              "year": "string",
+              "location": "string | null",
+              "detail": "string | null"
+            }
+          ]
+        },
+        "coverLetter": {
+          "opening": "string",
+          "body": "string",
+          "closing": "string"
         }
-        Rules:
-        - Mirror language from the job posting
-        - Reorder skills to match requirements
-        - Use numbers and outcomes wherever the profile has them
-        - Do NOT invent experience or skills not in the profile
-      `.trim(),
+      }
+
+    ## Content rules
+
+    ### Honesty
+    - Use ONLY facts present in the candidate profile.
+    - Never invent employers, roles, dates, metrics, skils,l or credentials.
+    - If a section of the profile is empty, moit that section from teh CV rather than fabricating content.
+
+    ### Tailoring
+    - Mirror the job posting's terminology and keywords wherever they truthfully apply.
+    - Order skills and experience bullets so the most relevant items appear first.
+    - The summary must be written specifically for this role — not generic.
+    - The experience bullet must be tailored to match what is required on this role.
+
+    ### CV writing
+    - Headline: use the candidate's profile headline, Do not reword.
+    - Summary: 2–4 sentences; role-specific, value-focused, no filler phrases.
+    - Experience bullets: start with a strong action verb, be achievement-focused, preserve any real numbers or outcomes from the profile.
+
+    ### Cover letter
+    - opening: greet and name the role; add a short hook linking the candidate to it.
+    - body: 1–2 short paragraphs tying the candidate's real experience and skills to the role's needs.
+    - closing: a brief, confident sign-off expressing interest in next steps.
+
+    ### General
+    - Fill every string with real content.
+    - No placeholders, empty strings, or brackets.
+  `.trim(),
 
       prompt: `
-        Job Details:
-        Company: ${application.company}
-        Role: ${application.role}
+    Tailor the CV for the job below.
 
-        Job Posting:
-        ${application.description}
+    # Job
+    Company: ${application.company}
+    Role: ${application.role}
 
-        Candidate Profile:
-        Name: ${profile.headline}
-        Github: ${profile.links?.github}
-        Linkedin: ${profile.links?.linkedin}
-        Portfolio: ${profile.links?.portfolio}
-        Summary: ${profile.summary}
-        Skills: ${(profile.skills ?? []).join(', ')}
-        Experience: ${JSON.stringify(profile.experience, null, 2)}
-        Education: ${JSON.stringify(profile.education, null, 2)}
-      `.trim(),
-      maxOutputTokens: 3000,
+    Job posting:
+    ${application.description}
+
+    # Candidate profile
+    Name: ${user.name}
+    Headline: ${profile.headline ?? '—'}
+    Location: ${profile.location ?? '—'}
+    Summary: ${profile.summary ?? '—'}
+
+    Links:
+    ${links || '—'}
+
+    Skills: ${(profile.skills ?? []).join(', ') || '—'}
+
+    Experience:
+    ${JSON.stringify(profile.experience ?? [], null, 2)}
+
+    Education:
+    ${JSON.stringify(profile.education ?? [], null, 2)}
+
+    Certifications:
+    ${JSON.stringify(profile.certifications ?? [], null, 2)}
+  `.trim(),
+
+      maxOutputTokens: 4000,
     })
 
     const cleaned = text

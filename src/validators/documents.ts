@@ -25,6 +25,7 @@ export type Document = {
 }
 
 export interface Contact {
+  name: string
   address: string
   email: string
   phone: string
@@ -76,6 +77,11 @@ export interface CoverLetterContent {
   closing: string
 }
 
+const optionalString = z
+  .string()
+  .nullish()
+  .transform((v) => v ?? undefined)
+
 const cvContentSchema = z.object({
   headline: z.string().min(1),
   summary: z.string().min(1),
@@ -85,7 +91,7 @@ const cvContentSchema = z.object({
       role: z.string(),
       dates: z.string(),
       bullets: z.array(z.string()),
-      location: z.string().optional(),
+      location: optionalString,
     }),
   ),
   skills: z.array(z.string()),
@@ -94,8 +100,8 @@ const cvContentSchema = z.object({
       institution: z.string(),
       degree: z.string(),
       year: z.string(),
-      location: z.string().optional(),
-      detail: z.string().optional(),
+      location: optionalString,
+      detail: optionalString,
     }),
   ),
   leadership: z

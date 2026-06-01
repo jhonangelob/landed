@@ -21,11 +21,24 @@ import {
   DialogTitle,
 } from '../ui/dialog'
 
+const DAY_MS = 24 * 60 * 60 * 1000
+
+function formatAccessDate(date: Date) {
+  return date
+    .toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    })
+    .toUpperCase()
+}
+
 interface UpdateSubscriptionModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   currentPlan: Plan
   newPlan: Plan
+  currentExpiresAt?: Date | string | null
 }
 
 export default function UpdateSubscriptionModal({
@@ -33,9 +46,20 @@ export default function UpdateSubscriptionModal({
   onOpenChange,
   currentPlan,
   newPlan,
+  currentExpiresAt,
 }: UpdateSubscriptionModalProps) {
   const { close } = useModal()
   const { mutateAsync: upgrade, isPending } = useUpdateSubscriptionMutation()
+
+  const accessThrough = newPlan.duration
+    ? new Date(Date.now() + newPlan.duration * DAY_MS)
+    : null
+
+  const expiresAt = currentExpiresAt ? new Date(currentExpiresAt) : null
+  const daysLeftInCycle =
+    expiresAt && expiresAt.getTime() > Date.now()
+      ? Math.ceil((expiresAt.getTime() - Date.now()) / DAY_MS)
+      : null
 
   async function handleUpgrade() {
     try {
@@ -78,7 +102,9 @@ export default function UpdateSubscriptionModal({
                 : `${currentPlan.currency}${currentPlan.price}/mo`}
             </p>
           </div>
-          <div></div>
+
+          <img src="/assets/airplane-1.svg" className="my-auto h-14" />
+
           <div className="space-y-0.5 text-end">
             <p className="text-muted-foreground font-mono text-[9px] leading-[1.4] font-normal tracking-[1.3px] uppercase">
               Upgrading to
@@ -114,14 +140,16 @@ export default function UpdateSubscriptionModal({
         <div className="flex flex-col rounded-lg border bg-[#f5f6f8]">
           <div className="flex h-11 flex-row items-center justify-between border-b border-dashed p-3">
             <p className="font-sans text-[13px] leading-[1.4] font-normal text-[#2c3a52]">
-              One-time charge{' '}
-              <span className="text-muted font-mono text-[10px] leading-[1.4] tracking-[0.6px]">
-                {' '}
-                · prorated, 21d left in cycle
-              </span>
+              One-time charge
+              {daysLeftInCycle !== null && (
+                <span className="text-muted font-mono text-[10px] leading-[1.4] tracking-[0.6px]">
+                  {' · '}
+                  {daysLeftInCycle}d left in cycle
+                </span>
+              )}
             </p>
             <p className="text-primary-text font-mono text-[16px] leading-[1.4] font-bold tracking-[0.3px]">
-              ₱{newPlan.price}
+              {newPlan.currency} {newPlan.price}
             </p>
           </div>
           <div className="flex h-11 flex-row items-center justify-between overflow-hidden border-b border-dashed p-3">
@@ -137,7 +165,9 @@ export default function UpdateSubscriptionModal({
               Access through
             </p>{' '}
             <p className="text-primary-text font-mono text-[13px] leading-[1.4] font-normal tracking-[0.3px]">
-              19 JUN 2026 · renew manually
+              {accessThrough
+                ? `${formatAccessDate(accessThrough)} · renew manually`
+                : '—'}
             </p>
           </div>
           <div className="flex h-11 flex-row items-center justify-between bg-[#c2c2c2]/10 p-3">

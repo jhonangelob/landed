@@ -6,12 +6,19 @@ import { Label } from '#/components/ui/label'
 
 import { updatePasswordSchema } from '#/validators/account'
 import type { UpdatePasswordInput } from '#/validators/account'
+import { useState } from 'react'
+import { EyeIcon, EyeOffIcon } from 'lucide-react'
 
 interface PasswordFormProps {
-  onUpdatePassword: (value: UpdatePasswordInput) => void
+  onUpdatePassword: (value: UpdatePasswordInput) => any
 }
 
 export default function PasswordForm({ onUpdatePassword }: PasswordFormProps) {
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false)
+  const [showNewPassword, setShowNewPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
+
   const form = useForm({
     defaultValues: {
       currentPassword: '',
@@ -20,7 +27,16 @@ export default function PasswordForm({ onUpdatePassword }: PasswordFormProps) {
     },
     validators: { onSubmit: updatePasswordSchema },
     onSubmit: async ({ value }) => {
-      await onUpdatePassword(value)
+      const res = await onUpdatePassword(value)
+
+      if (res.error) {
+        if (res.error.code === 'INVALID_PASSWORD') {
+          setErrorMessage('The current password you entered is incorrect.')
+        } else {
+          setErrorMessage(res.error.message)
+        }
+      }
+
       form.reset()
     },
   })
@@ -38,19 +54,36 @@ export default function PasswordForm({ onUpdatePassword }: PasswordFormProps) {
         children={(field) => (
           <div className="w-full space-y-1.5">
             <Label htmlFor="currentPassword">Current Password</Label>
-            <Input
-              id="currentPassword"
-              type="password"
-              placeholder="*****"
-              value={field.state.value}
-              onChange={(e) => field.handleChange(e.target.value)}
-              onBlur={field.handleBlur}
-            />
+            <div className="relative">
+              <Input
+                id="currentPassword"
+                type={showCurrentPassword ? 'text' : 'password'}
+                placeholder="*****"
+                value={field.state.value}
+                onChange={(e) => field.handleChange(e.target.value)}
+                onBlur={field.handleBlur}
+              />
+              <button
+                type="button"
+                onClick={() => setShowCurrentPassword((v) => !v)}
+                className="text-muted-foreground hover:text-foreground absolute top-1/2 right-2.5 -translate-y-1/2"
+              >
+                {showCurrentPassword ? (
+                  <EyeOffIcon className="size-4" />
+                ) : (
+                  <EyeIcon className="size-4" />
+                )}
+              </button>
+            </div>
             {field.state.meta.errors.map((err, i) => (
               <p key={i} className="text-destructive text-xs">
                 {err?.message as string}
               </p>
             ))}
+
+            {errorMessage && (
+              <p className="text-destructive text-xs">{errorMessage}</p>
+            )}
           </div>
         )}
       />
@@ -60,15 +93,28 @@ export default function PasswordForm({ onUpdatePassword }: PasswordFormProps) {
           children={(field) => (
             <div className="w-full space-y-1.5">
               <Label htmlFor="newPassword">New Password</Label>
-              <Input
-                id="newPassword"
-                type="password"
-                placeholder="*****"
-                value={field.state.value}
-                onChange={(e) => field.handleChange(e.target.value)}
-                onBlur={field.handleBlur}
-                className="h-10.5 rounded-md py-2.75 placeholder:italic"
-              />
+              <div className="relative">
+                <Input
+                  id="newPassword"
+                  type={showNewPassword ? 'text' : 'password'}
+                  placeholder="*****"
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  onBlur={field.handleBlur}
+                  className="h-10.5 rounded-md py-2.75 placeholder:italic"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowNewPassword((v) => !v)}
+                  className="text-muted-foreground hover:text-foreground absolute top-1/2 right-2.5 -translate-y-1/2"
+                >
+                  {showNewPassword ? (
+                    <EyeOffIcon className="size-4" />
+                  ) : (
+                    <EyeIcon className="size-4" />
+                  )}
+                </button>
+              </div>
               {field.state.meta.errors.map((err, i) => (
                 <p key={i} className="text-destructive text-xs">
                   {err?.message as string}
@@ -83,14 +129,27 @@ export default function PasswordForm({ onUpdatePassword }: PasswordFormProps) {
           children={(field) => (
             <div className="w-full space-y-1.5">
               <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <Input
-                id="confirmPassword"
-                placeholder="*****"
-                value={field.state.value}
-                onChange={(e) => field.handleChange(e.target.value)}
-                onBlur={field.handleBlur}
-                type="password"
-              />
+              <div className="relative">
+                <Input
+                  id="confirmPassword"
+                  placeholder="*****"
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  onBlur={field.handleBlur}
+                  type={showConfirmPassword ? 'text' : 'password'}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword((v) => !v)}
+                  className="text-muted-foreground hover:text-foreground absolute top-1/2 right-2.5 -translate-y-1/2"
+                >
+                  {showConfirmPassword ? (
+                    <EyeOffIcon className="size-4" />
+                  ) : (
+                    <EyeIcon className="size-4" />
+                  )}
+                </button>
+              </div>
               {field.state.meta.errors.map((err, i) => (
                 <p key={i} className="text-destructive text-xs">
                   {err?.message as string}

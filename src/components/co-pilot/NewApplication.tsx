@@ -42,8 +42,7 @@ export default function NewApplication({ profile }: NewApplicationProps) {
           to: '/co-pilot',
           search: { applicationId: application.id },
         })
-        // Errors here (limit reached, rate limit, AI failure) are surfaced by
-        // the mutation's onError as a toast or the usage-limit modal.
+
         await generateDocuments({ applicationId: application.id })
       } catch {
         // Already handled by the mutation onError handlers.

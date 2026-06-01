@@ -91,7 +91,7 @@ export default function AccountForm({
               <Input
                 id="email"
                 type="email"
-                placeholder="jane@example.com"
+                placeholder={data.email}
                 value={field.state.value}
                 onChange={(e) => field.handleChange(e.target.value)}
                 onBlur={field.handleBlur}

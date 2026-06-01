@@ -17,6 +17,7 @@ import type {
   UpdateAccountInput,
   UpdatePasswordInput,
 } from '#/validators/account'
+import { notify } from '#/lib/toast'
 
 export const accountQueryKey = ['account_details'] as const
 
@@ -35,6 +36,7 @@ export function useUpdateAccountMutation() {
       updateAccountDetails({ data: value }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: accountQueryKey })
+      notify.success('Account Update', 'Succesfully updated Account details')
     },
   })
 }
@@ -55,5 +57,8 @@ export function useUpdatePasswordMutation() {
   return useMutation({
     mutationFn: (value: UpdatePasswordInput) =>
       changePassword({ ...value, revokeOtherSessions: true }),
+    onSuccess: () => {
+      notify.success('Account Update', 'Succesfully updated password')
+    },
   })
 }

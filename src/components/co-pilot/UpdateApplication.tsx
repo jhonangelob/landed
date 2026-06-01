@@ -362,7 +362,7 @@ export default function UpdateApplication({
             variant="destructive"
           >
             <div className="flex flex-col space-y-2">
-              <p className="text-primary-text font-sans text-[14px] leading-[1.4]">
+              <p className="text-muted font-sans text-[14px] leading-[1.4]">
                 Permanently removes this application from your Flight Deck along
                 with any generated CV/cover letter for it. This cannot be
                 undone.
