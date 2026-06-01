@@ -5,6 +5,7 @@ import { cn } from '#/lib/utils'
 import type { Application } from '#/validators/application'
 
 import { KANBAN_COLUMNS } from '#/constants/stage'
+import { formatNumberCompact } from '#/helper/number'
 
 interface ApplicationSummaryProps {
   data: Application
@@ -28,7 +29,7 @@ export default function ApplicationSummary({ data }: ApplicationSummaryProps) {
     },
     {
       label: 'Salary',
-      value: data.salaryRange,
+      value: data.salaryRange && formatNumberCompact(Number(data.salaryRange)),
     },
     {
       label: 'Applied',

@@ -28,9 +28,10 @@ export default function StageBar({ stage, onUpdateStage }: StageBarProps) {
           <React.Fragment key={item.stage}>
             <Button
               type="button"
-              className="flex h-fit flex-col hover:bg-transparent"
+              className="flex h-fit flex-col hover:bg-transparent disabled:opacity-100"
               variant="ghost"
               onClick={() => onUpdateStage(item.stage)}
+              disabled={item.stage === stage || stage === 'landed'}
             >
               <div
                 className={cn(
