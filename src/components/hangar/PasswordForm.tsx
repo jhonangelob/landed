@@ -89,6 +89,7 @@ export default function PasswordForm({ onUpdatePassword }: PasswordFormProps) {
                 value={field.state.value}
                 onChange={(e) => field.handleChange(e.target.value)}
                 onBlur={field.handleBlur}
+                type="password"
               />
               {field.state.meta.errors.map((err, i) => (
                 <p key={i} className="text-destructive text-xs">

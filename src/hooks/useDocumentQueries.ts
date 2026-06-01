@@ -37,25 +37,31 @@ export function useGenerateDocumentsMutation(applicationId?: string) {
   return useMutation({
     mutationFn: (value: GenerateDocumentInput) =>
       generateDocuments({ data: value }),
-    onSuccess: (data, variables) => {
+    onMutate: () => {
+      const toastId = notify.loading(
+        'Generating documents',
+        'Tailoring your CV and cover letter to this role...',
+      )
+      return { toastId }
+    },
+    onSuccess: (data, variables, context) => {
       const id = applicationId ?? variables.applicationId
 
       queryClient.invalidateQueries({ queryKey: documentsQueryKey(id) })
       queryClient.invalidateQueries({ queryKey: subscriptionQueryKey })
 
+      notify.dismiss(context.toastId)
       notify.generationDone()
 
       const { usage } = data
 
-      if (
-        usage &&
-        !usage.unlimited &&
-        usage.remaining <= LOW_GENERATION_THRESHOLD
-      ) {
+      if (!usage.unlimited && usage.remaining <= LOW_GENERATION_THRESHOLD) {
         notify.headsUp(usage.remaining, usage.resetAt)
       }
     },
-    onError: (error) => {
+    onError: (error, _variables, context) => {
+      notify.dismiss(context?.toastId)
+
       const { code, message } = parseError(error)
 
       if (code === 'GENERATION_LIMIT_REACHED') {
