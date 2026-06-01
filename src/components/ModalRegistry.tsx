@@ -9,7 +9,12 @@ import UsageLimitModal from './modals/UsageLimitModal'
 
 const noop = () => {}
 
-export function ModalRegistry() {
+interface ModalRegistryProps {
+  /** Logged-in user's display name, used by the landed boarding-pass modal. */
+  userName: string
+}
+
+export function ModalRegistry({ userName }: ModalRegistryProps) {
   const { activeModal, payload, close } = useModalStore()
 
   const handleClose = (open: boolean) => {
@@ -49,8 +54,19 @@ export function ModalRegistry() {
         <ApplicationLandedModal
           open={activeModal === 'applicationLanded'}
           onOpenChange={handleClose}
+          userName={userName}
           company={payload.applicationLanded.company}
           role={payload.applicationLanded.role}
+          planTier={payload.applicationLanded.planTier}
+          previousCompany={payload.applicationLanded.previousCompany}
+          previousRole={payload.applicationLanded.previousRole}
+          appliedAt={payload.applicationLanded.appliedAt}
+          landedAt={payload.applicationLanded.landedAt}
+          compensation={payload.applicationLanded.compensation}
+          location={payload.applicationLanded.location}
+          appliedCount={payload.applicationLanded.appliedCount}
+          interviewedCount={payload.applicationLanded.interviewedCount}
+          daysCount={payload.applicationLanded.daysCount}
         />
       )}
       {payload.usageLimit && (

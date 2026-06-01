@@ -29,7 +29,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'TanStack Start Starter',
+        title: 'Landed',
       },
     ],
     links: [
@@ -51,7 +51,12 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <body>
         <NavigationProgress />
         {children}
-        <Toaster richColors position="bottom-right" closeButton />
+        <Toaster
+          position="bottom-right"
+          closeButton
+          expand={true}
+          visibleToasts={5}
+        />
         <TanStackDevtools
           config={{
             position: 'bottom-right',

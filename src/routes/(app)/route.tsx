@@ -18,6 +18,8 @@ export const Route = createFileRoute('/(app)')({
 })
 
 function AppLayout() {
+  const { user } = Route.useRouteContext()
+
   return (
     <div className="bg-background min-h-screen border">
       <Header />
@@ -25,7 +27,7 @@ function AppLayout() {
         <Outlet />
       </main>
       <Footer />
-      <ModalRegistry />
+      <ModalRegistry userName={user.name} />
     </div>
   )
 }

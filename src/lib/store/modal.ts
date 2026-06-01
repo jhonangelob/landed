@@ -28,6 +28,16 @@ export type ApplicationLandedPayload = {
   applicationId: string
   company: string
   role: string
+  planTier: string
+  previousCompany?: string
+  previousRole?: string
+  appliedAt: Date | null
+  landedAt: Date
+  compensation?: string
+  location?: string
+  appliedCount: number
+  interviewedCount: number
+  daysCount: number
 }
 
 export type UsageLimitReason = 'generation' | 'application'

@@ -5,8 +5,6 @@
 
 @import 'tw-animate-css';
 
-@custom-variant dark (&:is(.dark *));
-
 :root {
   /* Avionics Brand */
   --primary-text: #191b22;
@@ -61,52 +59,6 @@
   --sidebar-accent-foreground: #0f172a;
   --sidebar-border: #e2e8f0;
   --sidebar-ring: #0091ff;
-}
-
-.dark {
-  /* Avionics Brand (dark) */
-  --primary-blue: #38a8ff;
-  --primary-blue-dark: #0091ff;
-  --surface: #0c0f1a;
-  --surface-container: #141826;
-  --outline: #1e2338;
-  --foreground-soft: #94a3b8;
-  --foreground-soft2: #cbd5e1;
-  --header-bg: rgba(12, 15, 26, 0.88);
-
-  /* shadcn tokens (dark) */
-  --background: #0c0f1a;
-  --foreground: #f8fafc;
-  --card: #141826;
-  --card-foreground: #f8fafc;
-  --popover: #141826;
-  --popover-foreground: #f8fafc;
-  --primary: #38a8ff;
-  --primary-foreground: #0f172a;
-  --secondary: #1e2338;
-  --secondary-foreground: #f8fafc;
-  --muted: #6b7a92;
-  --muted-foreground: #94a3b8;
-  --accent: #172040;
-  --accent-foreground: #f8fafc;
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
-  --border: #1e2338;
-  --input: #1e2338;
-  --ring: #38a8ff;
-  --chart-1: #38a8ff;
-  --chart-2: #10b981;
-  --chart-3: #f59e0b;
-  --chart-4: #a78bfa;
-  --chart-5: #f87171;
-  --sidebar: #141826;
-  --sidebar-foreground: #f8fafc;
-  --sidebar-primary: #38a8ff;
-  --sidebar-primary-foreground: #0f172a;
-  --sidebar-accent: #1e2338;
-  --sidebar-accent-foreground: #f8fafc;
-  --sidebar-border: #1e2338;
-  --sidebar-ring: #38a8ff;
 }
 
 @theme inline {
@@ -406,18 +358,44 @@ header {
   label {
     @apply text-muted-foreground font-mono text-[10px]! leading-[1.4] font-medium tracking-[1.3px] uppercase md:text-[12px]!;
   }
+
+  /* ── Sonner toast ──────────────────────────────────────────
+     The toast itself is a custom card rendered in
+     components/ui/sonner.tsx (ToastCard). These rules only drive
+     the in-card progress bar and pause it while the stack is
+     hovered — matching sonner's own timer pause. */
+  .toast-progress-bar {
+    animation-name: toast-progress;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+  }
+
+  .toast-progress-bar--loading {
+    animation-name: toast-progress-indeterminate;
+    animation-duration: 1.3s;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    animation-fill-mode: none;
+  }
+
+  [data-sonner-toaster]:hover .toast-progress-bar {
+    animation-play-state: paused;
+  }
 }
-@keyframes progress {
-  0% {
-    transform: scaleX(0) translateX(0);
-    transform-origin: left;
+@keyframes toast-progress {
+  from {
+    transform: scaleX(1);
   }
-  50% {
-    transform: scaleX(0.6) translateX(0);
-    transform-origin: left;
+  to {
+    transform: scaleX(0);
   }
-  100% {
-    transform: scaleX(0.9) translateX(0);
-    transform-origin: left;
+}
+
+@keyframes toast-progress-indeterminate {
+  from {
+    transform: translateX(-120%);
+  }
+  to {
+    transform: translateX(370%);
   }
 }

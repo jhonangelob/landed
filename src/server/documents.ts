@@ -178,7 +178,6 @@ export const generateDocuments = createServerFn({ method: 'POST' })
 
     const parsed = result.data
 
-    // Only consume a generation once we have a valid result to store.
     const usage = await increaseGenerationUsed()
 
     await db.insert(generatedDocs).values([

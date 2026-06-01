@@ -108,7 +108,10 @@ export function useUpdateApplicationStageMutation(applicationId: string) {
       queryClient.invalidateQueries({ queryKey: applicationsQueryKey })
 
       if (!celebrated) {
-        notify.success(`Moved to ${values.stage.replace('_', ' ')}`)
+        notify.info(
+          'Status Update',
+          `Moved to ${values.stage.replace('_', ' ')}`,
+        )
       }
     },
     onError: (error) => {
@@ -126,7 +129,7 @@ export function useDeleteApplicationMutation() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: applicationsQueryKey })
       navigate({ to: '/flight-deck' })
-      notify.success('Application deleted')
+      notify.success('Application Deletion', 'Application deleted')
     },
     onError: (error) => {
       notify.fromError(error, 'Could not delete application')

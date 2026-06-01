@@ -32,7 +32,6 @@ export default function Header() {
   const handleClickNotification = () => {
     console.log('unimplemented: Notification')
   }
-
   const handleClickLogout = async () => {
     await signOut()
     navigate({ to: '/login' })

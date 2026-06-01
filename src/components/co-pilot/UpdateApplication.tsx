@@ -387,7 +387,7 @@ export default function UpdateApplication({
         <div className="w-full md:w-1/2">
           <FilePreview
             documents={documents}
-            showRegenerateButton
+            showRegenerateButton={application.stage === 'spotted'}
             onRetailor={handleRetailorDocument}
           />
         </div>

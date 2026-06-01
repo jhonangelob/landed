@@ -39,13 +39,14 @@ export function useGenerateDocumentsMutation(applicationId?: string) {
       generateDocuments({ data: value }),
     onSuccess: (data, variables) => {
       const id = applicationId ?? variables.applicationId
+
       queryClient.invalidateQueries({ queryKey: documentsQueryKey(id) })
-      // Usage changed — keep the Hangar / limit checks fresh.
       queryClient.invalidateQueries({ queryKey: subscriptionQueryKey })
 
       notify.generationDone()
 
       const { usage } = data
+
       if (
         usage &&
         !usage.unlimited &&
