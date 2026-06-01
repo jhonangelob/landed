@@ -39,9 +39,7 @@ export default function DeleteApplicationModal({
     try {
       await deleteApplication(id)
       onOpenChange(false)
-    } catch {
-      // Surfaced by the mutation's onError handler.
-    }
+    } catch {}
   }
 
   return (

@@ -1,10 +1,12 @@
 import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
+import { admin } from 'better-auth/plugins'
 import { tanstackStartCookies } from 'better-auth/tanstack-start'
 
 import { db } from '#/lib/db/index.server'
 import { accounts, sessions, users, verifications } from '#/lib/db/schema'
 
+import { FROM_EMAIL, resend } from '../email/index.server'
 import { AppError } from '../utils'
 
 if (!process.env.BETTER_AUTH_SECRET || !process.env.BETTER_AUTH_URL)
@@ -26,9 +28,47 @@ export const auth = betterAuth({
 
   emailAndPassword: {
     enabled: true,
+    sendResetPassword: async ({ user, url }) => {
+      void resend.emails.send({
+        from: `Landed <${FROM_EMAIL}>`,
+        to: user.email,
+        subject: 'Reset your Landed password',
+        html: `
+          <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:32px 24px;">
+            <h1 style="font-size:22px;font-weight:700;color:#0c1f35;margin-bottom:8px;">
+              Reset your password
+            </h1>
+            <p style="color:#5a7a99;font-size:15px;margin-bottom:24px;">
+              We received a request to reset your Landed password.
+              This link expires in 1 hour.
+            </p>
+            
+              href="${url}"
+              style="display:inline-block;background:#0ea5e9;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;"
+            >
+              Reset password →
+            </a>
+            <p style="margin-top:24px;font-size:12px;color:#5a7a99;">
+              If you didn't request this, ignore this email.
+            </p>
+          </div>
+        `,
+      })
+    },
   },
 
   requireEmailVerification: true,
+
+  emailVerification: {
+    sendVerificationEmail: async ({ user, url }) => {
+      void resend.emails.send({
+        from: `Landed <${FROM_EMAIL}>`,
+        to: user.email,
+        subject: 'Verify your email address',
+        text: `Click the link to verify your email: ${url}`,
+      })
+    },
+  },
 
   user: {
     additionalFields: {
@@ -49,5 +89,10 @@ export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL,
 
-  plugins: [tanstackStartCookies()],
+  plugins: [
+    admin({
+      adminUserIds: ['WdC9A2DDckKxorZxT83SfAdUJ7RFBeEl'],
+    }),
+    tanstackStartCookies(),
+  ],
 })

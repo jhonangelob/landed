@@ -93,7 +93,7 @@ export const checkGenerationLimit = createServerFn({ method: 'GET' }).handler(
       .limit(1)
       .then((r) => r[0] ?? null)
 
-    if (!sub)
+    if (!sub.id)
       throw new AppError(
         'SUBSCRIPTION_NOT_FOUND',
         'No active subscription found — please refresh and try again',
@@ -125,8 +125,6 @@ export const increaseGenerationUsed = createServerFn({
     .where(
       and(
         eq(subscriptions.userId, session.user.id),
-        // Unlimited plans store a NULL limit, so this guard only bites the
-        // metered Economy plan.
         sql`(${subscriptions.generationsLimit} IS NULL OR ${subscriptions.generationsUsed} < ${subscriptions.generationsLimit})`,
       ),
     )

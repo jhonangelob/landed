@@ -77,15 +77,11 @@ export default function UpdateApplication({
     onSubmit: async ({ value }) => {
       try {
         await updateApplicationDetails(value)
-      } catch {
-        // Surfaced by the mutation's onError handler.
-      }
+      } catch {}
     },
   })
 
   const handleUpdateStage = (stage: ApplicationStage) => {
-    // Errors surface via the mutation's onError (toast); landed transitions
-    // trigger the celebration modal from the mutation's onSuccess.
     updateStage({ id: applicationId, stage }).catch(() => {})
     form.setFieldValue('stage', stage)
   }

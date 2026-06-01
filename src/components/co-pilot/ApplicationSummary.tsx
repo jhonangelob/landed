@@ -1,11 +1,11 @@
 import { getTimeSince } from '#/helper/date'
+import { formatNumberCompact } from '#/helper/number'
 
 import { cn } from '#/lib/utils'
 
 import type { Application } from '#/validators/application'
 
 import { KANBAN_COLUMNS } from '#/constants/stage'
-import { formatNumberCompact } from '#/helper/number'
 
 interface ApplicationSummaryProps {
   data: Application

@@ -29,6 +29,7 @@ export const Route = createFileRoute('/(auth)/signup')({
   }),
   beforeLoad: async () => {
     const session = await getSession()
+
     if (session) {
       throw redirect({ to: '/flight-deck' })
     }

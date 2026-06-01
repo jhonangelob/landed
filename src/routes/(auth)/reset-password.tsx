@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 import { EyeIcon, EyeOffIcon } from 'lucide-react'
+import z from 'zod'
 
 import { useForm } from '@tanstack/react-form'
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
@@ -11,79 +12,88 @@ import { Label } from '#/components/ui/label'
 
 import { getSession } from '#/server/session'
 
-import { signIn } from '#/lib/auth/client'
+import { resetPassword } from '#/lib/auth/client'
 import { cn } from '#/lib/utils'
 
-import { loginSchema } from '#/validators/account'
+import { resetPasswordSchema } from '#/validators/account'
 
 import logo from '/landed.svg'
 
-export const Route = createFileRoute('/(auth)/login')({
+export const Route = createFileRoute('/(auth)/reset-password')({
   head: () => ({
     meta: [
       {
-        title: 'Landed | Login',
+        title: 'Landed | Reset Password',
       },
     ],
   }),
-  beforeLoad: async () => {
+  validateSearch: z.object({
+    token: z.string().optional(),
+  }),
+  beforeLoad: async ({ search }) => {
     const session = await getSession()
 
     if (session) {
       throw redirect({ to: '/flight-deck' })
     }
+
+    if (!search.token) {
+      throw redirect({ to: '/forgot-password' })
+    }
   },
+
   component: RouteComponent,
 })
 
 function RouteComponent() {
   const navigate = useNavigate()
+  const { token } = Route.useSearch()
 
   const [showPassword, setShowPassword] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
 
   const form = useForm({
-    defaultValues: { email: '', password: '' },
+    defaultValues: {
+      token: token ?? '',
+      password: '',
+      confirmPassword: '',
+    },
     validators: {
-      onSubmit: loginSchema,
+      onSubmit: resetPasswordSchema,
     },
     onSubmit: async ({ value }) => {
       setIsLoading(true)
-      const res = await signIn.email({
-        email: value.email,
-        password: value.password,
-        callbackURL: '/flight-deck',
+      setErrorMessage('')
+
+      const res = await resetPassword({
+        token: value.token,
+        newPassword: value.password,
       })
 
       if (res.error) {
         setErrorMessage(res.error.message || '')
+        setIsLoading(false)
+        return
       }
 
-      setIsLoading(false)
+      navigate({ to: '/login' })
     },
   })
-
-  const handleCreateAccount = () => {
-    navigate({ to: '/signup' })
-  }
-
-  const handleForgotPassword = () => {
-    navigate({ to: '/forgot-password' })
-  }
 
   return (
     <div className="bg-background flex h-screen flex-col items-center justify-start gap-4 p-12 md:justify-center">
       <img
         src={logo}
-        alt="FlightDeck Logo"
+        alt="Landed Logo"
         className="mb-4 h-10 min-w-fit md:h-14"
       />
 
       <div className="flex w-100 flex-col gap-6 rounded-xl border bg-white px-7 py-5">
         <div className="flex flex-col gap-2">
           <p className="font-display text-primary-text text-center text-[24px] font-bold">
-            Welcome Back
+            Reset Password
           </p>
           <p
             className={cn(
@@ -93,7 +103,7 @@ function RouteComponent() {
                 : 'text-muted-foreground',
             )}
           >
-            {errorMessage || 'Sign in to your account to continue'}
+            {errorMessage || 'Enter a new password for your account'}
           </p>
         </div>
 
@@ -105,30 +115,10 @@ function RouteComponent() {
           className="flex flex-col gap-4"
         >
           <form.Field
-            name="email"
-            children={(field) => (
-              <div className="w-full space-y-1.5">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  placeholder="juan@email.com"
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  onBlur={field.handleBlur}
-                />
-                {field.state.meta.errors.map((err, i) => (
-                  <p key={i} className="text-destructive text-[13px]">
-                    {err?.message as string}
-                  </p>
-                ))}
-              </div>
-            )}
-          />
-          <form.Field
             name="password"
             children={(field) => (
-              <div className="flex w-full flex-col space-y-1.5">
-                <Label htmlFor="password">Password</Label>
+              <div className="w-full space-y-1.5">
+                <Label htmlFor="password">New Password</Label>
                 <div className="relative">
                   <Input
                     id="password"
@@ -150,37 +140,54 @@ function RouteComponent() {
                     )}
                   </button>
                 </div>
-                <div className="flex flex-row items-center justify-between">
-                  {field.state.meta.errors.map((err, i) => (
-                    <p key={i} className="text-destructive text-[13px]">
-                      {err?.message as string}
-                    </p>
-                  ))}
-
-                  <div
-                    className="text-muted ml-auto cursor-pointer font-mono text-[10px]! leading-[1.4] font-medium tracking-[1.3px] uppercase hover:underline md:text-[12px]!"
-                    onClick={handleForgotPassword}
-                  >
-                    Forgot Password
-                  </div>
-                </div>
+                {field.state.meta.errors.map((err, i) => (
+                  <p key={i} className="text-destructive text-xs">
+                    {err?.message as string}
+                  </p>
+                ))}
               </div>
             )}
           />
-          <Button type="submit" className="">
-            {isLoading ? 'Loading...' : 'Sign in'}
+
+          <form.Field
+            name="confirmPassword"
+            children={(field) => (
+              <div className="w-full space-y-1.5">
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <div className="relative">
+                  <Input
+                    id="confirmPassword"
+                    placeholder="••••••••"
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    onBlur={field.handleBlur}
+                    type={showConfirm ? 'text' : 'password'}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirm((v) => !v)}
+                    className="text-muted-foreground hover:text-foreground absolute top-1/2 right-2.5 -translate-y-1/2"
+                  >
+                    {showConfirm ? (
+                      <EyeOffIcon className="size-4" />
+                    ) : (
+                      <EyeIcon className="size-4" />
+                    )}
+                  </button>
+                </div>
+                {field.state.meta.errors.map((err, i) => (
+                  <p key={i} className="text-destructive text-xs">
+                    {err?.message as string}
+                  </p>
+                ))}
+              </div>
+            )}
+          />
+
+          <Button type="submit" className="mt-1">
+            {isLoading ? 'Loading...' : 'Reset Password'}
           </Button>
         </form>
-
-        <p className="text-muted-foreground text-center font-sans text-[13px]">
-          Don't have an account?{' '}
-          <span
-            className="text-primary cursor-pointer font-sans text-[13px] font-medium hover:underline"
-            onClick={handleCreateAccount}
-          >
-            Create one.
-          </span>
-        </p>
       </div>
     </div>
   )

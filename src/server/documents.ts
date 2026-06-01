@@ -66,8 +66,8 @@ export const generateDocuments = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const session = await ensureSession()
 
-    // await checkGenerationLimit()
-    // await checkRateLimit()
+    await checkGenerationLimit()
+    await checkRateLimit()
 
     const profile = await db
       .select()

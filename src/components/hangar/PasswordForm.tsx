@@ -1,3 +1,7 @@
+import { useState } from 'react'
+
+import { EyeIcon, EyeOffIcon } from 'lucide-react'
+
 import { useForm } from '@tanstack/react-form'
 
 import { Button } from '#/components/ui/button'
@@ -6,8 +10,6 @@ import { Label } from '#/components/ui/label'
 
 import { updatePasswordSchema } from '#/validators/account'
 import type { UpdatePasswordInput } from '#/validators/account'
-import { useState } from 'react'
-import { EyeIcon, EyeOffIcon } from 'lucide-react'
 
 interface PasswordFormProps {
   onUpdatePassword: (value: UpdatePasswordInput) => any

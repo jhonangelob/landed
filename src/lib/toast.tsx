@@ -1,21 +1,18 @@
+import { formatResetDate } from '#/helper/usage'
 import { toast as sonner } from 'sonner'
 
 import { ToastCard } from '#/components/ui/sonner'
 import type { ToastType } from '#/components/ui/sonner'
-
-import { formatResetDate } from '#/helper/usage'
 
 import { parseError } from './error'
 
 const DEFAULT_DURATION = 4000
 
 interface ShowOptions {
-  /** Reuse an existing toast id (e.g. to resolve a loading toast in place). */
   id?: string | number
   duration?: number
 }
 
-/** Render a custom toast card. `header` is the title, `message` the detail. */
 function show(
   type: ToastType,
   header: string,
@@ -35,11 +32,6 @@ function show(
         duration={duration === Infinity ? DEFAULT_DURATION : duration}
       />
     ),
-    // Only set `id` when we actually have one. sonner.custom spreads this
-    // object *after* its generated id (`{ ...id, ...data }`), so passing
-    // `id: undefined` clobbers the real id back to undefined — sonner then
-    // mints a different id for the toast than the one it hands to the render
-    // fn, and dismiss()/the close button can never match it.
     options?.id !== undefined ? { id: options.id, duration } : { duration },
   )
 }
@@ -116,7 +108,9 @@ export const notify = {
       (data) =>
         show(
           'success',
-          typeof opts.success === 'function' ? opts.success(data) : opts.success,
+          typeof opts.success === 'function'
+            ? opts.success(data)
+            : opts.success,
           undefined,
           { id },
         ),

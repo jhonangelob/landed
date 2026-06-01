@@ -12,12 +12,12 @@ import {
 } from '#/server/account'
 
 import { changePassword, signOut } from '#/lib/auth/client'
+import { notify } from '#/lib/toast'
 
 import type {
   UpdateAccountInput,
   UpdatePasswordInput,
 } from '#/validators/account'
-import { notify } from '#/lib/toast'
 
 export const accountQueryKey = ['account_details'] as const
 

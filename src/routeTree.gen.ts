@@ -12,7 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as appRouteRouteImport } from './routes/(app)/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as authSignupRouteImport } from './routes/(auth)/signup'
+import { Route as authResetPasswordRouteImport } from './routes/(auth)/reset-password'
 import { Route as authLoginRouteImport } from './routes/(auth)/login'
+import { Route as authForgotPasswordRouteImport } from './routes/(auth)/forgot-password'
 import { Route as appProfileRouteImport } from './routes/(app)/profile'
 import { Route as appHangarRouteImport } from './routes/(app)/hangar'
 import { Route as appFlightDeckRouteImport } from './routes/(app)/flight-deck'
@@ -33,9 +35,19 @@ const authSignupRoute = authSignupRouteImport.update({
   path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
+const authResetPasswordRoute = authResetPasswordRouteImport.update({
+  id: '/(auth)/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const authLoginRoute = authLoginRouteImport.update({
   id: '/(auth)/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const authForgotPasswordRoute = authForgotPasswordRouteImport.update({
+  id: '/(auth)/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const appProfileRoute = appProfileRouteImport.update({
@@ -70,7 +82,9 @@ export interface FileRoutesByFullPath {
   '/flight-deck': typeof appFlightDeckRoute
   '/hangar': typeof appHangarRoute
   '/profile': typeof appProfileRoute
+  '/forgot-password': typeof authForgotPasswordRoute
   '/login': typeof authLoginRoute
+  '/reset-password': typeof authResetPasswordRoute
   '/signup': typeof authSignupRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -80,7 +94,9 @@ export interface FileRoutesByTo {
   '/flight-deck': typeof appFlightDeckRoute
   '/hangar': typeof appHangarRoute
   '/profile': typeof appProfileRoute
+  '/forgot-password': typeof authForgotPasswordRoute
   '/login': typeof authLoginRoute
+  '/reset-password': typeof authResetPasswordRoute
   '/signup': typeof authSignupRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -92,7 +108,9 @@ export interface FileRoutesById {
   '/(app)/flight-deck': typeof appFlightDeckRoute
   '/(app)/hangar': typeof appHangarRoute
   '/(app)/profile': typeof appProfileRoute
+  '/(auth)/forgot-password': typeof authForgotPasswordRoute
   '/(auth)/login': typeof authLoginRoute
+  '/(auth)/reset-password': typeof authResetPasswordRoute
   '/(auth)/signup': typeof authSignupRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -104,7 +122,9 @@ export interface FileRouteTypes {
     | '/flight-deck'
     | '/hangar'
     | '/profile'
+    | '/forgot-password'
     | '/login'
+    | '/reset-password'
     | '/signup'
     | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
@@ -114,7 +134,9 @@ export interface FileRouteTypes {
     | '/flight-deck'
     | '/hangar'
     | '/profile'
+    | '/forgot-password'
     | '/login'
+    | '/reset-password'
     | '/signup'
     | '/api/auth/$'
   id:
@@ -125,7 +147,9 @@ export interface FileRouteTypes {
     | '/(app)/flight-deck'
     | '/(app)/hangar'
     | '/(app)/profile'
+    | '/(auth)/forgot-password'
     | '/(auth)/login'
+    | '/(auth)/reset-password'
     | '/(auth)/signup'
     | '/api/auth/$'
   fileRoutesById: FileRoutesById
@@ -133,7 +157,9 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   appRouteRoute: typeof appRouteRouteWithChildren
+  authForgotPasswordRoute: typeof authForgotPasswordRoute
   authLoginRoute: typeof authLoginRoute
+  authResetPasswordRoute: typeof authResetPasswordRoute
   authSignupRoute: typeof authSignupRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
@@ -161,11 +187,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authSignupRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(auth)/reset-password': {
+      id: '/(auth)/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof authResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/(auth)/login': {
       id: '/(auth)/login'
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof authLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(auth)/forgot-password': {
+      id: '/(auth)/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof authForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(app)/profile': {
@@ -227,7 +267,9 @@ const appRouteRouteWithChildren = appRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   appRouteRoute: appRouteRouteWithChildren,
+  authForgotPasswordRoute: authForgotPasswordRoute,
   authLoginRoute: authLoginRoute,
+  authResetPasswordRoute: authResetPasswordRoute,
   authSignupRoute: authSignupRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }

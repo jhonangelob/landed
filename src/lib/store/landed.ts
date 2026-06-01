@@ -47,7 +47,8 @@ export function maybeCelebrateLanded(
 ): boolean {
   if (newStage !== 'landed') return false
 
-  const apps = queryClient.getQueryData<Application[]>(applicationsQueryKey) ?? []
+  const apps =
+    queryClient.getQueryData<Application[]>(applicationsQueryKey) ?? []
   const app = apps.find((a) => a.id === applicationId)
 
   if (app?.stage === 'landed') return false

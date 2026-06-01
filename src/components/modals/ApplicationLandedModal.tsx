@@ -1,3 +1,4 @@
+import { formatNumberCompact } from '#/helper/number'
 import {
   ArrowRightIcon,
   ChevronRightIcon,
@@ -18,7 +19,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '#/components/ui/dialog'
-import { formatNumberCompact } from '#/helper/number'
 
 interface ApplicationLandedModalProps {
   open: boolean

@@ -44,9 +44,7 @@ export default function NewApplication({ profile }: NewApplicationProps) {
         })
 
         await generateDocuments({ applicationId: application.id })
-      } catch {
-        // Already handled by the mutation onError handlers.
-      }
+      } catch {}
     },
   })
 

@@ -9,12 +9,6 @@ export interface ParsedError {
 
 const DEFAULT_MESSAGE = 'Something went wrong. Please try again.'
 
-/**
- * Server function errors lose their class identity when they cross the
- * network boundary, but the `message` (and usually the `code`) survive as
- * plain properties. This normalises whatever we get back into a predictable
- * `{ code, message }` so the UI can branch on it.
- */
 export function parseError(error: unknown): ParsedError {
   if (error && typeof error === 'object') {
     const e = error as { code?: unknown; message?: unknown }
@@ -27,8 +21,6 @@ export function parseError(error: unknown): ParsedError {
       return { code: e.code as ParsedErrorCode, message }
     }
 
-    // Fall back to matching the message when the code didn't survive
-    // serialization.
     if (
       /limit reached|generation limit|used all of your generations|out of generations/i.test(
         message,

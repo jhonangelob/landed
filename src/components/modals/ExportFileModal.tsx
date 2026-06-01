@@ -52,9 +52,7 @@ export default function ExportFileModal({
       a.click()
       URL.revokeObjectURL(url)
       onOpenChange(false)
-    } catch {
-      // Surfaced by the mutation's onError handler (e.g. locked template).
-    }
+    } catch {}
   }
 
   return (

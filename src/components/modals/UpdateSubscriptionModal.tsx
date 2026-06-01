@@ -65,9 +65,7 @@ export default function UpdateSubscriptionModal({
     try {
       await upgrade(newPlan.id)
       close()
-    } catch {
-      // Surfaced by the mutation's onError handler.
-    }
+    } catch {}
   }
 
   return (
