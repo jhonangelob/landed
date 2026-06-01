@@ -45,6 +45,7 @@ export const saveProfile = createServerFn({ method: 'POST' })
         education: data.education,
         links: data.links,
         preferences: data.preferences,
+        certifications: data.certifications,
         updatedAt: new Date(),
       })
       .onConflictDoUpdate({
@@ -58,6 +59,7 @@ export const saveProfile = createServerFn({ method: 'POST' })
           education: data.education,
           links: data.links,
           preferences: data.preferences,
+          certifications: data.certifications,
           updatedAt: new Date(),
         },
       })
