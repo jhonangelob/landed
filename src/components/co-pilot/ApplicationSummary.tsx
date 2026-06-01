@@ -24,7 +24,7 @@ export default function ApplicationSummary({ data }: ApplicationSummaryProps) {
     },
 
     {
-      label: 'Stages to landed',
+      label: 'Stages before landing',
       value: stagesToLand,
     },
     {
