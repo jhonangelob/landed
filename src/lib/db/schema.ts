@@ -40,6 +40,7 @@ export const users = pgTable('user', {
   username: text('username').unique(),
   createdAt: timestamp('created_at').notNull(),
   updatedAt: timestamp('updated_at').notNull(),
+  role: text('role').notNull().default('seeker'),
 })
 
 export const sessions = pgTable('session', {

@@ -23,9 +23,11 @@ import {
 } from '../ui/sheet'
 import logo from '/landed-logo.svg'
 
-export default function Header() {
+export default function Header({ isAdmin }: { isAdmin: boolean }) {
   const location = useLocation()
   const navigate = useNavigate()
+
+  const navigation = NAVIGATION.filter((item) => !item.admin || isAdmin)
 
   const checkIfSelected = (path: string) => location.pathname === path
 
@@ -53,7 +55,7 @@ export default function Header() {
         </div>
 
         <div className="hidden flex-row md:flex">
-          {NAVIGATION.map((item) => (
+          {navigation.map((item) => (
             <Link
               to={item.url}
               key={item.url}
@@ -108,7 +110,7 @@ export default function Header() {
             </SheetHeader>
 
             <nav className="flex flex-1 flex-col gap-1 px-3 py-3">
-              {NAVIGATION.map((item) => (
+              {navigation.map((item) => (
                 <Link
                   to={item.url}
                   key={item.url}

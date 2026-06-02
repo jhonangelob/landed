@@ -1,0 +1,34 @@
+import SectionHeader from '#/components/layout/SectionHeader'
+import { getSession } from '#/server/session'
+import { createFileRoute, redirect } from '@tanstack/react-router'
+
+export const Route = createFileRoute('/(app)/admin')({
+  head: () => ({
+    meta: [
+      {
+        title: 'Landed | Mission Control',
+      },
+    ],
+  }),
+  beforeLoad: async () => {
+    const session = await getSession()
+
+    if (session?.user.role !== 'admin') {
+      throw redirect({ to: '/flight-deck' })
+    }
+  },
+  component: RouteComponent,
+})
+
+function RouteComponent() {
+  return (
+    <>
+      <SectionHeader
+        subTitle="Operations Overview"
+        title1="Mission"
+        title2="Control"
+        description="How Landed is flying — users, revenue and platform usage at a glance."
+      />
+    </>
+  )
+}
