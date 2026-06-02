@@ -11,24 +11,29 @@ export function NavigationProgress() {
     select: (s) => s.status === 'pending',
   })
 
-  const isMutating = useIsMutating() > 0
   const isQuerying = useIsFetching() > 0
+
+  const isMutating = useIsMutating() > 0
+
+  const shouldBlockUI = isRouterLoading || isMutating
 
   useEffect(() => {
     if (!initialLoadDone.current) {
       if (!isRouterLoading) initialLoadDone.current = true
       return
     }
-    setShow(isRouterLoading || isMutating || isQuerying)
-  }, [isRouterLoading, isMutating, isQuerying])
+    setShow(isRouterLoading || isQuerying)
+  }, [isRouterLoading, isQuerying])
 
   return (
     <>
+      {shouldBlockUI && <div className="fixed inset-0 z-9998 cursor-pointer" />}
+
       <div
         className={`pointer-events-none fixed top-0 right-0 left-0 z-9999 h-0.75 transition-opacity duration-300 ${show ? 'opacity-100' : 'opacity-0'} `}
       >
         <div
-          className="h-full w-full bg-sky-500"
+          className="bg-primary h-full w-full shadow"
           style={{
             animation: show
               ? 'landed-progress 1.8s ease-in-out infinite'
@@ -36,7 +41,6 @@ export function NavigationProgress() {
           }}
         />
       </div>
-
       <style>{`
         @keyframes landed-progress {
           0%   { transform-origin: left; transform: scaleX(0.02); }
