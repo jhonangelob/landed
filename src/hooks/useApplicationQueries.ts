@@ -129,7 +129,7 @@ export function useDeleteApplicationMutation() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: applicationsQueryKey })
       navigate({ to: '/flight-deck' })
-      notify.success('Application Deletion', 'Application deleted')
+      notify.success('Application Update', 'Application deleted')
     },
     onError: (error) => {
       notify.fromError(error, 'Could not delete application')

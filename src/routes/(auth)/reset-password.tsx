@@ -1,7 +1,6 @@
 import { useState } from 'react'
 
 import { EyeIcon, EyeOffIcon } from 'lucide-react'
-import z from 'zod'
 
 import { useForm } from '@tanstack/react-form'
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
@@ -15,7 +14,10 @@ import { getSession } from '#/server/session'
 import { resetPassword } from '#/lib/auth/client'
 import { cn } from '#/lib/utils'
 
-import { resetPasswordSchema } from '#/validators/account'
+import {
+  resetPasswordSchema,
+  resetPasswordSearchSchema,
+} from '#/validators/account'
 
 import logo from '/landed.svg'
 
@@ -27,9 +29,7 @@ export const Route = createFileRoute('/(auth)/reset-password')({
       },
     ],
   }),
-  validateSearch: z.object({
-    token: z.string().optional(),
-  }),
+  validateSearch: resetPasswordSearchSchema,
   beforeLoad: async ({ search }) => {
     const session = await getSession()
 

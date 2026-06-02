@@ -18,7 +18,7 @@ export default function SubscriptionCard({
   return (
     <div
       className={cn(
-        'hover:border-muted-foreground/40 flex w-full cursor-pointer flex-col gap-2 rounded-lg border bg-[#f5f6f8] p-4 shadow-none',
+        'hover:border-muted-foreground/40 flex w-full cursor-pointer flex-col gap-2 rounded-lg border bg-surface-muted p-4 shadow-none',
         current && 'border-primary bg-primary/30 hover:none',
       )}
       onClick={onSelect}
@@ -41,7 +41,7 @@ export default function SubscriptionCard({
         {data.features.map((item, index) => (
           <p
             key={index}
-            className="flex flex-row items-center gap-2 font-sans text-[13px] leading-[1.4] font-normal text-[#2c3a52]"
+            className="flex flex-row items-center gap-2 font-sans text-[13px] leading-[1.4] font-normal text-ink-muted"
           >
             <CheckIcon className="text-primary size-3 stroke-4" />
             {item}

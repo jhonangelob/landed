@@ -19,7 +19,7 @@ export type ExportFilePayload = {
   applicationId: string
 }
 
-export type UpdateSubscriptionPayload = {
+export type PlanInformationPayload = {
   currentPlan: Plan
   newPlan: Plan
   currentExpiresAt?: Date | string | null
@@ -55,7 +55,7 @@ type ModalMap = {
   deleteAccount: DeleteAccountPayload
   deleteApplication: DeleteApplicationPayload
   exportFile: ExportFilePayload
-  updateSubscription: UpdateSubscriptionPayload
+  planInformation: PlanInformationPayload
   applicationLanded: ApplicationLandedPayload
   usageLimit: UsageLimitPayload
 }

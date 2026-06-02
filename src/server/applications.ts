@@ -1,5 +1,4 @@
 import { and, eq, isNull } from 'drizzle-orm'
-import z from 'zod'
 
 import { createServerFn } from '@tanstack/react-start'
 
@@ -9,6 +8,7 @@ import { db } from '#/lib/db/index.server'
 import { applications } from '#/lib/db/schema'
 
 import {
+  applicationIdSchema,
   createApplicationSchema,
   deleteApplicationSchema,
   updateApplicationSchema,
@@ -34,9 +34,7 @@ export const getApplications = createServerFn({ method: 'GET' }).handler(
 )
 
 export const getApplicationById = createServerFn({ method: 'GET' })
-  .inputValidator((data: unknown) =>
-    z.object({ id: z.string().uuid() }).parse(data),
-  )
+  .inputValidator((data: unknown) => applicationIdSchema.parse(data))
   .handler(async ({ data }) => {
     const session = await ensureSession()
 

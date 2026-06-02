@@ -49,7 +49,7 @@ export default function UsageLimitModal({
   const currentPlan = getPlanById(planId)
 
   const handleUpgrade = () => {
-    openModal('updateSubscription', {
+    openModal('planInformation', {
       currentPlan,
       newPlan: selected,
     })
@@ -68,13 +68,13 @@ export default function UsageLimitModal({
           You are out of Co-Pilot generations
         </DialogDescription>
 
-        <p className="font-sans text-[14px] leading-[1.55] text-[#2c3a52]">
+        <p className="font-sans text-[14px] leading-[1.55] text-ink-muted">
           You tried to generate a document, but your Economy plan includes{' '}
           <span className="font-bold">10 Co-Pilot generations</span> per month.
           Your allowance refills in 14 days — or upgrade now to keep going.
         </p>
 
-        <div className="flex flex-col gap-3 rounded-lg border bg-[#f5f6f8] px-3.75 py-3.25">
+        <div className="flex flex-col gap-3 rounded-lg border bg-surface-muted px-3.75 py-3.25">
           <div className="flex flex-row items-center justify-between">
             <p className="text-muted font-mono text-[11px] leading-[1.55] tracking-[1.3px] uppercase">
               Usage this month
@@ -105,7 +105,7 @@ export default function UsageLimitModal({
             {PAID_PLANS.map((item, index) => (
               <div
                 className={cn(
-                  'cursor-pointer space-y-2 rounded-lg border bg-[#f5f6f8] p-4',
+                  'cursor-pointer space-y-2 rounded-lg border bg-surface-muted p-4',
                   selected.id === item.id && 'border-primary',
                 )}
                 onClick={() => setSelected(PAID_PLANS[index])}

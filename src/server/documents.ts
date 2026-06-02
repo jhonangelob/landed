@@ -3,7 +3,6 @@ import { anthropic } from '@ai-sdk/anthropic'
 import { renderToBuffer } from '@react-pdf/renderer'
 import { generateText } from 'ai'
 import { and, count, desc, eq, gte } from 'drizzle-orm'
-import z from 'zod'
 
 import { createServerFn } from '@tanstack/react-start'
 
@@ -24,6 +23,7 @@ import { AppError } from '#/lib/utils'
 
 import {
   aiResponseSchema,
+  documentsByApplicationSchema,
   exportDocumentSchema,
   generateDocumentSchema,
 } from '#/validators/documents'
@@ -40,9 +40,7 @@ const TEMPLATES = {
 } as const
 
 export const getDocuments = createServerFn({ method: 'GET' })
-  .inputValidator((data: unknown) =>
-    z.object({ id: z.string().uuid() }).parse(data),
-  )
+  .inputValidator((data: unknown) => documentsByApplicationSchema.parse(data))
   .handler(async ({ data }) => {
     const session = await ensureSession()
 

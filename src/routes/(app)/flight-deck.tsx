@@ -6,6 +6,7 @@ import KanbanBoard from '#/components/flight-deck/KanbanBoard'
 import SectionHeader from '#/components/layout/SectionHeader'
 
 import { getApplications } from '#/server/applications'
+import { getSession } from '#/server/session'
 
 export const Route = createFileRoute('/(app)/flight-deck')({
   head: () => ({
@@ -20,6 +21,13 @@ export const Route = createFileRoute('/(app)/flight-deck')({
       queryKey: ['applications'],
       queryFn: () => getApplications(),
     }),
+  beforeLoad: async () => {
+    const session = await getSession()
+
+    if (!session?.user.hasOnboarded) {
+      console.log('unimplemented: show onboarding')
+    }
+  },
   component: RouteComponent,
 })
 

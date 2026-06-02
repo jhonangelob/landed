@@ -37,6 +37,10 @@ export const resetPasswordSchema = z
 
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>
 
+export const resetPasswordSearchSchema = z.object({
+  token: z.string().optional(),
+})
+
 export const signupSchema = z
   .object({
     fullName: z

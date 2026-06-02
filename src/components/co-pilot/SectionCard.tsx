@@ -20,7 +20,7 @@ export default function SectionCard({
       className={cn(
         'flex flex-col rounded-lg border p-6 shadow-none',
         variant === 'destructive'
-          ? 'border-destructive bg-[#fef4f4]'
+          ? 'border-destructive bg-surface-danger-subtle'
           : 'bg-white',
       )}
     >

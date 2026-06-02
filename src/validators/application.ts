@@ -53,6 +53,14 @@ export const deleteApplicationSchema = z.object({
   id: z.string().uuid(),
 })
 
+export const applicationIdSchema = z.object({
+  id: z.string().uuid(),
+})
+
+export const coPilotSearchSchema = z.object({
+  applicationId: z.string().uuid().optional(),
+})
+
 export type Application = {
   id: string
   company: string

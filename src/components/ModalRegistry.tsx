@@ -4,7 +4,7 @@ import ApplicationLandedModal from './modals/ApplicationLandedModal'
 import DeleteAccountModal from './modals/DeleteAccountModal'
 import DeleteApplicationModal from './modals/DeleteApplicationModal'
 import ExportFileModal from './modals/ExportFileModal'
-import UpdateSubscriptionModal from './modals/UpdateSubscriptionModal'
+import PlanInformationModal from './modals/PlanInformationModal'
 import UsageLimitModal from './modals/UsageLimitModal'
 
 const noop = () => {}
@@ -42,13 +42,13 @@ export function ModalRegistry({ userName }: ModalRegistryProps) {
         onOpenChange={handleClose}
         applicationId={payload.exportFile?.applicationId ?? ''}
       />
-      {payload.updateSubscription && (
-        <UpdateSubscriptionModal
-          open={activeModal === 'updateSubscription'}
+      {payload.planInformation && (
+        <PlanInformationModal
+          open={activeModal === 'planInformation'}
           onOpenChange={handleClose}
-          currentPlan={payload.updateSubscription.currentPlan}
-          newPlan={payload.updateSubscription.newPlan}
-          currentExpiresAt={payload.updateSubscription.currentExpiresAt}
+          currentPlan={payload.planInformation.currentPlan}
+          newPlan={payload.planInformation.newPlan}
+          currentExpiresAt={payload.planInformation.currentExpiresAt}
         />
       )}
       {payload.applicationLanded && (

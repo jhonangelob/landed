@@ -285,7 +285,7 @@ export default function UpdateApplication({
                         <SelectTrigger
                           id="stage"
                           onBlur={field.handleBlur}
-                          className="h-10.5! w-full bg-[#f5f6f8]! shadow-none!"
+                          className="h-10.5! w-full bg-surface-muted! shadow-none!"
                         >
                           <SelectValue placeholder="Select stage" />
                         </SelectTrigger>

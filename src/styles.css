@@ -25,6 +25,27 @@
   --status-offer: #10b981;
   --status-landed: #0091ff;
 
+  /* Surfaces */
+  --surface-muted: #f5f6f8;
+  --surface-subtle: #fafbfd;
+  --surface-info: #ebf2f9;
+  --surface-danger: #fef1f0;
+  --surface-danger-subtle: #fef4f4;
+
+  /* Content / ink */
+  --ink-strong: #0f1b2d;
+  --ink-muted: #2c3a52;
+
+  /* Lines */
+  --divider: #c7ccd6;
+  --border-danger: #e4b9ba;
+
+  /* Status accents */
+  --success: #2e7d5b;
+  --warning: #e0a11b;
+  --danger-strong: #d2484a;
+  --neutral-tint: #c2c2c2;
+
   /* shadcn tokens */
   --background: #f9f9fc;
   --foreground: #0f172a;
@@ -111,6 +132,20 @@
   --color-status-interviewing: var(--status-interviewing);
   --color-status-offer: var(--status-offer);
   --color-status-landed: var(--status-landed);
+
+  --color-surface-muted: var(--surface-muted);
+  --color-surface-subtle: var(--surface-subtle);
+  --color-surface-info: var(--surface-info);
+  --color-surface-danger: var(--surface-danger);
+  --color-surface-danger-subtle: var(--surface-danger-subtle);
+  --color-ink-strong: var(--ink-strong);
+  --color-ink-muted: var(--ink-muted);
+  --color-divider: var(--divider);
+  --color-border-danger: var(--border-danger);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger-strong: var(--danger-strong);
+  --color-neutral-tint: var(--neutral-tint);
 }
 
 html,
@@ -229,11 +264,22 @@ pre code {
     0 8px 24px rgba(0, 145, 255, 0.1);
 }
 
-/* Global transitions — applies to all current and future components */
+/* Theme/hover transitions, scoped to interactive and themed elements.
+   Avoids the layout/paint cost of transitioning every node via `*`.
+   `[data-slot]` covers shadcn/Radix components (button, card, badge, …). */
 @media (prefers-reduced-motion: no-preference) {
-  *,
-  *::before,
-  *::after {
+  a,
+  button,
+  input,
+  textarea,
+  select,
+  summary,
+  [data-slot],
+  [role='button'],
+  [role='tab'],
+  .feature-card,
+  .island-shell,
+  .nav-link {
     transition-property:
       color, background-color, border-color, text-decoration-color, fill,
       stroke, opacity, box-shadow;
@@ -347,17 +393,9 @@ header {
     @apply cursor-pointer shadow-none!;
   }
 
-  input {
-    @apply h-10.5! rounded-md! bg-[#f5f6f8]! py-2.75 text-[13px]! shadow-none! focus:ring-0! focus:ring-offset-0! md:text-[14px]!;
-  }
-
-  textarea {
-    @apply rounded-md! bg-[#f5f6f8]! py-2.75 text-[13px]! shadow-none! focus:ring-0! focus:ring-offset-0! md:text-[14px]!;
-  }
-
-  label {
-    @apply text-muted-foreground font-mono text-[10px]! leading-[1.4] font-medium tracking-[1.3px] uppercase md:text-[12px]!;
-  }
+  /* Input / Textarea / Label field styling lives in their components
+     (components/ui/{input,textarea,label}.tsx) so consumers can override
+     via className without fighting an !important cascade. */
 
   /* ── Sonner toast ──────────────────────────────────────────
      The toast itself is a custom card rendered in

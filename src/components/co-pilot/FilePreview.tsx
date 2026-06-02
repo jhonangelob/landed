@@ -47,7 +47,7 @@ export default function FilePreview({
   const hasDocuments = documents && documents.length > 0
 
   return (
-    <div className="w-full rounded-lg border bg-[#fafbfd] p-5.5">
+    <div className="w-full rounded-lg border bg-surface-subtle p-5.5">
       <Tabs defaultValue="cv">
         <TabsList variant="line" className="flex w-full flex-row items-center">
           <TabsTrigger

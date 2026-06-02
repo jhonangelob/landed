@@ -6,9 +6,10 @@ import { Label } from '#/components/ui/label'
 
 import { updateAccountSchema } from '#/validators/account'
 import type { UpdateAccountInput } from '#/validators/account'
+import type { User } from '#/lib/db/schema'
 
 interface AccountFormProps {
-  data: any
+  data: User
   onConfirmUpdate: (value: UpdateAccountInput) => void
 }
 
@@ -18,7 +19,7 @@ export default function AccountForm({
 }: AccountFormProps) {
   const form = useForm({
     defaultValues: {
-      fullName: data.name ?? '',
+      fullName: data.name,
       username: data.username ?? '',
     },
     validators: { onSubmit: updateAccountSchema },
@@ -123,7 +124,7 @@ export default function AccountForm({
           selector={(s) => ({ isSubmitting: s.isSubmitting, values: s.values })}
           children={({ isSubmitting, values }) => {
             const hasChanges =
-              values.fullName !== (data.name ?? '') ||
+              values.fullName !== data.name ||
               values.username !== (data.username ?? '')
             return (
               <Button

@@ -6,9 +6,8 @@ import {
 
 import { getProfile, saveProfile } from '#/server/profile'
 
-import { notify } from '#/lib/toast'
-
 import type { PilotProfile } from '#/lib/db/schema'
+import { notify } from '#/lib/toast'
 
 import type { PilotProfileInput } from '#/validators/profile'
 

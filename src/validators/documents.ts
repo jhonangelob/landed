@@ -1,5 +1,9 @@
 import z from 'zod'
 
+export const documentsByApplicationSchema = z.object({
+  id: z.string().uuid(),
+})
+
 export const generateDocumentSchema = z.object({
   applicationId: z.string().uuid(),
 })

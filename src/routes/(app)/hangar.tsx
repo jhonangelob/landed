@@ -13,8 +13,9 @@ import {
   subscriptionQueryKey,
   useSubscriptionQuery,
 } from '#/hooks/useSubscriptionQueries'
+import { MoveRightIcon } from 'lucide-react'
 
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 
 import { Button } from '#/components/ui/button'
 
@@ -60,6 +61,8 @@ export const Route = createFileRoute('/(app)/hangar')({
 })
 
 function RouteComponent() {
+  const navigate = useNavigate()
+
   const { data: activities } = useActivitiesQuery()
   const { data: account } = useAccountDetailsQuery()
   const { data: subscription } = useSubscriptionQuery()
@@ -75,6 +78,11 @@ function RouteComponent() {
     { day: 'numeric', month: 'long' },
   )
 
+  const handlePlanUpgrade = () => {
+    navigate({
+      to: '/checkout',
+    })
+  }
   return (
     <div className="flex flex-col gap-4">
       <SectionHeader
@@ -108,6 +116,7 @@ function RouteComponent() {
         title="Choose your plan"
         description="Every plan includes unlimited applications, the Flight Deck, and the Pilot Profile. Co-Pilot generations and extras vary."
         order={3}
+        className="space-y-4"
       >
         <div className="flex flex-col gap-4 lg:flex-row">
           {PLANS.map((item) => (
@@ -116,7 +125,7 @@ function RouteComponent() {
               current={subscription.planId === item.id}
               onSelect={() =>
                 subscription.planId !== item.id &&
-                open('updateSubscription', {
+                open('planInformation', {
                   currentPlan: PLANS.find(
                     (it) => it.id === subscription.planId,
                   )!,
@@ -127,6 +136,14 @@ function RouteComponent() {
               key={item.id}
             />
           ))}
+        </div>
+        <div className="flex">
+          <Button
+            className="ml-auto font-mono text-[12px] leading-[1.4] font-semibold tracking-[0.7px] uppercase"
+            onClick={handlePlanUpgrade}
+          >
+            Upgrade Plan <MoveRightIcon />
+          </Button>
         </div>
       </SectionCard>
       <div className="flex flex-col gap-4 lg:flex-row">
@@ -144,7 +161,7 @@ function RouteComponent() {
           title="Delete account"
           description="Permanently delete your Pilot Profile, application history, and every document Co-Pilot has generated. This cannot be undone."
           order={5}
-          className="w-full border-[#e4b9ba]! bg-[#fef1f0]! lg:w-2/5"
+          className="w-full border-border-danger! bg-surface-danger! lg:w-2/5"
         >
           <div className="mt-auto flex flex-row items-end justify-between">
             <p className="text-muted font-mono text-[11px] leading-[1.4] font-normal tracking-[1.1px] uppercase">

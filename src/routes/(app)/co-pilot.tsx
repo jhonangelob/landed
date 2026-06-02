@@ -1,6 +1,5 @@
 import { useApplicationQuery } from '#/hooks/useApplicationQueries'
 import { useProfileQuery } from '#/hooks/useProfileQueries'
-import z from 'zod'
 
 import { createFileRoute } from '@tanstack/react-router'
 
@@ -10,6 +9,8 @@ import UpdateApplication from '#/components/co-pilot/UpdateApplication'
 import { getApplicationById } from '#/server/applications'
 import { getProfile } from '#/server/profile'
 
+import { coPilotSearchSchema } from '#/validators/application'
+
 export const Route = createFileRoute('/(app)/co-pilot')({
   head: () => ({
     meta: [
@@ -18,9 +19,7 @@ export const Route = createFileRoute('/(app)/co-pilot')({
       },
     ],
   }),
-  validateSearch: z.object({
-    applicationId: z.string().uuid().optional(),
-  }),
+  validateSearch: coPilotSearchSchema,
   loader: ({ context: { queryClient }, location }) => {
     const { applicationId } = location.search as { applicationId?: string }
 

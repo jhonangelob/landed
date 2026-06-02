@@ -9,8 +9,12 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as appRouteRouteImport } from './routes/(app)/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PaymentSuccessRouteImport } from './routes/payment/success'
+import { Route as PaymentReturnRouteImport } from './routes/payment/return'
+import { Route as PaymentFailedRouteImport } from './routes/payment/failed'
 import { Route as authSignupRouteImport } from './routes/(auth)/signup'
 import { Route as authResetPasswordRouteImport } from './routes/(auth)/reset-password'
 import { Route as authLoginRouteImport } from './routes/(auth)/login'
@@ -19,8 +23,15 @@ import { Route as appProfileRouteImport } from './routes/(app)/profile'
 import { Route as appHangarRouteImport } from './routes/(app)/hangar'
 import { Route as appFlightDeckRouteImport } from './routes/(app)/flight-deck'
 import { Route as appCoPilotRouteImport } from './routes/(app)/co-pilot'
+import { Route as appAdminRouteImport } from './routes/(app)/admin'
+import { Route as ApiPaymongoWebhookRouteImport } from './routes/api/paymongo/webhook'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const appRouteRoute = appRouteRouteImport.update({
   id: '/(app)',
   getParentRoute: () => rootRouteImport,
@@ -28,6 +39,21 @@ const appRouteRoute = appRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaymentSuccessRoute = PaymentSuccessRouteImport.update({
+  id: '/payment/success',
+  path: '/payment/success',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaymentReturnRoute = PaymentReturnRouteImport.update({
+  id: '/payment/return',
+  path: '/payment/return',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaymentFailedRoute = PaymentFailedRouteImport.update({
+  id: '/payment/failed',
+  path: '/payment/failed',
   getParentRoute: () => rootRouteImport,
 } as any)
 const authSignupRoute = authSignupRouteImport.update({
@@ -70,6 +96,16 @@ const appCoPilotRoute = appCoPilotRouteImport.update({
   path: '/co-pilot',
   getParentRoute: () => appRouteRoute,
 } as any)
+const appAdminRoute = appAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const ApiPaymongoWebhookRoute = ApiPaymongoWebhookRouteImport.update({
+  id: '/api/paymongo/webhook',
+  path: '/api/paymongo/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -78,6 +114,8 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/checkout': typeof CheckoutRoute
+  '/admin': typeof appAdminRoute
   '/co-pilot': typeof appCoPilotRoute
   '/flight-deck': typeof appFlightDeckRoute
   '/hangar': typeof appHangarRoute
@@ -86,10 +124,16 @@ export interface FileRoutesByFullPath {
   '/login': typeof authLoginRoute
   '/reset-password': typeof authResetPasswordRoute
   '/signup': typeof authSignupRoute
+  '/payment/failed': typeof PaymentFailedRoute
+  '/payment/return': typeof PaymentReturnRoute
+  '/payment/success': typeof PaymentSuccessRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/paymongo/webhook': typeof ApiPaymongoWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/checkout': typeof CheckoutRoute
+  '/admin': typeof appAdminRoute
   '/co-pilot': typeof appCoPilotRoute
   '/flight-deck': typeof appFlightDeckRoute
   '/hangar': typeof appHangarRoute
@@ -98,12 +142,18 @@ export interface FileRoutesByTo {
   '/login': typeof authLoginRoute
   '/reset-password': typeof authResetPasswordRoute
   '/signup': typeof authSignupRoute
+  '/payment/failed': typeof PaymentFailedRoute
+  '/payment/return': typeof PaymentReturnRoute
+  '/payment/success': typeof PaymentSuccessRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/paymongo/webhook': typeof ApiPaymongoWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/(app)': typeof appRouteRouteWithChildren
+  '/checkout': typeof CheckoutRoute
+  '/(app)/admin': typeof appAdminRoute
   '/(app)/co-pilot': typeof appCoPilotRoute
   '/(app)/flight-deck': typeof appFlightDeckRoute
   '/(app)/hangar': typeof appHangarRoute
@@ -112,12 +162,18 @@ export interface FileRoutesById {
   '/(auth)/login': typeof authLoginRoute
   '/(auth)/reset-password': typeof authResetPasswordRoute
   '/(auth)/signup': typeof authSignupRoute
+  '/payment/failed': typeof PaymentFailedRoute
+  '/payment/return': typeof PaymentReturnRoute
+  '/payment/success': typeof PaymentSuccessRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/paymongo/webhook': typeof ApiPaymongoWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/checkout'
+    | '/admin'
     | '/co-pilot'
     | '/flight-deck'
     | '/hangar'
@@ -126,10 +182,16 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/signup'
+    | '/payment/failed'
+    | '/payment/return'
+    | '/payment/success'
     | '/api/auth/$'
+    | '/api/paymongo/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/checkout'
+    | '/admin'
     | '/co-pilot'
     | '/flight-deck'
     | '/hangar'
@@ -138,11 +200,17 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/signup'
+    | '/payment/failed'
+    | '/payment/return'
+    | '/payment/success'
     | '/api/auth/$'
+    | '/api/paymongo/webhook'
   id:
     | '__root__'
     | '/'
     | '/(app)'
+    | '/checkout'
+    | '/(app)/admin'
     | '/(app)/co-pilot'
     | '/(app)/flight-deck'
     | '/(app)/hangar'
@@ -151,21 +219,37 @@ export interface FileRouteTypes {
     | '/(auth)/login'
     | '/(auth)/reset-password'
     | '/(auth)/signup'
+    | '/payment/failed'
+    | '/payment/return'
+    | '/payment/success'
     | '/api/auth/$'
+    | '/api/paymongo/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   appRouteRoute: typeof appRouteRouteWithChildren
+  CheckoutRoute: typeof CheckoutRoute
   authForgotPasswordRoute: typeof authForgotPasswordRoute
   authLoginRoute: typeof authLoginRoute
   authResetPasswordRoute: typeof authResetPasswordRoute
   authSignupRoute: typeof authSignupRoute
+  PaymentFailedRoute: typeof PaymentFailedRoute
+  PaymentReturnRoute: typeof PaymentReturnRoute
+  PaymentSuccessRoute: typeof PaymentSuccessRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiPaymongoWebhookRoute: typeof ApiPaymongoWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/(app)': {
       id: '/(app)'
       path: ''
@@ -178,6 +262,27 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/payment/success': {
+      id: '/payment/success'
+      path: '/payment/success'
+      fullPath: '/payment/success'
+      preLoaderRoute: typeof PaymentSuccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/payment/return': {
+      id: '/payment/return'
+      path: '/payment/return'
+      fullPath: '/payment/return'
+      preLoaderRoute: typeof PaymentReturnRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/payment/failed': {
+      id: '/payment/failed'
+      path: '/payment/failed'
+      fullPath: '/payment/failed'
+      preLoaderRoute: typeof PaymentFailedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(auth)/signup': {
@@ -236,6 +341,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appCoPilotRouteImport
       parentRoute: typeof appRouteRoute
     }
+    '/(app)/admin': {
+      id: '/(app)/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof appAdminRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/api/paymongo/webhook': {
+      id: '/api/paymongo/webhook'
+      path: '/api/paymongo/webhook'
+      fullPath: '/api/paymongo/webhook'
+      preLoaderRoute: typeof ApiPaymongoWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -247,6 +366,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface appRouteRouteChildren {
+  appAdminRoute: typeof appAdminRoute
   appCoPilotRoute: typeof appCoPilotRoute
   appFlightDeckRoute: typeof appFlightDeckRoute
   appHangarRoute: typeof appHangarRoute
@@ -254,6 +374,7 @@ interface appRouteRouteChildren {
 }
 
 const appRouteRouteChildren: appRouteRouteChildren = {
+  appAdminRoute: appAdminRoute,
   appCoPilotRoute: appCoPilotRoute,
   appFlightDeckRoute: appFlightDeckRoute,
   appHangarRoute: appHangarRoute,
@@ -267,11 +388,16 @@ const appRouteRouteWithChildren = appRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   appRouteRoute: appRouteRouteWithChildren,
+  CheckoutRoute: CheckoutRoute,
   authForgotPasswordRoute: authForgotPasswordRoute,
   authLoginRoute: authLoginRoute,
   authResetPasswordRoute: authResetPasswordRoute,
   authSignupRoute: authSignupRoute,
+  PaymentFailedRoute: PaymentFailedRoute,
+  PaymentReturnRoute: PaymentReturnRoute,
+  PaymentSuccessRoute: PaymentSuccessRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiPaymongoWebhookRoute: ApiPaymongoWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

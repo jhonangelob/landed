@@ -1,6 +1,5 @@
 import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
-import { admin } from 'better-auth/plugins'
 import { tanstackStartCookies } from 'better-auth/tanstack-start'
 
 import { db } from '#/lib/db/index.server'
@@ -42,7 +41,7 @@ export const auth = betterAuth({
               We received a request to reset your Landed password.
               This link expires in 1 hour.
             </p>
-            
+            <a
               href="${url}"
               style="display:inline-block;background:#0ea5e9;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;"
             >
@@ -77,6 +76,18 @@ export const auth = betterAuth({
         required: false,
         unique: true,
       },
+      hasOnboarded: {
+        type: 'boolean',
+        required: false,
+        defaultValue: false,
+        input: false,
+      },
+      role: {
+        type: 'string',
+        required: false,
+        defaultValue: 'seeker',
+        input: false,
+      },
     },
   },
 
@@ -89,10 +100,5 @@ export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL,
 
-  plugins: [
-    admin({
-      adminUserIds: ['WdC9A2DDckKxorZxT83SfAdUJ7RFBeEl'],
-    }),
-    tanstackStartCookies(),
-  ],
+  plugins: [tanstackStartCookies()],
 })

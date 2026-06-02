@@ -1,6 +1,8 @@
-import SectionHeader from '#/components/layout/SectionHeader'
-import { getSession } from '#/server/session'
 import { createFileRoute, redirect } from '@tanstack/react-router'
+
+import SectionHeader from '#/components/layout/SectionHeader'
+
+import { getSession } from '#/server/session'
 
 export const Route = createFileRoute('/(app)/admin')({
   head: () => ({

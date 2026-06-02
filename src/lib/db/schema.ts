@@ -41,6 +41,7 @@ export const users = pgTable('user', {
   createdAt: timestamp('created_at').notNull(),
   updatedAt: timestamp('updated_at').notNull(),
   role: text('role').notNull().default('seeker'),
+  hasOnboarded: boolean('has_onboarded').notNull().default(false),
 })
 
 export const sessions = pgTable('session', {

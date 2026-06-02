@@ -20,10 +20,10 @@ export default function SectionCard({
       className={`flex flex-col rounded-lg border bg-white p-6 shadow-none ${className}`}
     >
       <div className="flex flex-row items-start justify-between gap-4">
-        <p className="font-display text-[22px] leading-[1.4] font-bold tracking-[-0.6px] text-[#0f1b2d]">
+        <p className="font-display text-[22px] leading-[1.4] font-bold tracking-[-0.6px] text-ink-strong">
           {title}
         </p>
-        <div className="flex items-center justify-center rounded-md border px-2 py-0.5 font-mono text-[11px] leading-[1.4] tracking-[1.5px] text-[#2c3a52]">
+        <div className="flex items-center justify-center rounded-md border px-2 py-0.5 font-mono text-[11px] leading-[1.4] tracking-[1.5px] text-ink-muted">
           0{order}
         </div>
       </div>

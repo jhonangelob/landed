@@ -19,6 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '#/components/ui/dialog'
+import { formatDate } from '#/helper/date'
 
 interface ApplicationLandedModalProps {
   open: boolean
@@ -38,35 +39,8 @@ interface ApplicationLandedModalProps {
   daysCount: number
 }
 
-const MONTHS = [
-  'JAN',
-  'FEB',
-  'MAR',
-  'APR',
-  'MAY',
-  'JUN',
-  'JUL',
-  'AUG',
-  'SEP',
-  'OCT',
-  'NOV',
-  'DEC',
-]
-
 function getCompanyCode(name: string) {
   return name.slice(0, 3).toUpperCase()
-}
-
-function formatDate(date: string | Date) {
-  const d = new Date(date)
-  const day = d.getDate().toString().padStart(2, '0')
-  return `${day} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`
-}
-
-function formatTicketDate(date: string | Date) {
-  const d = new Date(date)
-  const day = d.getDate().toString().padStart(2, '0')
-  return `${day}${MONTHS[d.getMonth()]}${d.getFullYear()}`
 }
 
 export default function ApplicationLandedModal({
@@ -110,14 +84,14 @@ export default function ApplicationLandedModal({
           You <span className="text-primary italic">landed</span>.
         </DialogDescription>
 
-        <p className="mx-auto max-w-130 text-center font-sans text-[15px] leading-normal text-[#2c3a52]">
+        <p className="text-ink-muted mx-auto max-w-130 text-center font-sans text-[15px] leading-normal">
           Final descent confirmed at{' '}
           <span className="font-bold">{company}</span> for the{' '}
           <span className="font-bold">{role}</span> role. Wheels down.
         </p>
 
         <div className="flex flex-row rounded-lg border">
-          <div className="flex-1 border-r border-dashed border-[#c7ccd6] bg-[#f5f6f8] px-6.5 py-6">
+          <div className="border-divider bg-surface-muted flex-1 border-r border-dashed px-6.5 py-6">
             <div className="flex flex-row justify-between pb-4">
               <div>
                 <p className="text-muted font-mono text-[11px] leading-[1.4] font-normal tracking-[1.7px] uppercase">
@@ -200,7 +174,7 @@ export default function ApplicationLandedModal({
               )}
             </div>
           </div>
-          <div className="w-55 space-y-6 bg-[#ebf2f9] px-5.5 py-6">
+          <div className="bg-surface-info w-55 space-y-6 px-5.5 py-6">
             <div className="flex flex-row justify-between">
               <p className="text-muted font-mono text-[11px] leading-[1.4] tracking-[1.7px] uppercase">
                 Stub
@@ -236,13 +210,13 @@ export default function ApplicationLandedModal({
             <div>
               <div></div>
               <p className="text-muted text-center font-mono text-[9px] leading-[1.4] tracking-[0.9px]">
-                LND·{formatTicketDate(landedAt)}·{getCompanyCode(company)}
+                LND·{formatDate(landedAt)}·{getCompanyCode(company)}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="flex flex-row justify-between gap-2 rounded-lg border bg-[#fafbfd] px-5 py-4">
+        <div className="bg-surface-subtle flex flex-row justify-between gap-2 rounded-lg border px-5 py-4">
           <div className="w-45 space-y-1.5">
             <p className="text-primary-text font-display text-[18px] leading-[1.4] font-bold tracking-[-0.5px]">
               Tell the tower.

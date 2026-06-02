@@ -13,7 +13,7 @@ import { Textarea } from '#/components/ui/textarea'
 
 import SectionCard from '#/components/profile/SectionCard'
 
-import type { PilotProfile } from '#/lib/db/schema'
+import type { PilotProfile, User } from '#/lib/db/schema'
 import { cn } from '#/lib/utils'
 
 import { PROFILE_LIMITS, pilotProfileSchema } from '#/validators/profile'
@@ -21,7 +21,7 @@ import type { PilotProfileInput } from '#/validators/profile'
 
 interface ProfileFormProps {
   profile: PilotProfile | null
-  account: any
+  account: User
   onSave: (value: PilotProfileInput) => Promise<void> | void
 }
 
@@ -35,8 +35,8 @@ export default function ProfileForm({
 
   const form = useForm({
     defaultValues: {
-      fullName: account?.name ?? '',
-      email: account?.email ?? '',
+      fullName: account.name,
+      email: account.email,
       location: profile?.location ?? '',
       headline: profile?.headline ?? '',
       summary: profile?.summary ?? '',
@@ -400,9 +400,7 @@ export default function ProfileForm({
                 type="button"
                 variant="outline"
                 className="w-fit text-sm"
-                disabled={
-                  field.state.value.length >= PROFILE_LIMITS.experience
-                }
+                disabled={field.state.value.length >= PROFILE_LIMITS.experience}
                 onClick={() =>
                   form.pushFieldValue('experience', {
                     company: '',
@@ -416,7 +414,8 @@ export default function ProfileForm({
               </Button>
               {field.state.value.length >= PROFILE_LIMITS.experience && (
                 <p className="text-muted-foreground text-xs">
-                  Maximum {PROFILE_LIMITS.experience} experience entries reached.
+                  Maximum {PROFILE_LIMITS.experience} experience entries
+                  reached.
                 </p>
               )}
               {field.state.meta.errors.map((err, i) => (
@@ -760,7 +759,8 @@ export default function ProfileForm({
               </Button>
               {field.state.value.length >= PROFILE_LIMITS.certifications && (
                 <p className="text-muted-foreground text-xs">
-                  Maximum {PROFILE_LIMITS.certifications} certifications reached.
+                  Maximum {PROFILE_LIMITS.certifications} certifications
+                  reached.
                 </p>
               )}
               {field.state.meta.errors.map((err, i) => (
@@ -888,7 +888,7 @@ export default function ProfileForm({
                 className={cn(
                   'h-2.5 w-2.5 rounded-full outline-3',
                   isDirty
-                    ? 'bg-[#e0a11b] outline-[#e0a11b]/20'
+                    ? 'bg-warning outline-warning/20'
                     : 'bg-primary outline-primary/20',
                 )}
               />

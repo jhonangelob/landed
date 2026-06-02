@@ -6,11 +6,11 @@ type ActivityData = {
 }
 
 const CARD_CLASS =
-  'flex h-23.5 flex-col gap-2 rounded-md border bg-[#f5f6f8] px-4 py-3.5 shadow-none'
+  'flex h-23.5 flex-col gap-2 rounded-md border bg-surface-muted px-4 py-3.5 shadow-none'
 const LABEL_CLASS =
   'text-muted font-mono text-[11px] leading-[1.4] font-normal tracking-[1.1px] uppercase'
 const VALUE_CLASS =
-  'font-display leading-none font-bold tracking-[-0.8px] text-[#0f1b2]'
+  'font-display leading-none font-bold tracking-[-0.8px] text-ink-strong'
 
 const cards = (data: ActivityData) => [
   { value: data.applicationCount, label: 'Applications Submitted' },

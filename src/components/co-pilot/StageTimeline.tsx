@@ -1,3 +1,4 @@
+import { formatDate } from '#/helper/date'
 import { cn } from '#/lib/utils'
 
 import type { Application } from '#/validators/application'
@@ -11,15 +12,6 @@ const STAGES = [
   { label: 'Interview', key: 'interviewAt' },
   { label: 'Offer', key: 'offerAt' },
 ] as const satisfies { label: string; key: keyof Application }[]
-
-function formatDate(date: Date | string | null): string {
-  if (!date) return 'Not set'
-  return new Date(date).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  })
-}
 
 export default function StageTimeline({ data }: StageTimelineProps) {
   return (

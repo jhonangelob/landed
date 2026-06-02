@@ -54,7 +54,10 @@ export const preferencesSchema = z.object({
   roles: z
     .array(z.string().min(1))
     .min(1, 'Add at least one preferred role')
-    .max(PROFILE_LIMITS.roles, `Maximum ${PROFILE_LIMITS.roles} preferred roles`),
+    .max(
+      PROFILE_LIMITS.roles,
+      `Maximum ${PROFILE_LIMITS.roles} preferred roles`,
+    ),
   salaryRange: z.string(),
 })
 

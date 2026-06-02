@@ -54,7 +54,7 @@ export default function ApplicationSummary({ data }: ApplicationSummaryProps) {
           key={item.label}
           className={cn(
             'rounded-md border p-4',
-            index === 0 ? 'border-primary/40 bg-primary/10' : 'bg-[#f5f6f8]',
+            index === 0 ? 'border-primary/40 bg-primary/10' : 'bg-surface-muted',
           )}
         >
           <p className="text-muted font-mono text-[10px] leading-[1.4] font-normal tracking-[1.3px] uppercase">
