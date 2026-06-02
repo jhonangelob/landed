@@ -1,5 +1,14 @@
 import { z } from 'zod'
 
+export const PROFILE_LIMITS = {
+  skills: 30,
+  experience: 8,
+  bullets: 6,
+  education: 4,
+  certifications: 10,
+  roles: 5,
+} as const
+
 export const experienceSchema = z.object({
   company: z.string().min(1, 'Company name is required'),
   role: z.string().min(1, 'Role is required'),
@@ -7,7 +16,10 @@ export const experienceSchema = z.object({
   bullets: z
     .array(z.string().min(1, 'Bullet point cannot be empty'))
     .min(1, 'Add at least one bullet point')
-    .max(6, 'Maximum 6 bullet points per role'),
+    .max(
+      PROFILE_LIMITS.bullets,
+      `Maximum ${PROFILE_LIMITS.bullets} bullet points per role`,
+    ),
 })
 
 export type ExperienceInput = z.infer<typeof experienceSchema>
@@ -42,7 +54,7 @@ export const preferencesSchema = z.object({
   roles: z
     .array(z.string().min(1))
     .min(1, 'Add at least one preferred role')
-    .max(5, 'Maximum 5 preferred roles'),
+    .max(PROFILE_LIMITS.roles, `Maximum ${PROFILE_LIMITS.roles} preferred roles`),
   salaryRange: z.string(),
 })
 
@@ -74,18 +86,27 @@ export const pilotProfileSchema = z.object({
       z.string().min(1, 'Skill cannot be empty').max(50, 'Skill name too long'),
     )
     .min(1, 'Add at least one skill')
-    .max(30, 'Maximum 30 skills'),
+    .max(PROFILE_LIMITS.skills, `Maximum ${PROFILE_LIMITS.skills} skills`),
   experience: z
     .array(experienceSchema)
     .min(1, 'Add at least one work experience')
-    .max(8, 'Maximum 8 experience entries'),
+    .max(
+      PROFILE_LIMITS.experience,
+      `Maximum ${PROFILE_LIMITS.experience} experience entries`,
+    ),
   certifications: z
     .array(certificationSchema)
-    .max(10, 'Maximum 10 certifications'),
+    .max(
+      PROFILE_LIMITS.certifications,
+      `Maximum ${PROFILE_LIMITS.certifications} certifications`,
+    ),
   education: z
     .array(educationSchema)
     .min(1, 'Add at least one education entry')
-    .max(4, 'Maximum 4 education entries'),
+    .max(
+      PROFILE_LIMITS.education,
+      `Maximum ${PROFILE_LIMITS.education} education entries`,
+    ),
   links: linksSchema,
   preferences: preferencesSchema,
 })

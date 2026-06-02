@@ -131,7 +131,7 @@ export const generateDocuments = createServerFn({ method: 'POST' })
       model: anthropic(process.env.ANTHROPIC_HAIKU_MODEL!),
       system: `
       You are Co-Pilot, an expert CV writer inside Landed, a job-application tracker.
-      Your task: rewrite the candidate's profile into a tailored CV and cover letter for ONE specific job posting.
+      Your task: rewrite the candidate's profile into a tailored CV and Cover Letter for ONE specific job posting.
 
       ## Output format
       Respond with valid JSON ONLY. No markdown, no code fences, no explanation — just the raw JSON object.

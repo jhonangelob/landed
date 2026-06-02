@@ -36,7 +36,7 @@ export function useUpdateAccountMutation() {
       updateAccountDetails({ data: value }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: accountQueryKey })
-      notify.success('Account Update', 'Succesfully updated Account details')
+      notify.success('Account Update', 'Successfully updated Account details')
     },
   })
 }
@@ -58,7 +58,7 @@ export function useUpdatePasswordMutation() {
     mutationFn: (value: UpdatePasswordInput) =>
       changePassword({ ...value, revokeOtherSessions: true }),
     onSuccess: () => {
-      notify.success('Account Update', 'Succesfully updated password')
+      notify.success('Account Update', 'Successfully updated password')
     },
   })
 }

@@ -16,7 +16,7 @@ import SectionCard from '#/components/profile/SectionCard'
 import type { PilotProfile } from '#/lib/db/schema'
 import { cn } from '#/lib/utils'
 
-import { pilotProfileSchema } from '#/validators/profile'
+import { PROFILE_LIMITS, pilotProfileSchema } from '#/validators/profile'
 import type { PilotProfileInput } from '#/validators/profile'
 
 interface ProfileFormProps {
@@ -369,12 +369,23 @@ export default function ProfileForm({
                           variant="outline"
                           size="sm"
                           className="w-fit text-xs"
+                          disabled={
+                            bulletsField.state.value.length >=
+                            PROFILE_LIMITS.bullets
+                          }
                           onClick={() =>
                             form.pushFieldValue(`experience[${i}].bullets`, '')
                           }
                         >
                           <PlusIcon className="size-3" /> Add bullet
                         </Button>
+                        {bulletsField.state.value.length >=
+                          PROFILE_LIMITS.bullets && (
+                          <p className="text-muted-foreground text-xs">
+                            Maximum {PROFILE_LIMITS.bullets} bullet points per
+                            role.
+                          </p>
+                        )}
                         {bulletsField.state.meta.errors.map((err, j) => (
                           <p key={j} className="text-destructive text-xs">
                             {err?.message as string}
@@ -389,6 +400,9 @@ export default function ProfileForm({
                 type="button"
                 variant="outline"
                 className="w-fit text-sm"
+                disabled={
+                  field.state.value.length >= PROFILE_LIMITS.experience
+                }
                 onClick={() =>
                   form.pushFieldValue('experience', {
                     company: '',
@@ -400,6 +414,11 @@ export default function ProfileForm({
               >
                 <PlusIcon className="size-4" /> Add Experience
               </Button>
+              {field.state.value.length >= PROFILE_LIMITS.experience && (
+                <p className="text-muted-foreground text-xs">
+                  Maximum {PROFILE_LIMITS.experience} experience entries reached.
+                </p>
+              )}
               {field.state.meta.errors.map((err, i) => (
                 <p key={i} className="text-destructive text-xs">
                   {err?.message as string}
@@ -417,64 +436,74 @@ export default function ProfileForm({
       >
         <form.Field
           name="skills"
-          children={(field) => (
-            <div className="space-y-3">
-              <div className="flex min-h-6 flex-wrap gap-2">
-                {field.state.value.map((skill: string, i: number) => (
-                  <span
-                    key={i}
-                    className="bg-secondary text-foreground flex items-center gap-1 rounded-md px-2 py-1 text-[12px] font-medium"
-                  >
-                    {skill}
-                    <button
-                      type="button"
-                      onClick={() => form.removeFieldValue('skills', i)}
-                      className="text-muted-foreground hover:text-destructive"
+          children={(field) => {
+            const atLimit = field.state.value.length >= PROFILE_LIMITS.skills
+            return (
+              <div className="space-y-3">
+                <div className="flex min-h-6 flex-wrap gap-2">
+                  {field.state.value.map((skill: string, i: number) => (
+                    <span
+                      key={i}
+                      className="bg-secondary text-foreground flex items-center gap-1 rounded-md px-2 py-1 text-[12px] font-medium"
                     >
-                      <XIcon className="size-3" />
-                    </button>
-                  </span>
-                ))}
-              </div>
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Add a skill and press Enter..."
-                  value={skillInput}
-                  onChange={(e) => setSkillInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ',') {
-                      e.preventDefault()
-                      const v = skillInput.trim().replace(/,$/, '')
-                      if (v) {
+                      {skill}
+                      <button
+                        type="button"
+                        onClick={() => form.removeFieldValue('skills', i)}
+                        className="text-muted-foreground hover:text-destructive"
+                      >
+                        <XIcon className="size-3" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Add a skill and press Enter..."
+                    value={skillInput}
+                    disabled={atLimit}
+                    onChange={(e) => setSkillInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ',') {
+                        e.preventDefault()
+                        const v = skillInput.trim().replace(/,$/, '')
+                        if (v && !atLimit) {
+                          form.pushFieldValue('skills', v)
+                          setSkillInput('')
+                        }
+                      }
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    disabled={atLimit}
+                    onClick={() => {
+                      const v = skillInput.trim()
+                      if (v && !atLimit) {
                         form.pushFieldValue('skills', v)
                         setSkillInput('')
                       }
-                    }
-                  }}
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={() => {
-                    const v = skillInput.trim()
-                    if (v) {
-                      form.pushFieldValue('skills', v)
-                      setSkillInput('')
-                    }
-                  }}
-                  className="h-10.5"
-                >
-                  <PlusIcon className="size-4" />
-                </Button>
+                    }}
+                    className="h-10.5"
+                  >
+                    <PlusIcon className="size-4" />
+                  </Button>
+                </div>
+                {atLimit && (
+                  <p className="text-muted-foreground text-xs">
+                    Maximum {PROFILE_LIMITS.skills} skills reached.
+                  </p>
+                )}
+                {field.state.meta.errors.map((err, i) => (
+                  <p key={i} className="text-destructive text-xs">
+                    {err?.message as string}
+                  </p>
+                ))}
               </div>
-              {field.state.meta.errors.map((err, i) => (
-                <p key={i} className="text-destructive text-xs">
-                  {err?.message as string}
-                </p>
-              ))}
-            </div>
-          )}
+            )
+          }}
         />
       </SectionCard>
 
@@ -562,6 +591,7 @@ export default function ProfileForm({
                 type="button"
                 variant="outline"
                 className="w-fit text-sm"
+                disabled={field.state.value.length >= PROFILE_LIMITS.education}
                 onClick={() =>
                   form.pushFieldValue('education', {
                     institution: '',
@@ -572,6 +602,11 @@ export default function ProfileForm({
               >
                 <PlusIcon className="size-4" /> Add Education
               </Button>
+              {field.state.value.length >= PROFILE_LIMITS.education && (
+                <p className="text-muted-foreground text-xs">
+                  Maximum {PROFILE_LIMITS.education} education entries reached.
+                </p>
+              )}
               {field.state.meta.errors.map((err, i) => (
                 <p key={i} className="text-destructive text-xs">
                   {err?.message as string}
@@ -708,6 +743,9 @@ export default function ProfileForm({
                 type="button"
                 variant="outline"
                 className="w-fit text-sm"
+                disabled={
+                  field.state.value.length >= PROFILE_LIMITS.certifications
+                }
                 onClick={() =>
                   form.pushFieldValue('certifications', {
                     name: '',
@@ -720,6 +758,11 @@ export default function ProfileForm({
               >
                 <PlusIcon className="size-4" /> Add Certification
               </Button>
+              {field.state.value.length >= PROFILE_LIMITS.certifications && (
+                <p className="text-muted-foreground text-xs">
+                  Maximum {PROFILE_LIMITS.certifications} certifications reached.
+                </p>
+              )}
               {field.state.meta.errors.map((err, i) => (
                 <p key={i} className="text-destructive text-xs">
                   {err?.message as string}
@@ -737,67 +780,77 @@ export default function ProfileForm({
       >
         <form.Field
           name="preferences.roles"
-          children={(field) => (
-            <div className="space-y-3">
-              <Label>Preferred Roles</Label>
-              <div className="flex min-h-6 flex-wrap gap-2">
-                {field.state.value.map((role: string, i: number) => (
-                  <span
-                    key={i}
-                    className="bg-secondary text-foreground flex items-center gap-1 rounded-md px-2 py-1 text-[12px] font-medium"
-                  >
-                    {role}
-                    <button
-                      type="button"
-                      onClick={() =>
-                        form.removeFieldValue('preferences.roles', i)
-                      }
-                      className="text-muted-foreground hover:text-destructive"
+          children={(field) => {
+            const atLimit = field.state.value.length >= PROFILE_LIMITS.roles
+            return (
+              <div className="space-y-3">
+                <Label>Preferred Roles</Label>
+                <div className="flex min-h-6 flex-wrap gap-2">
+                  {field.state.value.map((role: string, i: number) => (
+                    <span
+                      key={i}
+                      className="bg-secondary text-foreground flex items-center gap-1 rounded-md px-2 py-1 text-[12px] font-medium"
                     >
-                      <XIcon className="size-3" />
-                    </button>
-                  </span>
-                ))}
-              </div>
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Add a role and press Enter..."
-                  value={roleInput}
-                  onChange={(e) => setRoleInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ',') {
-                      e.preventDefault()
-                      const v = roleInput.trim().replace(/,$/, '')
-                      if (v) {
+                      {role}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          form.removeFieldValue('preferences.roles', i)
+                        }
+                        className="text-muted-foreground hover:text-destructive"
+                      >
+                        <XIcon className="size-3" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Add a role and press Enter..."
+                    value={roleInput}
+                    disabled={atLimit}
+                    onChange={(e) => setRoleInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ',') {
+                        e.preventDefault()
+                        const v = roleInput.trim().replace(/,$/, '')
+                        if (v && !atLimit) {
+                          form.pushFieldValue('preferences.roles', v)
+                          setRoleInput('')
+                        }
+                      }
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    disabled={atLimit}
+                    onClick={() => {
+                      const v = roleInput.trim()
+                      if (v && !atLimit) {
                         form.pushFieldValue('preferences.roles', v)
                         setRoleInput('')
                       }
-                    }
-                  }}
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={() => {
-                    const v = roleInput.trim()
-                    if (v) {
-                      form.pushFieldValue('preferences.roles', v)
-                      setRoleInput('')
-                    }
-                  }}
-                  className="h-10.5"
-                >
-                  <PlusIcon className="size-4" />
-                </Button>
+                    }}
+                    className="h-10.5"
+                  >
+                    <PlusIcon className="size-4" />
+                  </Button>
+                </div>
+                {atLimit && (
+                  <p className="text-muted-foreground text-xs">
+                    Maximum {PROFILE_LIMITS.roles} preferred roles reached.
+                  </p>
+                )}
+                {field.state.meta.errors.map((err, i) => (
+                  <p key={i} className="text-destructive text-xs">
+                    {err?.message as string}
+                  </p>
+                ))}
               </div>
-              {field.state.meta.errors.map((err, i) => (
-                <p key={i} className="text-destructive text-xs">
-                  {err?.message as string}
-                </p>
-              ))}
-            </div>
-          )}
+            )
+          }}
         />
         <form.Field
           name="preferences.salaryRange"

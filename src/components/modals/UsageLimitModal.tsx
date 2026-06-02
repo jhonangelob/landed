@@ -65,7 +65,7 @@ export default function UsageLimitModal({
         </DialogHeader>
 
         <DialogDescription className="font-display text-primary-text text-[24px] leading-[1.2] font-bold tracking-[-0.6px]">
-          You're out of Co-Pilot generations
+          You are out of Co-Pilot generations
         </DialogDescription>
 
         <p className="font-sans text-[14px] leading-[1.55] text-[#2c3a52]">

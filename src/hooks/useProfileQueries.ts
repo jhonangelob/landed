@@ -6,6 +6,8 @@ import {
 
 import { getProfile, saveProfile } from '#/server/profile'
 
+import { notify } from '#/lib/toast'
+
 import type { PilotProfile } from '#/lib/db/schema'
 
 import type { PilotProfileInput } from '#/validators/profile'
@@ -26,6 +28,10 @@ export function useSaveProfileMutation() {
     mutationFn: (value: PilotProfileInput) => saveProfile({ data: value }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: profileQueryKey })
+      notify.success('Profile updated', 'Your Pilot Profile has been saved')
+    },
+    onError: (error) => {
+      notify.fromError(error, 'Could not update profile')
     },
   })
 }

@@ -58,7 +58,7 @@ export default function NewApplication({ profile }: NewApplicationProps) {
         subTitle="Ai Document Generator"
         title1="Co-"
         title2="Pilot"
-        description="Paste a job posting and we'll tailor your CV and cover letter using your Pilot Profile."
+        description="Paste a job posting and we'll tailor your CV and Cover Letter using your Pilot Profile."
       />
       <div className="flex flex-col gap-4 lg:flex-row">
         <div className="flex min-w-1/2 flex-col gap-4 rounded-lg border bg-white p-6">

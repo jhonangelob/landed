@@ -40,7 +40,7 @@ export function useGenerateDocumentsMutation(applicationId?: string) {
     onMutate: () => {
       const toastId = notify.loading(
         'Generating documents',
-        'Tailoring your CV and cover letter to this role...',
+        'Tailoring your CV and Cover Letter to this role...',
       )
       return { toastId }
     },

@@ -90,7 +90,7 @@ export const notify = {
       target
         ? `Tailored CV for ${target} is ready`
         : 'Your documents are ready',
-      'Your CV and cover letter have finished generating.',
+      'Your CV and Cover Letter have finished generating.',
     )
   },
 

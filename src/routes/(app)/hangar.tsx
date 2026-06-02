@@ -70,6 +70,11 @@ function RouteComponent() {
 
   const { open } = useModal()
 
+  const activitySince = new Date(subscription.startedAt).toLocaleDateString(
+    'en-GB',
+    { day: 'numeric', month: 'long' },
+  )
+
   return (
     <div className="flex flex-col gap-4">
       <SectionHeader
@@ -82,7 +87,7 @@ function RouteComponent() {
         <SectionCard
           subTitle="Bay 01 · Account"
           title="Account details"
-          description="The name printed on every CV and cover letter Co-Pilot generates. Use the name you'd want a recruiter to call out on a phone screen."
+          description="The name printed on every CV and Cover Letter Co-Pilot generates. Use the name you would want a recruiter to call out on a phone screen."
           order={1}
           className="w-full lg:w-3/5"
         >
@@ -128,7 +133,7 @@ function RouteComponent() {
         <SectionCard
           subTitle="Bay 04 · Usage this month"
           title="Activity"
-          description="Your activity since 19 May. Resets monthly."
+          description={`Your activity since ${activitySince}. Resets monthly.`}
           order={4}
           className="w-full lg:w-3/5"
         >

@@ -38,7 +38,7 @@ export function useUpdateSubscriptionMutation() {
     onSuccess: (_, planId) => {
       queryClient.invalidateQueries({ queryKey: subscriptionQueryKey })
       notify.success(
-        `You're now on ${getPlanById(planId).name}`,
+        `You are now on ${getPlanById(planId).name}`,
         'Welcome aboard — enjoy your upgraded cabin.',
       )
     },

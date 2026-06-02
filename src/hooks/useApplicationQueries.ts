@@ -110,7 +110,7 @@ export function useUpdateApplicationStageMutation(applicationId: string) {
       if (!celebrated) {
         notify.info(
           'Status Update',
-          `Moved to ${values.stage.replace('_', ' ')}`,
+          `Moved to ${values.stage.charAt(0).toUpperCase() + values.stage.slice(1).replace('_', ' ')}`,
         )
       }
     },
