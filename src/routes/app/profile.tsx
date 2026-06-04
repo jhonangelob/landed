@@ -14,7 +14,7 @@ import { getProfile } from '#/server/profile'
 
 import type { PilotProfileInput } from '#/validators/profile'
 
-export const Route = createFileRoute('/(app)/profile')({
+export const Route = createFileRoute('/app/profile')({
   head: () => ({
     meta: [
       {

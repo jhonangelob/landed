@@ -11,7 +11,7 @@ import { getProfile } from '#/server/profile'
 
 import { coPilotSearchSchema } from '#/validators/application'
 
-export const Route = createFileRoute('/(app)/co-pilot')({
+export const Route = createFileRoute('/app/co-pilot')({
   head: () => ({
     meta: [
       {

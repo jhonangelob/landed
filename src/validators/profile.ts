@@ -72,6 +72,10 @@ export const pilotProfileSchema = z.object({
     .string()
     .min(1, 'Email is required')
     .email('Must be a valid email address'),
+  phone: z
+    .string()
+    .min(10, 'Phone number is required')
+    .max(13, 'Phone is too long'),
   location: z
     .string()
     .min(1, 'Location is required')

@@ -4,9 +4,10 @@ import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
 import { Label } from '#/components/ui/label'
 
+import type { User } from '#/lib/db/schema'
+
 import { updateAccountSchema } from '#/validators/account'
 import type { UpdateAccountInput } from '#/validators/account'
-import type { User } from '#/lib/db/schema'
 
 interface AccountFormProps {
   data: User

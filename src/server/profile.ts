@@ -46,6 +46,7 @@ export const saveProfile = createServerFn({ method: 'POST' })
         links: data.links,
         preferences: data.preferences,
         certifications: data.certifications,
+        phone: data.phone,
         updatedAt: new Date(),
       })
       .onConflictDoUpdate({

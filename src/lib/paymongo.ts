@@ -32,7 +32,11 @@ async function paymongoFetch(path: string, init: RequestInit = {}) {
 
 // ── Public API ───────────────────────────────────────────────
 
-export async function createPaymentIntent(amount: number, currency = 'PHP') {
+export async function createPaymentIntent(
+  amount: number,
+  currency = 'PHP',
+  metadata?: Record<string, string>,
+) {
   return paymongoFetch('/payment_intents', {
     method: 'POST',
     body: JSON.stringify({
@@ -48,6 +52,7 @@ export async function createPaymentIntent(amount: number, currency = 'PHP') {
             'qrph',
           ],
           capture_type: 'automatic',
+          ...(metadata ? { metadata } : {}),
         },
       },
     }),

@@ -25,11 +25,11 @@ export default function SectionCard({
         <p className="text-muted font-mono text-[11px] leading-[1.4] font-normal tracking-[1.3px] uppercase">
           {subTitle}
         </p>
-        <div className="flex items-center justify-center rounded-md border px-2 py-0.5 font-mono text-[11px] leading-[1.4] tracking-[1.5px] text-ink-muted">
+        <div className="text-ink-muted flex items-center justify-center rounded-md border px-2 py-0.5 font-mono text-[11px] leading-[1.4] tracking-[1.5px]">
           0{order}
         </div>
       </div>
-      <p className="font-display mb-5 text-[22px] leading-[1.4] font-bold tracking-[-0.6px] text-ink-strong">
+      <p className="font-display text-ink-strong mb-5 text-[22px] leading-[1.4] font-bold tracking-[-0.6px]">
         {title}
       </p>
       <p className="text-muted mb-4.5 font-sans text-[14px] leading-normal font-normal">

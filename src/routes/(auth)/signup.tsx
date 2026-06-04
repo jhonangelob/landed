@@ -13,6 +13,7 @@ import { Label } from '#/components/ui/label'
 import { getSession } from '#/server/session'
 
 import { signUp } from '#/lib/auth/client'
+import { notify } from '#/lib/toast'
 import { cn } from '#/lib/utils'
 
 import { signupSchema } from '#/validators/account'
@@ -31,7 +32,7 @@ export const Route = createFileRoute('/(auth)/signup')({
     const session = await getSession()
 
     if (session) {
-      throw redirect({ to: '/flight-deck' })
+      throw redirect({ to: '/app' })
     }
   },
   component: RouteComponent,
@@ -62,14 +63,18 @@ function RouteComponent() {
       const res = await signUp.email({
         email: value.email,
         password: value.password,
-        callbackURL: '/login',
+        callbackURL: '/login?verified=true',
         name: value.fullName,
       })
 
       if (res.data) {
+        notify.success(
+          'Account created',
+          'Check your inbox to verify your email address.',
+        )
         try {
-          await createSubscription()
-          navigate({ to: '/flight-deck' })
+          await createSubscription({ userId: res.data.user.id })
+          navigate({ to: '/app' })
         } catch {
           setErrorMessage(
             'Account created but setup failed. Please contact support.',

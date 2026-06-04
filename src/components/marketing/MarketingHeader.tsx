@@ -11,7 +11,7 @@ import { Link, useLocation, useNavigate } from '@tanstack/react-router'
 import { signOut } from '#/lib/auth/client'
 import { cn } from '#/lib/utils'
 
-import { NAVIGATION } from '#/constants/navigations'
+import { MARKETING_NAVIGATION } from '#/constants/navigations'
 
 import { Button } from '../ui/button'
 import {
@@ -23,11 +23,9 @@ import {
 } from '../ui/sheet'
 import logo from '/landed-logo.svg'
 
-export default function Header({ isAdmin }: { isAdmin: boolean }) {
+export default function MarketingHeader() {
   const location = useLocation()
   const navigate = useNavigate()
-
-  const navigation = NAVIGATION.filter((item) => !item.admin || isAdmin)
 
   const checkIfSelected = (path: string) => location.pathname === path
 
@@ -55,7 +53,7 @@ export default function Header({ isAdmin }: { isAdmin: boolean }) {
         </div>
 
         <div className="hidden flex-row md:flex">
-          {navigation.map((item) => (
+          {MARKETING_NAVIGATION.map((item) => (
             <Link
               to={item.url}
               key={item.url}
@@ -110,7 +108,7 @@ export default function Header({ isAdmin }: { isAdmin: boolean }) {
             </SheetHeader>
 
             <nav className="flex flex-1 flex-col gap-1 px-3 py-3">
-              {navigation.map((item) => (
+              {MARKETING_NAVIGATION.map((item) => (
                 <Link
                   to={item.url}
                   key={item.url}

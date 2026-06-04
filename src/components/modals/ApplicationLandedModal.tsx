@@ -1,3 +1,4 @@
+import { formatDate } from '#/helper/date'
 import { formatNumberCompact } from '#/helper/number'
 import {
   ArrowRightIcon,
@@ -19,7 +20,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '#/components/ui/dialog'
-import { formatDate } from '#/helper/date'
 
 interface ApplicationLandedModalProps {
   open: boolean
@@ -64,7 +64,7 @@ export default function ApplicationLandedModal({
 
   const handleViewFlightDeck = () => {
     onOpenChange(false)
-    navigate({ to: '/flight-deck' })
+    navigate({ to: '/app' })
   }
 
   return (

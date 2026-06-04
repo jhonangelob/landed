@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+import { planIdSchema } from '#/validators/subscription'
+
 // Payment method types supported by the PayMongo integration.
 export const paymentMethodTypeSchema = z.enum([
   'card',
@@ -24,9 +26,9 @@ export const cardPaymentSchema = z.object({
 export type CardPaymentInput = z.infer<typeof cardPaymentSchema>
 
 // Server function payloads.
+// The amount is derived server-side from the plan — never trust a client amount.
 export const createIntentSchema = z.object({
-  amount: z.number().positive(),
-  currency: z.string().default('PHP'),
+  planId: planIdSchema,
 })
 
 export const createMethodSchema = z.object({

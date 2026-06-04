@@ -3,14 +3,21 @@ import crypto from 'node:crypto'
 import { createFileRoute } from '@tanstack/react-router'
 
 function verifySignature(payload: string, sigHeader: string, secret: string) {
-  const [tPart, v1Part] = sigHeader.split(',')
-  const t = tPart.replace('t=', '')
-  const v1 = v1Part.replace('v1=', '')
+  const parts = sigHeader.split(',')
+  const t = parts.find((p) => p.startsWith('t='))?.slice(2)
+  const v1 = parts.find((p) => p.startsWith('v1='))?.slice(3)
+  if (!t || !v1) return false
+
   const computed = crypto
     .createHmac('sha256', secret)
     .update(`${t}.${payload}`)
     .digest('hex')
-  return computed === v1
+
+  const expected = Buffer.from(computed)
+  const received = Buffer.from(v1)
+  // Length check first: timingSafeEqual throws on unequal-length buffers.
+  if (expected.length !== received.length) return false
+  return crypto.timingSafeEqual(expected, received)
 }
 
 // TODO: wire these to the real fulfillment flow (e.g. activate the user's
@@ -40,15 +47,25 @@ export const Route = createFileRoute('/api/paymongo/webhook')({
           return new Response('Unauthorized', { status: 401 })
         }
 
-        const event = JSON.parse(body)
-        const { type, data } = event.data.attributes
+        let event: any
+        try {
+          event = JSON.parse(body)
+        } catch {
+          return new Response('Invalid payload', { status: 400 })
+        }
+
+        const type = event?.data?.attributes?.type
+        const data = event?.data?.attributes?.data
+        if (!type || !data) {
+          return new Response('Invalid payload', { status: 400 })
+        }
 
         switch (type) {
           case 'payment.paid':
-            await fulfillOrder(data.attributes.metadata?.orderId)
+            await fulfillOrder(data.attributes?.metadata?.orderId)
             break
           case 'payment.failed':
-            await markOrderFailed(data.attributes.metadata?.orderId)
+            await markOrderFailed(data.attributes?.metadata?.orderId)
             break
         }
 

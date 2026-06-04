@@ -62,12 +62,12 @@ export default function PlanInformationModal({
         <DialogDescription className="font-display text-primary-text text-[32px] leading-[1.06] font-bold tracking-[-0.8px]">
           Move to <span className="text-primary italic">{newPlan.name}</span>.
         </DialogDescription>
-        <div className="flex flex-row justify-between rounded-lg border bg-surface-muted px-5 py-4.5">
+        <div className="bg-surface-muted flex flex-row justify-between rounded-lg border px-5 py-4.5">
           <div className="space-y-0.5">
             <p className="text-muted-foreground font-mono text-[9px] leading-[1.4] font-normal tracking-[1.3px] uppercase">
               Current
             </p>
-            <p className="font-mono text-[26px] leading-none font-medium tracking-[1.6px] text-ink-muted uppercase">
+            <p className="text-ink-muted font-mono text-[26px] leading-none font-medium tracking-[1.6px] uppercase">
               {currentPlan.id.slice(0, 3)}
             </p>
             <p className="text-primary-text font-sans text-[15px] leading-[1.4] font-bold tracking-[-0.4px]">
@@ -86,7 +86,7 @@ export default function PlanInformationModal({
             <p className="text-muted-foreground font-mono text-[9px] leading-[1.4] font-normal tracking-[1.3px] uppercase">
               Upgrading to
             </p>
-            <p className="font-mono text-[26px] leading-none font-medium tracking-[1.6px] text-ink-muted uppercase">
+            <p className="text-ink-muted font-mono text-[26px] leading-none font-medium tracking-[1.6px] uppercase">
               {newPlan.id.slice(0, 3)}
             </p>
             <p className="text-primary-text font-sans text-[15px] leading-[1.4] font-bold tracking-[-0.4px]">
@@ -106,7 +106,7 @@ export default function PlanInformationModal({
             {newPlan.features.map((feature) => (
               <p
                 key={feature}
-                className="flex flex-row items-center gap-1 font-sans text-[13px] leading-[1.2] text-ink-muted"
+                className="text-ink-muted flex flex-row items-center gap-1 font-sans text-[13px] leading-[1.2]"
               >
                 <PlusIcon className="text-primary size-2.5 stroke-4" />
                 {feature}
@@ -114,9 +114,9 @@ export default function PlanInformationModal({
             ))}
           </div>
         </div>
-        <div className="flex flex-col rounded-lg border bg-surface-muted">
+        <div className="bg-surface-muted flex flex-col rounded-lg border">
           <div className="flex h-11 flex-row items-center justify-between border-b border-dashed p-3">
-            <p className="font-sans text-[13px] leading-[1.4] font-normal text-ink-muted">
+            <p className="text-ink-muted font-sans text-[13px] leading-[1.4] font-normal">
               One-time charge
               {daysLeftInCycle !== null && (
                 <span className="text-muted font-mono text-[10px] leading-[1.4] tracking-[0.6px]">
@@ -130,7 +130,7 @@ export default function PlanInformationModal({
             </p>
           </div>
           <div className="flex h-11 flex-row items-center justify-between overflow-hidden border-b border-dashed p-3">
-            <p className="font-sans text-[13px] leading-[1.4] font-normal text-ink-muted">
+            <p className="text-ink-muted font-sans text-[13px] leading-[1.4] font-normal">
               Effective
             </p>
             <p className="text-primary-text font-mono text-[13px] leading-[1.4] font-normal tracking-[0.3px]">
@@ -138,7 +138,7 @@ export default function PlanInformationModal({
             </p>
           </div>
           <div className="flex h-11 flex-row items-center justify-between border-b border-dashed p-3">
-            <p className="font-sans text-[13px] leading-[1.4] font-normal text-ink-muted">
+            <p className="text-ink-muted font-sans text-[13px] leading-[1.4] font-normal">
               Access through
             </p>{' '}
             <p className="text-primary-text font-mono text-[13px] leading-[1.4] font-normal tracking-[0.3px]">
@@ -147,7 +147,7 @@ export default function PlanInformationModal({
                 : '—'}
             </p>
           </div>
-          <div className="flex h-10 flex-row items-center justify-between bg-neutral-tint/10 p-3"></div>
+          <div className="bg-neutral-tint/10 flex h-10 flex-row items-center justify-between p-3"></div>
         </div>
       </DialogContent>
     </Dialog>

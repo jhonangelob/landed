@@ -1,4 +1,4 @@
-import { and, count, eq, isNull, max } from 'drizzle-orm'
+import { count, eq, max, sql } from 'drizzle-orm'
 
 import { createServerFn } from '@tanstack/react-start'
 
@@ -24,12 +24,14 @@ export const getActivities = createServerFn({
       db
         .select({
           total: count(),
-          activeInterviews: count(
-            and(
-              eq(applications.stage, 'interview'),
-              isNull(applications.deletedAt),
-            ),
-          ),
+          // count(expr) counts non-null rows, and a boolean predicate is never
+          // null — so a conditional FILTER is required to count only interviews.
+          activeInterviews: sql<number>`
+            count(*) filter (
+              where ${applications.stage} = 'interview'
+              and ${applications.deletedAt} is null
+            )
+          `.mapWith(Number),
         })
         .from(applications)
         .where(eq(applications.userId, uid)),

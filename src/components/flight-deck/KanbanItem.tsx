@@ -18,7 +18,7 @@ export default function KanbanItem({ data }: KanbanItemProps) {
 
   const handleClickApplicationItem = () => {
     navigate({
-      to: '/co-pilot',
+      to: '/app/co-pilot',
       search: { applicationId: data.id },
     })
   }

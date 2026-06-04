@@ -41,6 +41,7 @@ export default function ProfileForm({
       headline: profile?.headline ?? '',
       summary: profile?.summary ?? '',
       skills: profile?.skills ?? [],
+      phone: profile?.phone ?? '',
       experience: profile?.experience ?? [
         { company: '', role: '', dates: '', bullets: [''] },
       ],
@@ -162,13 +163,13 @@ export default function ProfileForm({
         </div>
         <div className="flex flex-col gap-4 md:flex-row">
           <form.Field
-            name="links.github"
+            name="phone"
             children={(field) => (
               <div className="w-full space-y-1.5">
-                <Label htmlFor="github">Github</Label>
+                <Label htmlFor="phone">Phone number</Label>
                 <Input
-                  id="github"
-                  placeholder="https://github.com/..."
+                  id="phone"
+                  placeholder="+639..."
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 import { useForm } from '@tanstack/react-form'
-import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
+import { Link, createFileRoute, redirect } from '@tanstack/react-router'
 
 import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
@@ -28,15 +28,13 @@ export const Route = createFileRoute('/(auth)/forgot-password')({
     const session = await getSession()
 
     if (session) {
-      throw redirect({ to: '/flight-deck' })
+      throw redirect({ to: '/app' })
     }
   },
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  const navigate = useNavigate()
-
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [isSent, setIsSent] = useState(false)
@@ -66,10 +64,6 @@ function RouteComponent() {
       setIsLoading(false)
     },
   })
-
-  const handleSignIn = () => {
-    navigate({ to: '/login' })
-  }
 
   return (
     <div className="bg-background flex h-screen flex-col items-center justify-start gap-4 p-12 md:justify-center">
@@ -136,12 +130,12 @@ function RouteComponent() {
 
         <p className="text-muted-foreground text-center font-sans text-[13px]">
           Remember your password?{' '}
-          <span
+          <Link
             className="text-primary cursor-pointer font-sans text-[13px] font-medium hover:underline"
-            onClick={handleSignIn}
+            to="/login"
           >
             Sign in.
-          </span>
+          </Link>
         </p>
       </div>
     </div>

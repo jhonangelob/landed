@@ -6,7 +6,7 @@ import Header from '#/components/layout/Header'
 
 import { getSession } from '#/server/session'
 
-export const Route = createFileRoute('/(app)')({
+export const Route = createFileRoute('/app')({
   beforeLoad: async () => {
     const session = await getSession()
 

@@ -79,16 +79,15 @@ export default function PaymentForm({ selectedPlan }: PaymentFormProps) {
     setProcessing(true)
     try {
       const { paymentIntentId, clientKey } = await createIntentFn({
-        data: { amount, currency: 'PHP' },
+        data: { planId },
       })
 
       const { paymentMethodId } = await createMethodFn({ data: methodInput })
 
-      // The return URL carries the intent + plan so the /payment/return
-      // loader can verify and apply the subscription.
+      // The return URL carries only the intent id — the plan is resolved
+      // server-side from the intent metadata during fulfillment.
       const url = new URL('/payment/return', window.location.origin)
       url.searchParams.set('payment_intent_id', paymentIntentId)
-      url.searchParams.set('plan_id', planId)
 
       const { status, nextAction } = await attachMethodFn({
         data: {
@@ -102,7 +101,7 @@ export default function PaymentForm({ selectedPlan }: PaymentFormProps) {
       if (status === 'succeeded') {
         navigate({
           to: '/payment/return',
-          search: { payment_intent_id: paymentIntentId, plan_id: planId },
+          search: { payment_intent_id: paymentIntentId },
         })
       } else if (
         status === 'awaiting_next_action' &&
@@ -147,7 +146,7 @@ export default function PaymentForm({ selectedPlan }: PaymentFormProps) {
         <p className="font-display text-primary-text text-[17px] leading-[1.4] font-bold">
           Payment
         </p>
-        <p className="font-sans text-[13px] leading-[1.4] text-muted">
+        <p className="text-muted font-sans text-[13px] leading-[1.4]">
           Charged once. Choose how you'd like to pay.
         </p>
         <div className="mt-4 grid grid-cols-5 gap-2">

@@ -23,6 +23,12 @@ export const upgradeSchema = z.object({
 
 export type UpgradeInput = z.infer<typeof upgradeSchema>
 
+export const createSubscriptionSchema = z.object({
+  userId: z.string(),
+})
+
+export type CreateSubscriptionInput = z.infer<typeof createSubscriptionSchema>
+
 export const subscriptionSchema = z.object({
   userId: z.string(),
   planId: planIdSchema,

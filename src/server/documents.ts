@@ -1,4 +1,5 @@
 import { clToHtml, cvToHtml } from '#/helper/document'
+import { buildSystemPrompt, buildUserPrompt } from '#/helper/prompt'
 import { anthropic } from '@ai-sdk/anthropic'
 import { renderToBuffer } from '@react-pdf/renderer'
 import { generateText } from 'ai'
@@ -74,6 +75,12 @@ export const generateDocuments = createServerFn({ method: 'POST' })
       .limit(1)
       .then((r) => r.at(0))
 
+    if (!profile)
+      throw new AppError(
+        'NOT_FOUND',
+        'Profile not found — complete your Pilot Profile first',
+      )
+
     const user = await db
       .select()
       .from(users)
@@ -111,121 +118,28 @@ export const generateDocuments = createServerFn({ method: 'POST' })
 
     const nextVersion = (latest?.version ?? 0) + 1
 
-    if (!profile)
-      throw new AppError(
-        'NOT_FOUND',
-        'Profile not found — complete your Pilot Profile first',
-      )
-
-    const links = [
-      profile.links?.github && `GitHub: ${profile.links.github}`,
-      profile.links?.linkedin && `LinkedIn: ${profile.links.linkedin}`,
-      profile.links?.portfolio && `Portfolio: ${profile.links.portfolio}`,
-    ]
-      .filter(Boolean)
-      .join('\n')
-
     const { text } = await generateText({
       model: anthropic(process.env.ANTHROPIC_HAIKU_MODEL!),
-      system: `
-      You are Co-Pilot, an expert CV writer inside Landed, a job-application tracker.
-      Your task: rewrite the candidate's profile into a tailored CV and Cover Letter for ONE specific job posting.
-
-      ## Output format
-      Respond with valid JSON ONLY. No markdown, no code fences, no explanation — just the raw JSON object.
-      Always return every field below. Use null for fields where the profile has no matching data.
-
-      {
-        "cv": {
-          "name": "string",
-          "headline": "string",
-          "summary": "string",
-          "experience": [
-            {
-              "company": "string",
-              "role": "string",
-              "dates": "string",
-              "location": "string | null",
-              "bullets": ["string"]
-            }
-          ],
-          "skills": ["string"],
-          "education": [
-            {
-              "institution": "string",
-              "degree": "string",
-              "year": "string",
-              "location": "string | null",
-              "detail": "string | null"
-            }
-          ]
+      system: buildSystemPrompt(),
+      prompt: buildUserPrompt({
+        company: application.company,
+        role: application.role,
+        description: application.description || '',
+        profile: {
+          fullName: user.name,
+          email: user.email,
+          phone: profile.phone ?? '',
+          location: profile.location ?? '',
+          headline: profile.headline ?? '',
+          summary: profile.summary ?? '',
+          skills: profile.skills ?? [],
+          experience: profile.experience ?? [],
+          certifications: profile.certifications ?? [],
+          education: profile.education ?? [],
+          links: profile.links ?? { github: '', linkedin: '', portfolio: '' },
+          preferences: profile.preferences ?? { roles: [], salaryRange: '' },
         },
-        "coverLetter": {
-          "opening": "string",
-          "body": "string",
-          "closing": "string"
-        }
-      }
-
-    ## Content rules
-
-    ### Honesty
-    - Use ONLY facts present in the candidate profile.
-    - Never invent employers, roles, dates, metrics, skils,l or credentials.
-    - If a section of the profile is empty, moit that section from teh CV rather than fabricating content.
-
-    ### Tailoring
-    - Mirror the job posting's terminology and keywords wherever they truthfully apply.
-    - Order skills and experience bullets so the most relevant items appear first.
-    - The summary must be written specifically for this role — not generic.
-    - The experience bullet must be tailored to match what is required on this role.
-
-    ### CV writing
-    - Headline: use the candidate's profile headline, Do not reword.
-    - Summary: 2–4 sentences; role-specific, value-focused, no filler phrases.
-    - Experience bullets: start with a strong action verb, be achievement-focused, preserve any real numbers or outcomes from the profile.
-
-    ### Cover letter
-    - opening: greet and name the role; add a short hook linking the candidate to it.
-    - body: 1–2 short paragraphs tying the candidate's real experience and skills to the role's needs.
-    - closing: a brief, confident sign-off expressing interest in next steps.
-
-    ### General
-    - Fill every string with real content.
-    - No placeholders, empty strings, or brackets.
-  `.trim(),
-
-      prompt: `
-    Tailor the CV for the job below.
-
-    # Job
-    Company: ${application.company}
-    Role: ${application.role}
-
-    Job posting:
-    ${application.description}
-
-    # Candidate profile
-    Name: ${user.name}
-    Headline: ${profile.headline ?? '—'}
-    Location: ${profile.location ?? '—'}
-    Summary: ${profile.summary ?? '—'}
-
-    Links:
-    ${links || '—'}
-
-    Skills: ${(profile.skills ?? []).join(', ') || '—'}
-
-    Experience:
-    ${JSON.stringify(profile.experience ?? [], null, 2)}
-
-    Education:
-    ${JSON.stringify(profile.education ?? [], null, 2)}
-
-    Certifications:
-    ${JSON.stringify(profile.certifications ?? [], null, 2)}
-  `.trim(),
-
+      }),
       maxOutputTokens: 4000,
     })
 
@@ -245,6 +159,7 @@ export const generateDocuments = createServerFn({ method: 'POST' })
     }
 
     const result = aiResponseSchema.safeParse(raw)
+
     if (!result.success) {
       console.error('AI response validation failed:', result.error.issues)
       throw new AppError(
@@ -255,8 +170,8 @@ export const generateDocuments = createServerFn({ method: 'POST' })
 
     const parsed = result.data
 
-    const usage = await increaseGenerationUsed()
-
+    // Persist the documents first, then charge the generation — so a failed
+    // insert never consumes a user's quota.
     await db.insert(generatedDocs).values([
       {
         userId: session.user.id,
@@ -275,6 +190,8 @@ export const generateDocuments = createServerFn({ method: 'POST' })
         version: nextVersion,
       },
     ])
+
+    const usage = await increaseGenerationUsed()
 
     return {
       id: application.id,

@@ -34,7 +34,7 @@ import { useModal } from '#/lib/store/modal'
 
 import { PLANS } from '#/constants/plan'
 
-export const Route = createFileRoute('/(app)/hangar')({
+export const Route = createFileRoute('/app/hangar')({
   head: () => ({
     meta: [
       {
@@ -80,7 +80,7 @@ function RouteComponent() {
 
   const handlePlanUpgrade = () => {
     navigate({
-      to: '/checkout',
+      to: '/payment/checkout',
     })
   }
   return (
@@ -161,7 +161,7 @@ function RouteComponent() {
           title="Delete account"
           description="Permanently delete your Pilot Profile, application history, and every document Co-Pilot has generated. This cannot be undone."
           order={5}
-          className="w-full border-border-danger! bg-surface-danger! lg:w-2/5"
+          className="border-border-danger! bg-surface-danger! w-full lg:w-2/5"
         >
           <div className="mt-auto flex flex-row items-end justify-between">
             <p className="text-muted font-mono text-[11px] leading-[1.4] font-normal tracking-[1.1px] uppercase">

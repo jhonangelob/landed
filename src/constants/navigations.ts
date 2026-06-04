@@ -1,27 +1,46 @@
 export const NAVIGATION = [
   {
     label: 'Flight Deck',
-    url: '/flight-deck',
+    url: '/app',
     admin: false,
   },
   {
     label: 'Co-Pilot',
-    url: '/co-pilot',
+    url: '/app/co-pilot',
     admin: false,
   },
   {
     label: 'Pilot Profile',
-    url: '/profile',
+    url: '/app/profile',
     admin: false,
   },
   {
     label: 'Hangar',
-    url: '/hangar',
+    url: '/app/hangar',
     admin: false,
   },
   {
     label: 'Mission Control',
-    url: '/admin',
+    url: '/app/admin',
     admin: true,
+  },
+]
+
+export const MARKETING_NAVIGATION = [
+  {
+    label: 'How it works',
+    url: '/app',
+  },
+  {
+    label: 'Features',
+    url: '/app/co-pilot',
+  },
+  {
+    label: 'Pricing',
+    url: '/app/profile',
+  },
+  {
+    label: 'FAQ',
+    url: '/app/hangar',
   },
 ]

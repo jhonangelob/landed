@@ -35,7 +35,7 @@ export default function DeleteAccountModal({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="w-110 space-y-0">
         <DialogHeader>
-          <DialogTitle className="font-mono text-[11px] leading-[1.4] font-normal tracking-[1.5px] text-danger-strong uppercase">
+          <DialogTitle className="text-danger-strong font-mono text-[11px] leading-[1.4] font-normal tracking-[1.5px] uppercase">
             Final Descent
           </DialogTitle>
           <DialogDescription className="font display text-primary-text text-[24px] leading-[1.2] font-semibold tracking-[-0.6px]">

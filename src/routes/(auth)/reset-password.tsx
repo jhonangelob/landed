@@ -34,7 +34,7 @@ export const Route = createFileRoute('/(auth)/reset-password')({
     const session = await getSession()
 
     if (session) {
-      throw redirect({ to: '/flight-deck' })
+      throw redirect({ to: '/app' })
     }
 
     if (!search.token) {

@@ -10,7 +10,7 @@ import type { PlanId } from '#/validators/subscription'
 
 import { PLANS } from '#/constants/plan'
 
-export const Route = createFileRoute('/checkout')({
+export const Route = createFileRoute('/payment/checkout')({
   validateSearch: (search: Record<string, unknown>): { planId?: PlanId } => {
     const parsed = planIdSchema.safeParse(search.planId)
     return parsed.success ? { planId: parsed.data } : {}

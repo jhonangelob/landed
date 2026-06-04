@@ -1,11 +1,13 @@
-import { and, eq, isNull } from 'drizzle-orm'
+import { and, count, eq, isNull } from 'drizzle-orm'
 
 import { createServerFn } from '@tanstack/react-start'
 
 import { ensureSession } from '#/server/session'
 
+import { getUserPlan } from '#/lib/auth/subscription'
 import { db } from '#/lib/db/index.server'
 import { applications } from '#/lib/db/schema'
+import { AppError } from '#/lib/utils'
 
 import {
   applicationIdSchema,
@@ -15,7 +17,7 @@ import {
   updateStageSchema,
 } from '#/validators/application'
 
-import { checkGenerationLimit } from './subscription'
+import { getPlanById } from '#/constants/plan'
 
 export const getApplications = createServerFn({ method: 'GET' }).handler(
   async () => {
@@ -61,7 +63,27 @@ export const createApplication = createServerFn({
   .handler(async ({ data }) => {
     const session = await ensureSession()
 
-    await checkGenerationLimit()
+    // Enforce the plan's application cap (null = unlimited). This is separate
+    // from the AI generation quota — tracking a job should never be gated on
+    // generations remaining.
+    const plan = getPlanById(await getUserPlan(session.user.id))
+    if (plan.applications != null) {
+      const [{ total }] = await db
+        .select({ total: count() })
+        .from(applications)
+        .where(
+          and(
+            eq(applications.userId, session.user.id),
+            isNull(applications.deletedAt),
+          ),
+        )
+
+      if (total >= plan.applications)
+        throw new AppError(
+          'APPLICATION_LIMIT_REACHED',
+          `You've reached the ${plan.applications}-application limit on your plan — upgrade to add more.`,
+        )
+    }
 
     const [application] = await db
       .insert(applications)

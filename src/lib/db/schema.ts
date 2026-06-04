@@ -132,6 +132,7 @@ export const pilotProfiles = pgTable('pilot_profiles', {
   preferences: jsonb('preferences').$type<Preferences>(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
   location: text('location'),
+  phone: text('phone'),
   timezone: text('timezone'),
 })
 

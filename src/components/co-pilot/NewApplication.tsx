@@ -1,6 +1,5 @@
 import { useCreateApplicationMutation } from '#/hooks/useApplicationQueries'
-import { useGenerateDocumentsMutation } from '#/hooks/useDocumentQueries'
-import { SparklesIcon } from 'lucide-react'
+import { PlusIcon } from 'lucide-react'
 
 import { useForm } from '@tanstack/react-form'
 import { useNavigate } from '@tanstack/react-router'
@@ -25,7 +24,6 @@ export default function NewApplication({ profile }: NewApplicationProps) {
   const navigate = useNavigate()
 
   const { mutateAsync: createApplication } = useCreateApplicationMutation()
-  const { mutateAsync: generateDocuments } = useGenerateDocumentsMutation()
 
   const form = useForm({
     defaultValues: {
@@ -39,17 +37,15 @@ export default function NewApplication({ profile }: NewApplicationProps) {
         const application = await createApplication(value)
         form.reset()
         navigate({
-          to: '/co-pilot',
+          to: '/app/co-pilot',
           search: { applicationId: application.id },
         })
-
-        await generateDocuments({ applicationId: application.id })
       } catch {}
     },
   })
 
   const handleSetupProfile = () => {
-    navigate({ to: '/profile' })
+    navigate({ to: '/app/profile' })
   }
 
   return (
@@ -162,7 +158,7 @@ export default function NewApplication({ profile }: NewApplicationProps) {
                       className="w-full text-[12px] text-white! uppercase md:w-auto"
                       disabled={isSubmitting || !isDirty}
                     >
-                      <SparklesIcon /> Generate Documents
+                      <PlusIcon /> Add Application
                     </Button>
                   )}
                 />

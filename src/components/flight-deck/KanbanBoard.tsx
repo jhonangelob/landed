@@ -14,7 +14,7 @@ export default function KanbanBoard({ applications }: KanbanBoardProps) {
   const navigate = useNavigate()
 
   const handleNewApplication = () => {
-    navigate({ to: '/co-pilot' })
+    navigate({ to: '/app/co-pilot' })
   }
 
   return (

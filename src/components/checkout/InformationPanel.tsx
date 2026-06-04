@@ -1,3 +1,4 @@
+import { formatDate } from '#/helper/date'
 import { ArrowUpIcon, CheckIcon } from 'lucide-react'
 
 import { Kicker } from '#/components/ui/kicker'
@@ -7,7 +8,6 @@ import { cn } from '#/lib/utils'
 import type { Plan } from '#/validators/subscription'
 
 import { PLANS } from '#/constants/plan'
-import { formatDate } from '#/helper/date'
 
 const DAY_MS = 24 * 60 * 60 * 1000
 

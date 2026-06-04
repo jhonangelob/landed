@@ -27,6 +27,7 @@ export const auth = betterAuth({
 
   emailAndPassword: {
     enabled: true,
+    requireEmailVerification: true,
     sendResetPassword: async ({ user, url }) => {
       void resend.emails.send({
         from: `Landed <${FROM_EMAIL}>`,
@@ -56,15 +57,34 @@ export const auth = betterAuth({
     },
   },
 
-  requireEmailVerification: true,
-
   emailVerification: {
+    sendOnSignUp: true,
+    expiresIn: 3600,
     sendVerificationEmail: async ({ user, url }) => {
       void resend.emails.send({
         from: `Landed <${FROM_EMAIL}>`,
         to: user.email,
         subject: 'Verify your email address',
-        text: `Click the link to verify your email: ${url}`,
+        html: `
+          <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:32px 24px;">
+            <h1 style="font-size:22px;font-weight:700;color:#0c1f35;margin-bottom:8px;">
+              Verify Email
+            </h1>
+            <p style="color:#5a7a99;font-size:15px;margin-bottom:24px;">
+              We received a request to verify your Landed account.
+              This link expires in 1 hour.
+            </p>
+            <a
+              href="${url}"
+              style="display:inline-block;background:#0ea5e9;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;"
+            >
+              Verify Email →
+            </a>
+            <p style="margin-top:24px;font-size:12px;color:#5a7a99;">
+              If you didn't request this, ignore this email.
+            </p>
+          </div>
+        `,
       })
     },
   },

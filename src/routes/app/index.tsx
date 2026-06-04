@@ -8,7 +8,7 @@ import SectionHeader from '#/components/layout/SectionHeader'
 import { getApplications } from '#/server/applications'
 import { getSession } from '#/server/session'
 
-export const Route = createFileRoute('/(app)/flight-deck')({
+export const Route = createFileRoute('/app/')({
   head: () => ({
     meta: [
       {
