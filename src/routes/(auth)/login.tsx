@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 
+import type { LoginInput } from '#/types'
 import { EyeIcon, EyeOffIcon } from 'lucide-react'
 
 import { useForm } from '@tanstack/react-form'
@@ -56,7 +57,7 @@ function RouteComponent() {
   }, [verified, navigate])
 
   const form = useForm({
-    defaultValues: { email: '', password: '' },
+    defaultValues: { email: '', password: '' } satisfies LoginInput,
     validators: {
       onSubmit: loginSchema,
     },

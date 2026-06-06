@@ -1,7 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { getTimeSince } from '#/helper/date'
-import { formatNumber, parseNumber } from '#/helper/number'
+import type {
+  PilotProfile,
+  PilotProfileInput,
+  UpdatePilotProfileInput,
+} from '#/types'
 import { PlusIcon, XIcon } from 'lucide-react'
 
 import { useForm } from '@tanstack/react-form'
@@ -13,30 +17,33 @@ import { Textarea } from '#/components/ui/textarea'
 
 import SectionCard from '#/components/profile/SectionCard'
 
-import type { PilotProfile, User } from '#/lib/db/schema'
 import { cn } from '#/lib/utils'
 
-import { PROFILE_LIMITS, pilotProfileSchema } from '#/validators/profile'
-import type { PilotProfileInput } from '#/validators/profile'
+import { savePilotProfileSchema } from '#/validators/profile'
+import { PROFILE_LIMITS } from '#/validators/shared'
 
 interface ProfileFormProps {
   profile: PilotProfile | null
-  account: User
-  onSave: (value: PilotProfileInput) => Promise<void> | void
+  onSaveProfile: (value: PilotProfileInput) => Promise<void> | void
 }
 
 export default function ProfileForm({
   profile,
-  account,
-  onSave,
+  onSaveProfile,
 }: ProfileFormProps) {
   const [skillInput, setSkillInput] = useState('')
   const [roleInput, setRoleInput] = useState('')
+  const [wordInput, setWordInput] = useState('')
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const form = useForm({
     defaultValues: {
-      fullName: account.name,
-      email: account.email,
+      name: profile?.name ?? '',
+      email: profile?.email ?? '',
       location: profile?.location ?? '',
       headline: profile?.headline ?? '',
       summary: profile?.summary ?? '',
@@ -49,17 +56,20 @@ export default function ProfileForm({
         { institution: '', degree: '', year: '' },
       ],
       certifications: profile?.certifications ?? [],
-      links: profile?.links ?? { github: '', linkedin: '', portfolio: '' },
-      preferences: (profile?.preferences as {
-        roles: string[]
-        salaryRange: string
-      } | null) ?? { roles: [] as string[], salaryRange: '' },
-    },
+      links: Array.isArray(profile?.links)
+        ? profile.links
+        : [{ name: '', url: '' }],
+      preferences: profile?.preferences ?? {
+        roles: [],
+        wordsToAvoid: [],
+        preferredVoice: '',
+      },
+    } satisfies UpdatePilotProfileInput,
     validators: {
-      onSubmit: pilotProfileSchema,
+      onSubmit: savePilotProfileSchema,
     },
     onSubmit: async ({ value }) => {
-      await onSave(value)
+      await onSaveProfile(value)
     },
   })
 
@@ -78,12 +88,12 @@ export default function ProfileForm({
       >
         <div className="flex flex-col gap-4 md:flex-row">
           <form.Field
-            name="fullName"
+            name="name"
             children={(field) => (
               <div className="w-full space-y-1.5">
-                <Label htmlFor="fullName">Full Name</Label>
+                <Label htmlFor="name">Full Name</Label>
                 <Input
-                  id="fullName"
+                  id="name"
                   placeholder="Jane Doe"
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
@@ -161,60 +171,99 @@ export default function ProfileForm({
             )}
           />
         </div>
-        <div className="flex flex-col gap-4 md:flex-row">
-          <form.Field
-            name="phone"
-            children={(field) => (
-              <div className="w-full space-y-1.5">
-                <Label htmlFor="phone">Phone number</Label>
-                <Input
-                  id="phone"
-                  placeholder="+639..."
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  onBlur={field.handleBlur}
-                />
-                {field.state.meta.errors.map((err, i) => (
-                  <p key={i} className="text-destructive text-xs">
-                    {err?.message as string}
-                  </p>
-                ))}
-              </div>
-            )}
-          />
-          <form.Field
-            name="links.linkedin"
-            children={(field) => (
-              <div className="w-full space-y-1.5">
-                <Label htmlFor="linkedin">LinkedIn</Label>
-                <Input
-                  id="linkedin"
-                  placeholder="https://linkedin.com/..."
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  onBlur={field.handleBlur}
-                />
-                {field.state.meta.errors.map((err, i) => (
-                  <p key={i} className="text-destructive text-xs">
-                    {err?.message as string}
-                  </p>
-                ))}
-              </div>
-            )}
-          />
-        </div>
         <form.Field
-          name="links.portfolio"
+          name="phone"
           children={(field) => (
             <div className="w-full space-y-1.5">
-              <Label htmlFor="portfolio">Portfolio</Label>
+              <Label htmlFor="phone">Phone number</Label>
               <Input
-                id="portfolio"
-                placeholder="https://portfolio.com/..."
+                id="phone"
+                placeholder="+639..."
                 value={field.state.value}
                 onChange={(e) => field.handleChange(e.target.value)}
                 onBlur={field.handleBlur}
               />
+              {field.state.meta.errors.map((err, i) => (
+                <p key={i} className="text-destructive text-xs">
+                  {err?.message as string}
+                </p>
+              ))}
+            </div>
+          )}
+        />
+        <form.Field
+          name="links"
+          children={(field) => (
+            <div className="space-y-3">
+              <Label>Links</Label>
+              <div className="flex flex-col gap-3">
+                {field.state.value.map((_, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <form.Field
+                      name={`links[${i}].name`}
+                      children={(f) => (
+                        <div className="w-1/3 space-y-1.5">
+                          <Input
+                            placeholder="GitHub"
+                            value={f.state.value}
+                            onChange={(e) => f.handleChange(e.target.value)}
+                            onBlur={f.handleBlur}
+                          />
+                          {f.state.meta.errors.map((err, j) => (
+                            <p key={j} className="text-destructive text-xs">
+                              {err?.message as string}
+                            </p>
+                          ))}
+                        </div>
+                      )}
+                    />
+                    <form.Field
+                      name={`links[${i}].url`}
+                      children={(f) => (
+                        <div className="flex-1 space-y-1.5">
+                          <Input
+                            placeholder="https://github.com/username"
+                            value={f.state.value}
+                            onChange={(e) => f.handleChange(e.target.value)}
+                            onBlur={f.handleBlur}
+                          />
+                          {f.state.meta.errors.map((err, j) => (
+                            <p key={j} className="text-destructive text-xs">
+                              {err?.message as string}
+                            </p>
+                          ))}
+                        </div>
+                      )}
+                    />
+                    {i > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => form.removeFieldValue('links', i)}
+                        className="text-muted-foreground hover:text-destructive shrink-0"
+                      >
+                        <XIcon className="size-4" />
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="w-fit text-xs"
+                disabled={field.state.value.length >= PROFILE_LIMITS.links}
+                onClick={() =>
+                  form.pushFieldValue('links', { name: '', url: '' })
+                }
+              >
+                <PlusIcon className="size-3" /> Add link
+              </Button>
+              {field.state.value.length >= PROFILE_LIMITS.links && (
+                <p className="text-muted-foreground text-xs">
+                  Maximum {PROFILE_LIMITS.links} links reached.
+                </p>
+              )}
               {field.state.meta.errors.map((err, i) => (
                 <p key={i} className="text-destructive text-xs">
                   {err?.message as string}
@@ -230,7 +279,7 @@ export default function ProfileForm({
               <Label htmlFor="summary">Summary</Label>
               <Textarea
                 id="summary"
-                rows={10}
+                rows={4}
                 placeholder="Brief professional summary (50–600 characters)..."
                 value={field.state.value}
                 onChange={(e) => field.handleChange(e.target.value)}
@@ -619,7 +668,7 @@ export default function ProfileForm({
 
       <SectionCard
         order={5}
-        title="Certifications"
+        title="Certifications & Trainings"
         description="Licenses and certifications to strengthen your profile."
       >
         <form.Field
@@ -777,7 +826,7 @@ export default function ProfileForm({
       <SectionCard
         order={6}
         title="Preferences"
-        description="Target roles and salary range Co-Pilot uses to tailor your documents."
+        description="Target roles, writing voice, and words Co-Pilot avoids when tailoring your documents."
       >
         <form.Field
           name="preferences.roles"
@@ -854,17 +903,16 @@ export default function ProfileForm({
           }}
         />
         <form.Field
-          name="preferences.salaryRange"
+          name="preferences.preferredVoice"
           children={(field) => (
             <div className="space-y-1.5">
-              <Label>Salary Range</Label>
-              <Input
-                id="salaryRange"
-                placeholder="e.g. 120,000"
-                value={formatNumber(field.state.value)}
-                onChange={(e) =>
-                  field.handleChange(parseNumber(e.target.value))
-                }
+              <Label htmlFor="preferredVoice">Preferred Voice</Label>
+              <Textarea
+                id="preferredVoice"
+                rows={2}
+                placeholder="e.g. Confident and concise, results-oriented, no buzzwords..."
+                value={field.state.value}
+                onChange={(e) => field.handleChange(e.target.value)}
                 onBlur={field.handleBlur}
               />
               {field.state.meta.errors.map((err, i) => (
@@ -874,6 +922,70 @@ export default function ProfileForm({
               ))}
             </div>
           )}
+        />
+        <form.Field
+          name="preferences.wordsToAvoid"
+          children={(field) => {
+            const words = field.state.value
+            const addWord = () => {
+              const v = wordInput.trim().replace(/,$/, '')
+              if (v) {
+                field.handleChange([...words, v])
+                setWordInput('')
+              }
+            }
+            return (
+              <div className="space-y-3">
+                <Label>Words to Avoid</Label>
+                <div className="flex min-h-6 flex-wrap gap-2">
+                  {words.map((word, i) => (
+                    <span
+                      key={i}
+                      className="bg-secondary text-foreground flex items-center gap-1 rounded-md px-2 py-1 text-[12px] font-medium"
+                    >
+                      {word}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          field.handleChange(words.filter((_, j) => j !== i))
+                        }
+                        className="text-muted-foreground hover:text-destructive"
+                      >
+                        <XIcon className="size-3" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Add a word and press Enter..."
+                    value={wordInput}
+                    onChange={(e) => setWordInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ',') {
+                        e.preventDefault()
+                        addWord()
+                      }
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={addWord}
+                    className="h-10.5"
+                  >
+                    <PlusIcon className="size-4" />
+                  </Button>
+                </div>
+                {field.state.meta.errors.map((err, i) => (
+                  <p key={i} className="text-destructive text-xs">
+                    {err?.message as string}
+                  </p>
+                ))}
+              </div>
+            )
+          }}
         />
       </SectionCard>
 
@@ -896,7 +1008,7 @@ export default function ProfileForm({
               <p className="text-primary-text font-mono text-[11px] leading-[1.4] tracking-[0.9px] uppercase">
                 {isDirty
                   ? 'Unsaved Changes'
-                  : `All changes saved · ${profile?.updatedAt ? getTimeSince(profile.updatedAt) : ''}`}
+                  : `All changes saved${mounted && profile?.updatedAt ? ` · ${getTimeSince(profile.updatedAt)}` : ''}`}
               </p>
             </div>
             <Button

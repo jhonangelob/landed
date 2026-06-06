@@ -1,3 +1,5 @@
+import type { UpdateAccountInput, UpdatePasswordInput } from '#/types'
+
 import {
   useMutation,
   useQueryClient,
@@ -13,11 +15,6 @@ import {
 
 import { changePassword, signOut } from '#/lib/auth/client'
 import { notify } from '#/lib/toast'
-
-import type {
-  UpdateAccountInput,
-  UpdatePasswordInput,
-} from '#/validators/account'
 
 export const accountQueryKey = ['account_details'] as const
 

@@ -5,6 +5,7 @@ import { useRouterState } from '@tanstack/react-router'
 
 export function NavigationProgress() {
   const initialLoadDone = useRef(false)
+  const [mounted, setMounted] = useState(false)
   const [show, setShow] = useState(false)
 
   const isRouterLoading = useRouterState({
@@ -15,7 +16,11 @@ export function NavigationProgress() {
 
   const isMutating = useIsMutating() > 0
 
-  const shouldBlockUI = isRouterLoading || isMutating
+  const shouldBlockUI = mounted && (isRouterLoading || isMutating)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     if (!initialLoadDone.current) {

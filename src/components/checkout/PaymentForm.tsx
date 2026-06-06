@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import type { Plan } from '#/types'
 import { CreditCardIcon, MoveRightIcon } from 'lucide-react'
 
 import { useForm } from '@tanstack/react-form'
@@ -18,7 +19,6 @@ import {
 import { cn } from '#/lib/utils'
 
 import { cardPaymentSchema } from '#/validators/payment'
-import type { Plan } from '#/validators/subscription'
 
 const METHODS = [
   { id: 'card', label: 'Card', icon: <CreditCardIcon /> },

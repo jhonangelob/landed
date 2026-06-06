@@ -1,5 +1,7 @@
 import { useState } from 'react'
 
+import type { ForgotPasswordInput } from '#/types'
+
 import { useForm } from '@tanstack/react-form'
 import { Link, createFileRoute, redirect } from '@tanstack/react-router'
 
@@ -42,7 +44,7 @@ function RouteComponent() {
   const form = useForm({
     defaultValues: {
       email: '',
-    },
+    } satisfies ForgotPasswordInput,
     validators: {
       onSubmit: forgotPasswordSchema,
     },

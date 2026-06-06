@@ -11,14 +11,11 @@ export async function getUserPlan(
     .from(subscriptions)
     .where(eq(subscriptions.userId, userId))
     .limit(1)
+    .then((r) => r.at(0) ?? null)
 
-  if (!result.length) return 'economy'
+  if (!result || !result.isActive) return 'economy'
 
-  const sub = result[0]
+  if (result.expiresAt && new Date() > result.expiresAt) return 'economy'
 
-  if (!sub.isActive) return 'economy'
-
-  if (sub.expiresAt && new Date() > sub.expiresAt) return 'economy'
-
-  return sub.planId
+  return result.planId
 }

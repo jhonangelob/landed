@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import type { ResetPasswordInput } from '#/types'
 import { EyeIcon, EyeOffIcon } from 'lucide-react'
 
 import { useForm } from '@tanstack/react-form'
@@ -59,7 +60,7 @@ function RouteComponent() {
       token: token ?? '',
       password: '',
       confirmPassword: '',
-    },
+    } satisfies ResetPasswordInput,
     validators: {
       onSubmit: resetPasswordSchema,
     },

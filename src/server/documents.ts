@@ -1,9 +1,15 @@
 import { clToHtml, cvToHtml } from '#/helper/document'
-import { buildSystemPrompt, buildUserPrompt } from '#/helper/prompt'
+import {
+  buildCoverLetterSystemPrompt,
+  buildCvSystemPrompt,
+  buildUserPrompt,
+} from '#/helper/prompt'
+import type { CvContent } from '#/types'
 import { anthropic } from '@ai-sdk/anthropic'
 import { renderToBuffer } from '@react-pdf/renderer'
 import { generateText } from 'ai'
 import { and, count, desc, eq, gte } from 'drizzle-orm'
+import type { ZodType } from 'zod'
 
 import { createServerFn } from '@tanstack/react-start'
 
@@ -17,31 +23,59 @@ import {
   pilotProfiles,
   users,
 } from '#/lib/db/schema'
-import { ClassicTemplate } from '#/lib/pdf/templates/classic'
-import { MinimalTemplate } from '#/lib/pdf/templates/minimal'
-import { ModernTemplate } from '#/lib/pdf/templates/modern'
+import { TemplateA } from '#/lib/pdf/templates/TemplateA'
+import { TemplateB } from '#/lib/pdf/templates/TemplateB'
+import { TemplateC } from '#/lib/pdf/templates/TemplateC'
 import { AppError } from '#/lib/utils'
 
 import {
-  aiResponseSchema,
-  documentsByApplicationSchema,
+  coverLetterSchema,
+  cvSchema,
   exportDocumentSchema,
   generateDocumentSchema,
+  getDocumentSchema,
 } from '#/validators/documents'
-import type { CvContent } from '#/validators/documents'
 
 import { isTemplateLocked } from '#/constants/templates'
 
 import { checkGenerationLimit, increaseGenerationUsed } from './subscription'
 
 const TEMPLATES = {
-  classic: ClassicTemplate,
-  modern: ModernTemplate,
-  minimal: MinimalTemplate,
+  templateA: TemplateA,
+  templateC: TemplateC,
+  templateB: TemplateB,
 } as const
 
+function parseAiResponse<T>(text: string, schema: ZodType<T>): T {
+  const cleaned = text
+    .replace(/```json\n?/g, '')
+    .replace(/```\n?/g, '')
+    .trim()
+
+  let raw: unknown
+  try {
+    raw = JSON.parse(cleaned)
+  } catch {
+    throw new AppError(
+      'AI_PARSE_ERROR',
+      'AI returned malformed JSON — please try again',
+    )
+  }
+
+  const result = schema.safeParse(raw)
+  if (!result.success) {
+    console.error('AI response validation failed:', result.error.issues)
+    throw new AppError(
+      'AI_VALIDATION_ERROR',
+      'AI response has unexpected structure — please try again',
+    )
+  }
+
+  return result.data
+}
+
 export const getDocuments = createServerFn({ method: 'GET' })
-  .inputValidator((data: unknown) => documentsByApplicationSchema.parse(data))
+  .inputValidator((data: unknown) => getDocumentSchema.parse(data))
   .handler(async ({ data }) => {
     const session = await ensureSession()
 
@@ -118,85 +152,84 @@ export const generateDocuments = createServerFn({ method: 'POST' })
 
     const nextVersion = (latest?.version ?? 0) + 1
 
-    const { text } = await generateText({
-      model: anthropic(process.env.ANTHROPIC_HAIKU_MODEL!),
-      system: buildSystemPrompt(),
-      prompt: buildUserPrompt({
-        company: application.company,
-        role: application.role,
-        description: application.description || '',
-        profile: {
-          fullName: user.name,
-          email: user.email,
-          phone: profile.phone ?? '',
-          location: profile.location ?? '',
-          headline: profile.headline ?? '',
-          summary: profile.summary ?? '',
-          skills: profile.skills ?? [],
-          experience: profile.experience ?? [],
-          certifications: profile.certifications ?? [],
-          education: profile.education ?? [],
-          links: profile.links ?? { github: '', linkedin: '', portfolio: '' },
-          preferences: profile.preferences ?? { roles: [], salaryRange: '' },
+    const userPrompt = buildUserPrompt({
+      company: application.company,
+      role: application.role,
+      description: application.description || '',
+      profile: {
+        fullName: user.name,
+        email: user.email,
+        phone: profile.phone ?? '',
+        location: profile.location ?? '',
+        headline: profile.headline ?? '',
+        summary: profile.summary ?? '',
+        skills: profile.skills ?? [],
+        experience: profile.experience ?? [],
+        certifications: profile.certifications ?? [],
+        education: profile.education ?? [],
+        links: profile.links ?? [],
+        preferences: {
+          roles: profile.preferences?.roles ?? [],
+          preferredVoice: profile.preferences?.preferredVoice ?? '',
+          wordsToAvoid: profile.preferences?.wordsToAvoid ?? [],
         },
-      }),
-      maxOutputTokens: 4000,
+      },
     })
 
-    const cleaned = text
-      .replace(/```json\n?/g, '')
-      .replace(/```\n?/g, '')
-      .trim()
+    const callModel = (system: string) =>
+      generateText({
+        model: anthropic(process.env.ANTHROPIC_HAIKU_MODEL!),
+        system,
+        prompt: userPrompt,
+        maxOutputTokens: 4000,
+      })
 
-    let raw: unknown
-    try {
-      raw = JSON.parse(cleaned)
-    } catch {
-      throw new AppError(
-        'AI_PARSE_ERROR',
-        'AI returned malformed JSON — please try again',
-      )
-    }
+    const wantsCv = data.type !== 'cover_letter'
+    const wantsCoverLetter = data.type !== 'cv'
 
-    const result = aiResponseSchema.safeParse(raw)
+    const [cv, coverLetter] = await Promise.all([
+      wantsCv
+        ? callModel(buildCvSystemPrompt()).then(({ text }) =>
+            parseAiResponse(text, cvSchema),
+          )
+        : Promise.resolve(undefined),
+      wantsCoverLetter
+        ? callModel(buildCoverLetterSystemPrompt()).then(({ text }) =>
+            parseAiResponse(text, coverLetterSchema),
+          )
+        : Promise.resolve(undefined),
+    ])
 
-    if (!result.success) {
-      console.error('AI response validation failed:', result.error.issues)
-      throw new AppError(
-        'AI_VALIDATION_ERROR',
-        'AI response has unexpected structure — please try again',
-      )
-    }
-
-    const parsed = result.data
-
-    // Persist the documents first, then charge the generation — so a failed
-    // insert never consumes a user's quota.
-    await db.insert(generatedDocs).values([
-      {
+    const docs: (typeof generatedDocs.$inferInsert)[] = []
+    if (cv) {
+      docs.push({
         userId: session.user.id,
         applicationId: application.id,
         type: 'cv',
-        contentJson: parsed.cv,
-        contentHtml: cvToHtml(parsed.cv),
+        contentJson: cv,
+        contentHtml: cvToHtml(cv),
         version: nextVersion,
-      },
-      {
+      })
+    }
+    if (coverLetter) {
+      docs.push({
         userId: session.user.id,
         applicationId: application.id,
         type: 'cover_letter',
-        contentJson: parsed.coverLetter,
-        contentHtml: clToHtml(parsed.coverLetter),
+        contentJson: coverLetter,
+        contentHtml: clToHtml(coverLetter),
         version: nextVersion,
-      },
-    ])
+      })
+    }
+
+    await db.insert(generatedDocs).values(docs)
 
     const usage = await increaseGenerationUsed()
 
     return {
       id: application.id,
-      cv: parsed.cv,
-      coverLetter: parsed.coverLetter,
+      cv,
+      coverLetter,
       usage,
     }
   })
@@ -225,8 +258,17 @@ export const exportCvPdf = createServerFn({ method: 'POST' })
           eq(generatedDocs.type, 'cv'),
         ),
       )
+      .orderBy(desc(generatedDocs.createdAt))
       .limit(1)
       .then((r) => r.at(0))
+
+    const date = new Date()
+
+    const fileName = [
+      date.getFullYear(),
+      String(date.getMonth() + 1).padStart(2, '0'),
+      String(date.getDate()).padStart(2, '0'),
+    ].join('')
 
     if (!doc) throw new AppError('DOCUMENT_NOT_FOUND', 'Document not found')
 
@@ -234,13 +276,12 @@ export const exportCvPdf = createServerFn({ method: 'POST' })
     const pdfBuffer = await renderToBuffer(
       Template({
         content: doc.contentJson as CvContent,
-        email: session.user.email,
       }),
     )
 
     return {
       base64: Buffer.from(pdfBuffer).toString('base64'),
-      filename: `cv-${data.template}.pdf`,
+      filename: `${fileName}-CV.pdf`,
     }
   })
 
@@ -259,8 +300,9 @@ export const checkRateLimit = createServerFn({ method: 'GET' }).handler(
           gte(generatedDocs.createdAt, windowStart),
         ),
       )
+      .then((r) => r.at(0) ?? null)
 
-    const generations = Math.floor((result[0]?.total ?? 0) / 2)
+    const generations = Math.floor((result?.total ?? 0) / 2)
     const limit = 10
     const remaining = Math.max(0, limit - generations)
     const exceeded = generations >= limit

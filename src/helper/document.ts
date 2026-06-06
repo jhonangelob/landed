@@ -1,8 +1,5 @@
 import type { CoverLetterContent, CvContent } from '#/validators/documents'
 
-// Escape user/AI-derived text before interpolating it into HTML. The result is
-// stored as `contentHtml` and rendered via dangerouslySetInnerHTML, so every
-// interpolated value must be escaped to prevent stored XSS.
 const esc = (value: unknown): string =>
   String(value ?? '').replace(
     /[&<>"']/g,

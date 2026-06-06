@@ -9,7 +9,7 @@ import UpdateApplication from '#/components/co-pilot/UpdateApplication'
 import { getApplicationById } from '#/server/applications'
 import { getProfile } from '#/server/profile'
 
-import { coPilotSearchSchema } from '#/validators/application'
+import { applicationSearchSchema } from '#/validators/shared'
 
 export const Route = createFileRoute('/app/co-pilot')({
   head: () => ({
@@ -19,7 +19,7 @@ export const Route = createFileRoute('/app/co-pilot')({
       },
     ],
   }),
-  validateSearch: coPilotSearchSchema,
+  validateSearch: applicationSearchSchema,
   loader: ({ context: { queryClient }, location }) => {
     const { applicationId } = location.search as { applicationId?: string }
 
@@ -52,13 +52,25 @@ function RouteComponent() {
   const { data: profile } = useProfileQuery()
   const { data: application } = useApplicationQuery(applicationId)
 
+  const normalizedApplication = application
+    ? {
+        ...application,
+        url: application.url ?? '',
+        location: application.location ?? '',
+        salaryRange: application.salaryRange ?? '',
+        notes: application.notes ?? '',
+        status: application.status ?? '',
+        description: application.description ?? '',
+      }
+    : undefined
+
   return (
     <div className="section">
       {isEditMode ? (
         <UpdateApplication
           key={application?.updatedAt.getTime()}
           applicationId={applicationId}
-          application={application}
+          application={normalizedApplication}
         />
       ) : (
         <NewApplication profile={profile} />

@@ -1,9 +1,8 @@
 import { getTimeSince } from '#/helper/date'
 import { formatNumberCompact } from '#/helper/number'
+import type { Application } from '#/types'
 
 import { cn } from '#/lib/utils'
-
-import type { Application } from '#/validators/application'
 
 import { KANBAN_COLUMNS } from '#/constants/stage'
 
@@ -33,13 +32,11 @@ export default function ApplicationSummary({ data }: ApplicationSummaryProps) {
     },
     {
       label: 'Applied',
-      value: data.appliedAt
-        ? new Date(data.appliedAt).toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-          })
-        : '',
+      value: new Date(data.appliedAt).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      }),
     },
     {
       label: 'Last updated',

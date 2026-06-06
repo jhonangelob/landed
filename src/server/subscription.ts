@@ -21,8 +21,11 @@ export const getSubscription = createServerFn({ method: 'GET' }).handler(
       .select()
       .from(subscriptions)
       .where(eq(subscriptions.userId, session.user.id))
+      .then((r) => r.at(0) ?? null)
 
-    return result[0] ?? null
+    if (!result) throw new AppError('NOT_FOUND', 'Subscription not found')
+
+    return result
   },
 )
 

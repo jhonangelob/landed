@@ -1,16 +1,15 @@
+import type { Account, UpdateAccountInput } from '#/types'
+
 import { useForm } from '@tanstack/react-form'
 
 import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
 import { Label } from '#/components/ui/label'
 
-import type { User } from '#/lib/db/schema'
-
 import { updateAccountSchema } from '#/validators/account'
-import type { UpdateAccountInput } from '#/validators/account'
 
 interface AccountFormProps {
-  data: User
+  data: Account
   onConfirmUpdate: (value: UpdateAccountInput) => void
 }
 
@@ -20,9 +19,10 @@ export default function AccountForm({
 }: AccountFormProps) {
   const form = useForm({
     defaultValues: {
-      fullName: data.name,
-      username: data.username ?? '',
-    },
+      name: data.name,
+      username: data.username,
+      email: data.email,
+    } satisfies UpdateAccountInput,
     validators: { onSubmit: updateAccountSchema },
     onSubmit: async ({ value }) => {
       await onConfirmUpdate(value)
@@ -43,12 +43,12 @@ export default function AccountForm({
       className="flex flex-col gap-5"
     >
       <form.Field
-        name="fullName"
+        name="name"
         children={(field) => (
           <div className="w-full space-y-1.5">
-            <Label htmlFor="fullName">Full Name</Label>
+            <Label htmlFor="name">Full Name</Label>
             <Input
-              id="fullName"
+              id="name"
               placeholder="Jane Doe"
               value={field.state.value}
               onChange={(e) => field.handleChange(e.target.value)}
@@ -86,7 +86,7 @@ export default function AccountForm({
         />
 
         <form.Field
-          name={'email' as Parameters<typeof form.Field>[0]['name']}
+          name={'email'}
           children={(field) => (
             <div className="w-full space-y-1.5">
               <Label htmlFor="email">Email</Label>
@@ -125,8 +125,7 @@ export default function AccountForm({
           selector={(s) => ({ isSubmitting: s.isSubmitting, values: s.values })}
           children={({ isSubmitting, values }) => {
             const hasChanges =
-              values.fullName !== data.name ||
-              values.username !== (data.username ?? '')
+              values.name !== data.name || values.username !== data.username
             return (
               <Button
                 type="submit"

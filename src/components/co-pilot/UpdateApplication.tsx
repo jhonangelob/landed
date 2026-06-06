@@ -7,6 +7,11 @@ import {
   useDocumentsQuery,
   useGenerateDocumentsMutation,
 } from '#/hooks/useDocumentQueries'
+import type {
+  Application,
+  ApplicationStage,
+  UpdateApplicationInput,
+} from '#/types'
 import { SaveIcon } from 'lucide-react'
 
 import { useForm } from '@tanstack/react-form'
@@ -27,11 +32,8 @@ import SectionHeader from '#/components/layout/SectionHeader'
 
 import { useModal } from '#/lib/store/modal'
 
-import {
-  applicationStageSchema,
-  updateApplicationSchema,
-} from '#/validators/application'
-import type { Application, ApplicationStage } from '#/validators/application'
+import { updateApplicationSchema } from '#/validators/application'
+import { applicationStageSchema } from '#/validators/shared'
 
 import ApplicationSummary from './ApplicationSummary'
 import FilePreview from './FilePreview'
@@ -70,24 +72,22 @@ export default function UpdateApplication({
       stage: application?.stage ?? 'spotted',
       status: application?.status ?? '',
       description: application?.description ?? '',
-    },
+    } satisfies UpdateApplicationInput,
     validators: {
       onSubmit: updateApplicationSchema,
     },
     onSubmit: async ({ value }) => {
-      try {
-        await updateApplicationDetails(value)
-      } catch {}
+      await updateApplicationDetails(value)
     },
   })
 
   const handleUpdateStage = (stage: ApplicationStage) => {
-    updateStage({ id: applicationId, stage }).catch(() => {})
+    updateStage({ id: applicationId, stage })
     form.setFieldValue('stage', stage)
   }
 
-  const handleRetailorDocument = () => {
-    generateDocuments({ applicationId }).catch(() => {})
+  const handleRetailorDocument = (type: 'cv' | 'cover_letter') => {
+    generateDocuments({ applicationId, type })
   }
 
   if (!application) return null
@@ -383,8 +383,9 @@ export default function UpdateApplication({
         <div className="w-full md:w-1/2">
           <FilePreview
             documents={documents}
-            showRegenerateButton={application.stage === 'spotted'}
+            showRetailorButton={application.stage === 'spotted'}
             onRetailor={handleRetailorDocument}
+            applicationId={applicationId}
           />
         </div>
       </div>

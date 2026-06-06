@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 import { useCreateSubscriptionMutation } from '#/hooks/useSubscriptionQueries'
+import type { CreateAccountInput } from '#/types'
 import { EyeIcon, EyeOffIcon } from 'lucide-react'
 
 import { useForm } from '@tanstack/react-form'
@@ -16,7 +17,7 @@ import { signUp } from '#/lib/auth/client'
 import { notify } from '#/lib/toast'
 import { cn } from '#/lib/utils'
 
-import { signupSchema } from '#/validators/account'
+import { createAccountSchema } from '#/validators/account'
 
 import logo from '/landed.svg'
 
@@ -50,13 +51,13 @@ function RouteComponent() {
 
   const form = useForm({
     defaultValues: {
-      fullName: '',
+      name: '',
       email: '',
       password: '',
       confirmPassword: '',
-    },
+    } satisfies CreateAccountInput,
     validators: {
-      onSubmit: signupSchema,
+      onSubmit: createAccountSchema,
     },
     onSubmit: async ({ value }) => {
       setIsLoading(true)
@@ -64,7 +65,7 @@ function RouteComponent() {
         email: value.email,
         password: value.password,
         callbackURL: '/login?verified=true',
-        name: value.fullName,
+        name: value.name,
       })
 
       if (res.data) {
@@ -72,10 +73,13 @@ function RouteComponent() {
           'Account created',
           'Check your inbox to verify your email address.',
         )
+
+        console.log(res)
         try {
           await createSubscription({ userId: res.data.user.id })
           navigate({ to: '/app' })
-        } catch {
+        } catch (er) {
+          console.log(er)
           setErrorMessage(
             'Account created but setup failed. Please contact support.',
           )
@@ -130,12 +134,12 @@ function RouteComponent() {
           className="flex flex-col gap-4"
         >
           <form.Field
-            name="fullName"
+            name="name"
             children={(field) => (
               <div className="w-full space-y-1.5">
-                <Label htmlFor="fullName">Full Name</Label>
+                <Label htmlFor="name">Full Name</Label>
                 <Input
-                  id="fullName"
+                  id="name"
                   placeholder="Jane Doe"
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}

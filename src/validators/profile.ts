@@ -1,73 +1,18 @@
 import { z } from 'zod'
 
-export const PROFILE_LIMITS = {
-  skills: 30,
-  experience: 8,
-  bullets: 6,
-  education: 4,
-  certifications: 10,
-  roles: 5,
-} as const
-
-export const experienceSchema = z.object({
-  company: z.string().min(1, 'Company name is required'),
-  role: z.string().min(1, 'Role is required'),
-  dates: z.string().min(1, 'Date range is required'),
-  bullets: z
-    .array(z.string().min(1, 'Bullet point cannot be empty'))
-    .min(1, 'Add at least one bullet point')
-    .max(
-      PROFILE_LIMITS.bullets,
-      `Maximum ${PROFILE_LIMITS.bullets} bullet points per role`,
-    ),
-})
-
-export type ExperienceInput = z.infer<typeof experienceSchema>
-
-export const educationSchema = z.object({
-  institution: z.string().min(1, 'Institution is required'),
-  degree: z.string().min(1, 'Degree is required'),
-  year: z.string().min(1, 'Year is required'),
-})
-
-export type EducationInput = z.infer<typeof educationSchema>
-
-export const certificationSchema = z.object({
-  name: z.string().min(1, 'Certification name is required'),
-  issuer: z.string().min(1, 'Issuer is required'),
-  issueDate: z.string().min(1, 'Issue date is required'),
-  expiryDate: z.string(),
-  url: z.string().url('Must be a valid URL').or(z.literal('')),
-})
-
-export type CertificationInput = z.infer<typeof certificationSchema>
-
-export const linksSchema = z.object({
-  github: z.string().url('Must be a valid URL').or(z.literal('')),
-  linkedin: z.string().url('Must be a valid URL').or(z.literal('')),
-  portfolio: z.string().url('Must be a valid URL').or(z.literal('')),
-})
-
-export type LinksInput = z.infer<typeof linksSchema>
-
-export const preferencesSchema = z.object({
-  roles: z
-    .array(z.string().min(1))
-    .min(1, 'Add at least one preferred role')
-    .max(
-      PROFILE_LIMITS.roles,
-      `Maximum ${PROFILE_LIMITS.roles} preferred roles`,
-    ),
-  salaryRange: z.string(),
-})
-
-export type PreferencesInput = z.infer<typeof preferencesSchema>
+import {
+  PROFILE_LIMITS,
+  certificationSchema,
+  educationSchema,
+  experienceSchema,
+  linksSchema,
+  preferencesSchema,
+  projectSchema,
+} from './shared'
 
 export const pilotProfileSchema = z.object({
-  fullName: z
-    .string()
-    .min(1, 'Full name is required')
-    .max(100, 'Name is too long'),
+  id: z.string().uuid(),
+  name: z.string(),
   email: z
     .string()
     .min(1, 'Email is required')
@@ -107,6 +52,10 @@ export const pilotProfileSchema = z.object({
       PROFILE_LIMITS.certifications,
       `Maximum ${PROFILE_LIMITS.certifications} certifications`,
     ),
+  projects: z
+    .array(projectSchema)
+    .max(PROFILE_LIMITS.projects, `Maximum ${PROFILE_LIMITS.projects} projects`)
+    .optional(),
   education: z
     .array(educationSchema)
     .min(1, 'Add at least one education entry')
@@ -114,18 +63,15 @@ export const pilotProfileSchema = z.object({
       PROFILE_LIMITS.education,
       `Maximum ${PROFILE_LIMITS.education} education entries`,
     ),
-  links: linksSchema,
+  links: z
+    .array(linksSchema)
+    .min(1, 'Add at least one link entry')
+    .max(PROFILE_LIMITS.links, `Maximum ${PROFILE_LIMITS.links} links entries`),
   preferences: preferencesSchema,
+  updatedAt: z.date(),
 })
 
-export type PilotProfileInput = z.infer<typeof pilotProfileSchema>
-
-export const updatePilotProfileSchema = pilotProfileSchema
-  .partial()
-  .refine((data) => Object.keys(data).length > 0, {
-    message: 'At least one field must be provided',
-  })
-
-export type UpdatePilotProfileInput = z.infer<typeof updatePilotProfileSchema>
-
-export type PilotProfile = z.infer<typeof pilotProfileSchema>
+export const savePilotProfileSchema = pilotProfileSchema.omit({
+  id: true,
+  updatedAt: true,
+})

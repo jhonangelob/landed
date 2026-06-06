@@ -1,3 +1,11 @@
+import type {
+  Certification,
+  Education,
+  Experience,
+  Links,
+  Preferences,
+  Project,
+} from '#/types'
 import { relations } from 'drizzle-orm'
 import {
   boolean,
@@ -10,7 +18,7 @@ import {
   uuid,
 } from 'drizzle-orm/pg-core'
 
-import type { CoverLetterContent, CvContent } from '#/validators/documents'
+// ─── Enums ────────────────────────────────────────────────────────────────────
 
 export const applicationStatusEnum = pgEnum('application_status', [
   'spotted',
@@ -30,6 +38,8 @@ export const planTypeEnum = pgEnum('plan_id', [
 ])
 
 export const docTypeEnum = pgEnum('doc_type', ['cv', 'cover_letter'])
+
+// ─── Auth Tables ──────────────────────────────────────────────────────────────
 
 export const users = pgTable('user', {
   id: text('id').primaryKey(),
@@ -84,57 +94,32 @@ export const verifications = pgTable('verification', {
   updatedAt: timestamp('updated_at'),
 })
 
-interface Experience {
-  company: string
-  role: string
-  dates: string
-  bullets: string[]
-}
-
-interface Education {
-  institution: string
-  degree: string
-  year: string
-}
-
-interface Links {
-  github: string
-  linkedin: string
-  portfolio: string
-}
-
-interface Preferences {
-  roles: string[]
-  salaryRange: string
-}
-
-interface Certifications {
-  name: string
-  issuer: string
-  issueDate: string
-  expiryDate: string
-  url: string
-}
+// ─── Pilot Profiles ───────────────────────────────────────────────────────────
 
 export const pilotProfiles = pgTable('pilot_profiles', {
   id: uuid('id').primaryKey().defaultRandom(),
+  name: text('name'),
+  email: text('email').notNull().unique(),
   userId: text('user_id')
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' })
     .unique(),
   headline: text('headline'),
   summary: text('summary'),
-  skills: text('skills').array(),
-  experience: jsonb('experience').$type<Experience[]>(),
-  education: jsonb('education').$type<Education[]>(),
-  certifications: jsonb('certifications').$type<Certifications[]>(),
-  links: jsonb('links').$type<Links>(),
-  preferences: jsonb('preferences').$type<Preferences>(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull(),
   location: text('location'),
   phone: text('phone'),
   timezone: text('timezone'),
+  skills: text('skills').array(),
+  experience: jsonb('experience').$type<Experience[]>(),
+  education: jsonb('education').$type<Education[]>(),
+  projects: jsonb('projects').$type<Project[]>(),
+  certifications: jsonb('certifications').$type<Certification[]>(),
+  links: jsonb('links').$type<Links[]>(),
+  preferences: jsonb('preferences').$type<Preferences>(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
 })
+
+// ─── Applications ─────────────────────────────────────────────────────────────
 
 export const applications = pgTable('applications', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -150,17 +135,17 @@ export const applications = pgTable('applications', {
   notes: text('notes'),
   salaryRange: text('salary_range'),
   location: text('location'),
-
   appliedAt: timestamp('applied_at').defaultNow().notNull(),
   interviewAt: timestamp('interview_at'),
   offerAt: timestamp('offer_at'),
   landedAt: timestamp('landed_at'),
   rejectedAt: timestamp('rejected_at'),
-
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
   deletedAt: timestamp('deleted_at'),
 })
+
+// ─── Generated Docs ───────────────────────────────────────────────────────────
 
 export const generatedDocs = pgTable('generated_docs', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -180,6 +165,8 @@ export const generatedDocs = pgTable('generated_docs', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 })
 
+// ─── Touchdown Shares ─────────────────────────────────────────────────────────
+
 export const touchdownShares = pgTable('touchdown_shares', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: text('user_id')
@@ -193,6 +180,27 @@ export const touchdownShares = pgTable('touchdown_shares', {
   shareToken: text('share_token').notNull().unique(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
+
+// ─── Subscriptions ────────────────────────────────────────────────────────────
+
+export const subscriptions = pgTable('subscriptions', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' })
+    .unique(),
+  planId: planTypeEnum('plan_id').notNull().default('economy'),
+  startedAt: timestamp('started_at').defaultNow().notNull(),
+  expiresAt: timestamp('expires_at'),
+  isActive: boolean('is_active').notNull().default(true),
+  generationsUsed: integer('generations_used').notNull().default(0),
+  generationsLimit: integer('generations_limit'),
+  paymentRef: text('payment_ref'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
+// ─── Relations ────────────────────────────────────────────────────────────────
 
 export const usersRelations = relations(users, ({ one, many }) => ({
   pilotProfile: one(pilotProfiles, {
@@ -252,42 +260,6 @@ export const touchdownSharesRelations = relations(
   }),
 )
 
-export const subscriptions = pgTable('subscriptions', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  userId: text('user_id')
-    .notNull()
-    .references(() => users.id, { onDelete: 'cascade' })
-    .unique(),
-  planId: planTypeEnum('plan_id').notNull().default('economy'),
-  startedAt: timestamp('started_at').defaultNow().notNull(),
-  expiresAt: timestamp('expires_at'),
-  isActive: boolean('is_active').notNull().default(true),
-  generationsUsed: integer('generations_used').notNull().default(0),
-  generationsLimit: integer('generations_limit'),
-  paymentRef: text('payment_ref'),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull(),
-})
-
-export type User = typeof users.$inferSelect
-export type NewUser = typeof users.$inferInsert
-
-export type Session = typeof sessions.$inferSelect
-export type Account = typeof accounts.$inferSelect
-
-export type PilotProfile = typeof pilotProfiles.$inferSelect
-export type NewPilotProfile = typeof pilotProfiles.$inferInsert
-
-export type Application = typeof applications.$inferSelect
-export type NewApplication = typeof applications.$inferInsert
-export type ApplicationStatus =
-  (typeof applicationStatusEnum.enumValues)[number]
-
-export type GeneratedDoc = typeof generatedDocs.$inferSelect
-export type NewGeneratedDoc = typeof generatedDocs.$inferInsert
-
-export type TouchdownShare = typeof touchdownShares.$inferSelect
-export type NewTouchdownShare = typeof touchdownShares.$inferInsert
-
-export type Subscription = typeof subscriptions.$inferSelect
-export type NewSubscription = typeof subscriptions.$inferInsert
+export const subscriptionsRelations = relations(subscriptions, ({ one }) => ({
+  user: one(users, { fields: [subscriptions.userId], references: [users.id] }),
+}))

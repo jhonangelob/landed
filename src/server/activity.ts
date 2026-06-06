@@ -24,8 +24,6 @@ export const getActivities = createServerFn({
       db
         .select({
           total: count(),
-          // count(expr) counts non-null rows, and a boolean predicate is never
-          // null — so a conditional FILTER is required to count only interviews.
           activeInterviews: sql<number>`
             count(*) filter (
               where ${applications.stage} = 'interview'

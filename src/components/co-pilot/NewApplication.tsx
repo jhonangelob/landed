@@ -1,4 +1,5 @@
 import { useCreateApplicationMutation } from '#/hooks/useApplicationQueries'
+import type { ApplicationInput, PilotProfile } from '#/types'
 import { PlusIcon } from 'lucide-react'
 
 import { useForm } from '@tanstack/react-form'
@@ -9,9 +10,7 @@ import { Input } from '#/components/ui/input'
 import { Label } from '#/components/ui/label'
 import { Textarea } from '#/components/ui/textarea'
 
-import type { PilotProfile } from '#/lib/db/schema'
-
-import { createApplicationSchema } from '#/validators/application'
+import { newApplicationSchema } from '#/validators/application'
 
 import SectionHeader from '../layout/SectionHeader'
 import FilePreview from './FilePreview'
@@ -30,17 +29,15 @@ export default function NewApplication({ profile }: NewApplicationProps) {
       company: '',
       role: '',
       description: '',
-    },
-    validators: { onSubmit: createApplicationSchema },
+    } satisfies ApplicationInput,
+    validators: { onSubmit: newApplicationSchema },
     onSubmit: async ({ value }) => {
-      try {
-        const application = await createApplication(value)
-        form.reset()
-        navigate({
-          to: '/app/co-pilot',
-          search: { applicationId: application.id },
-        })
-      } catch {}
+      const application = await createApplication(value)
+      form.reset()
+      navigate({
+        to: '/app/co-pilot',
+        search: { applicationId: application.id },
+      })
     },
   })
 
@@ -158,7 +155,7 @@ export default function NewApplication({ profile }: NewApplicationProps) {
                       className="w-full text-[12px] text-white! uppercase md:w-auto"
                       disabled={isSubmitting || !isDirty}
                     >
-                      <PlusIcon /> Add Application
+                      <PlusIcon /> Create Application
                     </Button>
                   )}
                 />

@@ -1,4 +1,4 @@
-import type { Subscription } from '#/lib/db/schema'
+import type { Subscription } from '#/validators/subscription'
 
 export interface UsageInfo {
   planId: Subscription['planId']
@@ -29,8 +29,8 @@ export function getUsageInfo(
     expiresAt: Date | string | null
   },
 ): UsageInfo {
-  const unlimited = sub.generationsLimit == null
-  const limit = sub.generationsLimit ?? Infinity
+  const unlimited = sub.generationsLimit == 0
+  const limit = sub.generationsLimit
   const used = sub.generationsUsed
   const remaining = unlimited ? Infinity : Math.max(0, limit - used)
 

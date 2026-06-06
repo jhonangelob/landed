@@ -1,3 +1,5 @@
+import type { PilotProfileInput } from '#/types'
+
 import {
   useMutation,
   useQueryClient,
@@ -6,17 +8,14 @@ import {
 
 import { getProfile, saveProfile } from '#/server/profile'
 
-import type { PilotProfile } from '#/lib/db/schema'
 import { notify } from '#/lib/toast'
-
-import type { PilotProfileInput } from '#/validators/profile'
 
 export const profileQueryKey = ['profile'] as const
 
 export function useProfileQuery() {
   return useSuspenseQuery({
     queryKey: profileQueryKey,
-    queryFn: (): Promise<PilotProfile | null> => getProfile(),
+    queryFn: () => getProfile(),
   })
 }
 

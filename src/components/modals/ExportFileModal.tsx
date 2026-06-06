@@ -30,9 +30,9 @@ export default function ExportFileModal({
   onOpenChange,
   applicationId,
 }: ExportFileModalProps) {
-  const [template, setTemplate] = useState<'classic' | 'modern' | 'minimal'>(
-    'classic',
-  )
+  const [template, setTemplate] = useState<
+    'templateA' | 'templateC' | 'templateB'
+  >('templateA')
 
   const { mutateAsync: exportDocuments } = useExportDocumentsMutation()
 
@@ -41,18 +41,16 @@ export default function ExportFileModal({
   }
 
   const handleExport = async () => {
-    try {
-      const result = await exportDocuments({ applicationId, template })
-      const bytes = Uint8Array.from(atob(result.base64), (c) => c.charCodeAt(0))
-      const blob = new Blob([bytes], { type: 'application/pdf' })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = result.filename
-      a.click()
-      URL.revokeObjectURL(url)
-      onOpenChange(false)
-    } catch {}
+    const result = await exportDocuments({ applicationId, template })
+    const bytes = Uint8Array.from(atob(result.base64), (c) => c.charCodeAt(0))
+    const blob = new Blob([bytes], { type: 'application/pdf' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = result.filename
+    a.click()
+    URL.revokeObjectURL(url)
+    onOpenChange(false)
   }
 
   return (
@@ -70,10 +68,12 @@ export default function ExportFileModal({
               className={cn(
                 'flex-1 cursor-pointer space-y-2 rounded-md border p-3',
                 template === item.id && 'border-primary',
+                !item.enabled && 'cursor-not-allowed',
               )}
               key={item.id}
               onClick={() =>
-                setTemplate(item.id as 'classic' | 'modern' | 'minimal')
+                item.enabled &&
+                setTemplate(item.id as 'templateA' | 'templateC' | 'templateB')
               }
             >
               <div className="flex h-40 items-center justify-center rounded-sm bg-gray-200 text-white">
@@ -116,7 +116,7 @@ export default function ExportFileModal({
             className="font-sans text-[13px] uppercase"
             onClick={handleExport}
           >
-            <DownloadIcon /> Download {template}
+            <DownloadIcon /> Download
           </Button>
         </DialogFooter>
       </DialogContent>

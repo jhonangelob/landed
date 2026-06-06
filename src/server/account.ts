@@ -6,6 +6,7 @@ import { ensureSession } from '#/server/session'
 
 import { db } from '#/lib/db/index.server'
 import { users } from '#/lib/db/schema'
+import { AppError } from '#/lib/utils'
 
 import { updateAccountSchema } from '#/validators/account'
 
@@ -18,8 +19,15 @@ export const getAccountDetails = createServerFn({ method: 'GET' }).handler(
       .from(users)
       .where(eq(users.id, session.user.id))
       .limit(1)
+      .then((r) => r.at(0))
 
-    return result[0] ?? null
+    if (!result) throw new AppError('NOT_FOUND', 'User not found')
+
+    return {
+      ...result,
+      username: result.username ?? '',
+      image: result.image ?? null,
+    }
   },
 )
 
@@ -31,7 +39,7 @@ export const updateAccountDetails = createServerFn({ method: 'POST' })
     await db
       .update(users)
       .set({
-        name: data.fullName,
+        name: data.name,
         updatedAt: new Date(),
         username: data.username,
       })

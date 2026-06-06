@@ -3,7 +3,7 @@ import { subscriptionQueryKey } from '#/hooks/useSubscriptionQueries'
 
 import type { QueryClient } from '@tanstack/react-query'
 
-import type { Subscription } from '#/lib/db/schema'
+import type { Subscription } from '#/validators/subscription'
 
 import { FREE_PLAN } from '#/constants/plan'
 

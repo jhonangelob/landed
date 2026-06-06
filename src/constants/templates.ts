@@ -1,6 +1,6 @@
-import { ClassicTemplate } from '#/lib/pdf/templates/classic'
-import { MinimalTemplate } from '#/lib/pdf/templates/minimal'
-import { ModernTemplate } from '#/lib/pdf/templates/modern'
+import { TemplateA } from '#/lib/pdf/templates/TemplateA'
+import { TemplateB } from '#/lib/pdf/templates/TemplateB'
+import { TemplateC } from '#/lib/pdf/templates/TemplateC'
 
 import type { CvContent } from '#/validators/documents'
 import type { PlanId } from '#/validators/subscription'
@@ -11,31 +11,35 @@ export interface CvTemplate {
   description: string
   plan: PlanId
   preview: string
+  enabled: boolean
 }
 
 export const CV_TEMPLATES: CvTemplate[] = [
   {
-    id: 'classic',
+    id: 'templateA',
     name: 'Classic',
     description:
       'Single column, traditional layout. ATS-friendly and safe for any industry.',
     plan: 'economy',
     preview: '📄',
+    enabled: true,
   },
   {
-    id: 'modern',
+    id: 'templateB',
+    name: 'Minimal',
+    description: 'Clean lines, generous whitespace. Lets your content breathe.',
+    plan: 'premium',
+    preview: '🗒️',
+    enabled: false,
+  },
+  {
+    id: 'templateC',
     name: 'Modern',
     description:
       'Two column with sidebar. Visually distinct, great for tech and design roles.',
     plan: 'premium',
     preview: '📋',
-  },
-  {
-    id: 'minimal',
-    name: 'Minimal',
-    description: 'Clean lines, generous whitespace. Lets your content breathe.',
-    plan: 'premium',
-    preview: '🗒️',
+    enabled: false,
   },
 ] as const
 
@@ -61,7 +65,7 @@ export const TEMPLATE_MAP: Record<
   CvTemplateId,
   React.ComponentType<{ content: CvContent; email?: string }>
 > = {
-  classic: ClassicTemplate,
-  modern: ModernTemplate,
-  minimal: MinimalTemplate,
+  templateA: TemplateA,
+  templateB: TemplateB,
+  templateC: TemplateC,
 }

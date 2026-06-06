@@ -1,18 +1,15 @@
-import { useAccountDetailsQuery } from '#/hooks/useAccountQueries'
 import {
   useProfileQuery,
   useSaveProfileMutation,
 } from '#/hooks/useProfileQueries'
+import type { PilotProfileInput } from '#/types'
 
 import { createFileRoute } from '@tanstack/react-router'
 
 import SectionHeader from '#/components/layout/SectionHeader'
 import ProfileForm from '#/components/profile/ProfileForm'
 
-import { getAccountDetails } from '#/server/account'
 import { getProfile } from '#/server/profile'
-
-import type { PilotProfileInput } from '#/validators/profile'
 
 export const Route = createFileRoute('/app/profile')({
   head: () => ({
@@ -28,17 +25,12 @@ export const Route = createFileRoute('/app/profile')({
         queryKey: ['profile'],
         queryFn: () => getProfile(),
       }),
-      queryClient.ensureQueryData({
-        queryKey: ['account_details'],
-        queryFn: () => getAccountDetails(),
-      }),
     ]),
   component: RouteComponent,
 })
 
 function RouteComponent() {
   const { data: profile } = useProfileQuery()
-  const { data: account } = useAccountDetailsQuery()
 
   const { mutateAsync: saveProfileDetails } = useSaveProfileMutation()
 
@@ -57,8 +49,7 @@ function RouteComponent() {
       <ProfileForm
         key={profile?.updatedAt.getTime() ?? 'new'}
         profile={profile}
-        account={account}
-        onSave={handleSave}
+        onSaveProfile={handleSave}
       />
     </div>
   )

@@ -1,3 +1,5 @@
+import type { ExportDocumentInput, GenerateDocumentInput } from '#/types'
+
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import {
@@ -9,11 +11,6 @@ import {
 import { parseError } from '#/lib/error'
 import { openUsageLimitModal } from '#/lib/store/usage-limit'
 import { notify } from '#/lib/toast'
-
-import type {
-  ExportDocumentInput,
-  GenerateDocumentInput,
-} from '#/validators/documents'
 
 import { subscriptionQueryKey } from './useSubscriptionQueries'
 
@@ -37,10 +34,17 @@ export function useGenerateDocumentsMutation(applicationId?: string) {
   return useMutation({
     mutationFn: (value: GenerateDocumentInput) =>
       generateDocuments({ data: value }),
-    onMutate: () => {
+    onMutate: (variables) => {
+      const fileName =
+        variables.type === 'cv'
+          ? 'CV'
+          : variables.type === 'cover_letter'
+            ? 'Cover Letter'
+            : 'CV and Cover Letter'
+
       const toastId = notify.loading(
         'Generating documents',
-        'Tailoring your CV and Cover Letter to this role...',
+        `Tailoring your ${fileName} to this role...`,
       )
       return { toastId }
     },

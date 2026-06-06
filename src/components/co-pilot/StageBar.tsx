@@ -1,10 +1,9 @@
 import React from 'react'
 
+import type { ApplicationStage } from '#/types'
 import { CheckIcon } from 'lucide-react'
 
 import { cn } from '#/lib/utils'
-
-import type { ApplicationStage } from '#/validators/application'
 
 import { KANBAN_COLUMNS } from '#/constants/stage'
 

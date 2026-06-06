@@ -1,8 +1,8 @@
+import type { CreateSubscriptionInput } from '#/types'
+
 import { useMutation, useSuspenseQuery } from '@tanstack/react-query'
 
 import { createSubscription, getSubscription } from '#/server/subscription'
-
-import type { CreateSubscriptionInput } from '#/validators/subscription'
 
 export const subscriptionQueryKey = ['subscription'] as const
 

@@ -10,11 +10,11 @@ import { applications } from '#/lib/db/schema'
 import { AppError } from '#/lib/utils'
 
 import {
-  applicationIdSchema,
-  createApplicationSchema,
   deleteApplicationSchema,
+  getApplicationSchema,
+  newApplicationSchema,
   updateApplicationSchema,
-  updateStageSchema,
+  updateApplicationStageSchema,
 } from '#/validators/application'
 
 import { getPlanById } from '#/constants/plan'
@@ -36,11 +36,11 @@ export const getApplications = createServerFn({ method: 'GET' }).handler(
 )
 
 export const getApplicationById = createServerFn({ method: 'GET' })
-  .inputValidator((data: unknown) => applicationIdSchema.parse(data))
+  .inputValidator((data: unknown) => getApplicationSchema.parse(data))
   .handler(async ({ data }) => {
     const session = await ensureSession()
 
-    const result = await db
+    return await db
       .select()
       .from(applications)
       .where(
@@ -50,22 +50,17 @@ export const getApplicationById = createServerFn({ method: 'GET' })
           isNull(applications.deletedAt),
         ),
       )
-
       .limit(1)
-
-    return result[0] ?? null
+      .then((r) => r.at(0) ?? undefined)
   })
 
 export const createApplication = createServerFn({
   method: 'POST',
 })
-  .inputValidator((data: unknown) => createApplicationSchema.parse(data))
+  .inputValidator((data: unknown) => newApplicationSchema.parse(data))
   .handler(async ({ data }) => {
     const session = await ensureSession()
 
-    // Enforce the plan's application cap (null = unlimited). This is separate
-    // from the AI generation quota — tracking a job should never be gated on
-    // generations remaining.
     const plan = getPlanById(await getUserPlan(session.user.id))
     if (plan.applications != null) {
       const [{ total }] = await db
@@ -130,7 +125,7 @@ export const updateApplication = createServerFn({
 export const updateApplicationStage = createServerFn({
   method: 'POST',
 })
-  .inputValidator((data: unknown) => updateStageSchema.parse(data))
+  .inputValidator((data: unknown) => updateApplicationStageSchema.parse(data))
   .handler(async ({ data }) => {
     const session = await ensureSession()
 

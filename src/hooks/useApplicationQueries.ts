@@ -1,3 +1,10 @@
+import type {
+  ApplicationInput,
+  DeleteApplicationInput,
+  UpdateApplicationInput,
+  UpdateApplicationStageInput,
+} from '#/types'
+
 import {
   useMutation,
   useQuery,
@@ -19,12 +26,6 @@ import { parseError } from '#/lib/error'
 import { maybeCelebrateLanded } from '#/lib/store/landed'
 import { openUsageLimitModal } from '#/lib/store/usage-limit'
 import { notify } from '#/lib/toast'
-
-import type {
-  CreateApplicationInput,
-  UpdateApplicationInput,
-  UpdateStageInput,
-} from '#/validators/application'
 
 export const applicationsQueryKey = ['applications'] as const
 export const applicationQueryKey = (id: string) => ['application', id] as const
@@ -48,8 +49,7 @@ export function useCreateApplicationMutation() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (value: CreateApplicationInput) =>
-      createApplication({ data: value }),
+    mutationFn: (value: ApplicationInput) => createApplication({ data: value }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: applicationsQueryKey })
     },
@@ -93,7 +93,7 @@ export function useUpdateApplicationStageMutation(applicationId: string) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (values: UpdateStageInput) =>
+    mutationFn: (values: UpdateApplicationStageInput) =>
       updateApplicationStage({ data: values }),
     onSuccess: (_, values) => {
       const celebrated = maybeCelebrateLanded(
@@ -125,7 +125,8 @@ export function useDeleteApplicationMutation() {
   const navigate = useNavigate()
 
   return useMutation({
-    mutationFn: (id: string) => deleteApplication({ data: { id } }),
+    mutationFn: (values: DeleteApplicationInput) =>
+      deleteApplication({ data: values }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: applicationsQueryKey })
       navigate({ to: '/app' })

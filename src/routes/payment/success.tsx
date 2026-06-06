@@ -33,8 +33,6 @@ function formatDate(date: Date | string | null | undefined): string {
 function PaymentSuccess() {
   const queryClient = useQueryClient()
 
-  // The plan was applied server-side during /payment/return — refresh and read
-  // the real subscription so the receipt reflects what was actually purchased.
   useEffect(() => {
     queryClient.invalidateQueries({ queryKey: subscriptionQueryKey })
   }, [queryClient])

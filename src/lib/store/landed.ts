@@ -4,9 +4,8 @@ import { subscriptionQueryKey } from '#/hooks/useSubscriptionQueries'
 
 import type { QueryClient } from '@tanstack/react-query'
 
-import type { PilotProfile } from '#/lib/db/schema'
-
 import type { Application, ApplicationStage } from '#/validators/application'
+import type { PilotProfile } from '#/validators/profile'
 
 import { getPlanById } from '#/constants/plan'
 
@@ -75,7 +74,7 @@ export function maybeCelebrateLanded(
   const planTier = getPlanById(subscription?.planId ?? 'economy').name
 
   const profile = queryClient.getQueryData<PilotProfile | null>(profileQueryKey)
-  const currentJob = profile?.experience?.[0]
+  const currentJob = profile?.experience[0]
 
   useModalStore.getState().open('applicationLanded', {
     applicationId,

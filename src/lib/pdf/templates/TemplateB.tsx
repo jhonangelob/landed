@@ -3,77 +3,89 @@ import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer'
 import type { CvContent } from '#/validators/documents'
 
 /**
- * Harvard CV template (Harvard FAS Mignone Center for Career Success layout).
+ * Harvard CV — "Crimson Column" variant.
  *
- * Layout characteristics faithfully reproduced from the source PDF:
- *  - Centered name at the top, centered contact line beneath it.
- *  - Each section opens with a left-aligned, all-caps heading that spans
- *    the full content width with a hairline rule beneath it.
- *  - Each entry has a two-column header row: bold/uppercase organization on
- *    the left, italic location on the right; then italic position/role on
- *    the left with the italic date range on the right.
- *  - Bulleted descriptions use a round "•" marker, hanging indent.
- *  - Skills & Interests rows use an italic-bold label followed by plain value.
- *
- * Single-page safety: tight, deterministic spacing, no min-heights, wrap
- * disabled on logical blocks so a row never splits across a page break.
+ * Differences from Template B (Harvard FAS):
+ *  - A 3pt crimson left border anchors each section heading instead of a
+ *    full-width bottom rule, giving the page a vertical rhythm.
+ *  - Name is left-aligned (not centred) in a slightly larger cut; a thin
+ *    rule separates the header block from the body.
+ *  - Contact line is left-aligned, using a spaced middot separator.
+ *  - Section titles are small-caps style (uppercase + reduced fontSize)
+ *    with letter-spacing, prefixed by the crimson bar.
+ *  - Entry org label is bold but NOT all-caps — role is italic as before.
+ *  - Dates sit in a fixed-width right column (52pt) so every date aligns.
+ *  - Bullets use an en-dash (–) instead of a bullet dot for a cleaner look.
+ *  - Skills rows have a hairline separator between each row.
  */
 
-const COLORS = {
-  ink: '#000000',
-  rule: '#000000',
-  note: '#555555',
-}
+const CRIMSON = '#8B0000'
 
 const s = StyleSheet.create({
   page: {
-    fontSize: 11,
-    color: COLORS.ink,
-    paddingTop: 36,
+    fontSize: 10.5,
+    color: '#111111',
+    paddingTop: 40,
     paddingBottom: 36,
-    paddingHorizontal: 44,
-    lineHeight: 1.35,
+    paddingHorizontal: 48,
+    lineHeight: 1.4,
     fontFamily: 'Times-Roman',
   },
 
   // ── header ────────────────────────────────────────────────
   header: {
-    marginBottom: 10,
+    marginBottom: 8,
+    paddingBottom: 8,
+    borderBottom: `1pt solid #111111`,
   },
   name: {
-    fontSize: 18,
+    fontSize: 22,
     fontFamily: 'Times-Bold',
-    textAlign: 'center',
-    marginBottom: 3,
+    textAlign: 'left',
+    marginBottom: 2,
+    letterSpacing: 0.5,
   },
   headline: {
     fontSize: 10,
-    fontFamily: 'Times-Bold',
-    textAlign: 'center',
-    marginTop: 6,
+    fontFamily: 'Times-Italic',
+    color: CRIMSON,
+    marginBottom: 4,
   },
   contactLine: {
-    fontSize: 10,
-    textAlign: 'center',
+    fontSize: 9.5,
+    color: '#333333',
+    textAlign: 'left',
   },
 
   // ── section ───────────────────────────────────────────────
   section: {
+    marginBottom: 7,
+  },
+  sectionTitleWrapper: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
     marginBottom: 5,
   },
+  sectionBar: {
+    width: 3,
+    backgroundColor: CRIMSON,
+    marginRight: 6,
+  },
   sectionTitle: {
-    fontSize: 11,
+    fontSize: 9,
     fontFamily: 'Times-Bold',
-    letterSpacing: 0.6,
+    letterSpacing: 1.2,
     textTransform: 'uppercase',
-    borderBottom: '1pt solid #000000',
+    paddingTop: 2,
     paddingBottom: 2,
-    marginBottom: 4,
+    flex: 1,
+    borderBottom: `0.5pt solid #CCCCCC`,
   },
 
   // ── entry ─────────────────────────────────────────────────
   entry: {
     marginBottom: 5,
+    paddingLeft: 9,
   },
   rowBetween: {
     flexDirection: 'row',
@@ -81,74 +93,94 @@ const s = StyleSheet.create({
     alignItems: 'flex-start',
   },
 
-  // org row — bold + uppercase left, italic right
+  // org row — bold left (not all-caps), italic location right
   orgLeft: {
-    fontSize: 11,
+    fontSize: 10.5,
     fontFamily: 'Times-Bold',
-    textTransform: 'uppercase',
     flex: 1,
     paddingRight: 8,
   },
   orgRight: {
-    fontSize: 10,
+    fontSize: 9.5,
     fontFamily: 'Times-Italic',
+    color: '#444444',
     textAlign: 'right',
+    width: 110,
   },
 
-  // role row — italic left, italic right
+  // role row — italic left, dates right in fixed column
   roleLeft: {
-    fontSize: 11,
+    fontSize: 10.5,
     fontFamily: 'Times-Italic',
     flex: 1,
     paddingRight: 8,
   },
   roleRight: {
-    fontSize: 10,
-    fontFamily: 'Times-Italic',
+    fontSize: 9.5,
+    fontFamily: 'Times-Roman',
+    color: '#444444',
     textAlign: 'right',
+    width: 110,
   },
 
-  // single supplementary line (thesis, coursework, study abroad detail)
   plainLine: {
-    fontSize: 10,
+    fontSize: 9.5,
     marginTop: 1,
+    color: '#333333',
+    paddingLeft: 0,
   },
 
   // ── bullets ───────────────────────────────────────────────
   bullets: {
-    marginTop: 2,
+    marginTop: 3,
   },
   bullet: {
     flexDirection: 'row',
     marginBottom: 2,
-    paddingLeft: 12,
+    paddingLeft: 4,
   },
-  bulletDot: {
-    width: 10,
-    fontSize: 11,
+  bulletDash: {
+    width: 12,
+    fontSize: 10,
+    color: CRIMSON,
   },
   bulletText: {
     flex: 1,
-    fontSize: 10,
+    fontSize: 9.5,
     textAlign: 'justify',
+    color: '#222222',
   },
 
-  // ── skills & interests ────────────────────────────────────
+  // ── skills ────────────────────────────────────────────────
   skillRow: {
     flexDirection: 'row',
-    marginBottom: 1,
-  },
-  skillValue: {
-    fontSize: 10,
-    flex: 1,
+    paddingVertical: 2,
+    paddingLeft: 9,
+    borderBottom: `0.5pt solid #EEEEEE`,
   },
   skillLabel: {
     fontFamily: 'Times-BoldItalic',
-    fontSize: 10,
+    fontSize: 9.5,
+    color: CRIMSON,
+    width: 90,
+  },
+  skillValue: {
+    fontSize: 9.5,
+    flex: 1,
+    color: '#222222',
   },
 })
 
 // ─── sub-components ────────────────────────────────────────────────────────────
+
+function SectionHeading({ title }: { title: string }) {
+  return (
+    <View style={s.sectionTitleWrapper}>
+      <View style={s.sectionBar} />
+      <Text style={s.sectionTitle}>{title}</Text>
+    </View>
+  )
+}
 
 interface EntryHeaderProps {
   org: string
@@ -180,7 +212,7 @@ function Bullets({ items }: { items: string[] }) {
     <View style={s.bullets}>
       {items.map((b, j) => (
         <View key={j} style={s.bullet} wrap={false}>
-          <Text style={s.bulletDot}>•</Text>
+          <Text style={s.bulletDash}>–</Text>
           <Text style={s.bulletText}>{b}</Text>
         </View>
       ))}
@@ -194,38 +226,35 @@ interface Props {
   content: CvContent
 }
 
-export function ClassicTemplate({ content }: Props) {
-  const contactParts = [
-    content.contact.location,
-    content.contact.email,
-    content.contact.phone,
-    content.links?.github,
-    content.links?.linkedin,
-    content.links?.portfolio,
-  ].filter(Boolean)
-
+export function TemplateB({ content }: Props) {
   return (
-    <Document title="CV" creator="Harvard CV">
+    <Document title="CV" creator="Harvard CV — Crimson Column">
       <Page size="LETTER" style={s.page}>
         {/* ── Header ── */}
         <View style={s.header}>
           <Text style={s.name}>{content.name}</Text>
-          <Text style={s.headline}>{content.headline}</Text>
-          {contactParts.length > 0 && (
-            <Text style={s.contactLine}>{contactParts.join(' • ')}</Text>
+          {content.headline ? (
+            <Text style={s.headline}>{content.headline}</Text>
+          ) : null}
+          {content.links.length > 0 && (
+            <Text style={s.contactLine}>{content.links.join('  ·  ')}</Text>
           )}
         </View>
 
         {/* ── Summary ── */}
-        <View style={s.section}>
-          <Text style={s.sectionTitle}>Summary</Text>
-          <Text style={s.plainLine}>{content.summary}</Text>
-        </View>
+        {content.summary ? (
+          <View style={s.section}>
+            <SectionHeading title="Summary" />
+            <Text style={{ ...s.plainLine, paddingLeft: 9 }}>
+              {content.summary}
+            </Text>
+          </View>
+        ) : null}
 
         {/* ── Education ── */}
         {content.education.length > 0 && (
           <View style={s.section}>
-            <Text style={s.sectionTitle}>Education</Text>
+            <SectionHeading title="Education" />
             {content.education.map((edu, i) => (
               <View key={i} style={s.entry} wrap={false}>
                 <EntryHeader
@@ -245,7 +274,7 @@ export function ClassicTemplate({ content }: Props) {
         {/* ── Certifications ── */}
         {content.certifications && content.certifications.length > 0 && (
           <View style={s.section}>
-            <Text style={s.sectionTitle}>Certifications</Text>
+            <SectionHeading title="Certifications" />
             {content.certifications.map((cert, i) => (
               <View key={i} style={s.entry} wrap={false}>
                 <EntryHeader
@@ -261,7 +290,7 @@ export function ClassicTemplate({ content }: Props) {
         {/* ── Experience ── */}
         {content.experience.length > 0 && (
           <View style={s.section}>
-            <Text style={s.sectionTitle}>Experience</Text>
+            <SectionHeading title="Experience" />
             {content.experience.map((exp, i) => (
               <View key={i} style={s.entry} wrap={false}>
                 <EntryHeader
@@ -277,9 +306,9 @@ export function ClassicTemplate({ content }: Props) {
         )}
 
         {/* ── Leadership and Activities ── */}
-        {content.leadership && content.leadership.length > 0 && (
+        {/* {content.leadership && content.leadership.length > 0 && (
           <View style={s.section}>
-            <Text style={s.sectionTitle}>Leadership and Activities</Text>
+            <SectionHeading title="Leadership and Activities" />
             {content.leadership.map((act, i) => (
               <View key={i} style={s.entry} wrap={false}>
                 <EntryHeader
@@ -292,28 +321,24 @@ export function ClassicTemplate({ content }: Props) {
               </View>
             ))}
           </View>
-        )}
+        )} */}
 
         {/* ── Skills & Interests ── */}
         {(content.skills.length > 0 ||
           (content.skillGroups && content.skillGroups.length > 0)) && (
           <View style={s.section}>
-            <Text style={s.sectionTitle}>Skills &amp; Interests</Text>
+            <SectionHeading title="Skills &amp; Interests" />
             {content.skillGroups && content.skillGroups.length > 0 ? (
               content.skillGroups.map((g, i) => (
                 <View key={i} style={s.skillRow}>
-                  <Text style={s.skillValue}>
-                    <Text style={s.skillLabel}>{g.label}: </Text>
-                    {g.value}
-                  </Text>
+                  <Text style={s.skillLabel}>{g.label}</Text>
+                  <Text style={s.skillValue}>{g.value}</Text>
                 </View>
               ))
             ) : (
               <View style={s.skillRow}>
-                <Text style={s.skillValue}>
-                  <Text style={s.skillLabel}>Skills: </Text>
-                  {content.skills.join(', ')}
-                </Text>
+                <Text style={s.skillLabel}>Skills</Text>
+                <Text style={s.skillValue}>{content.skills.join(', ')}</Text>
               </View>
             )}
           </View>

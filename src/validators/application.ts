@@ -1,30 +1,8 @@
-import { z } from 'zod'
+import z from 'zod'
 
-export const applicationStageSchema = z.enum([
-  'spotted',
-  'applied',
-  'in_flight',
-  'interview',
-  'offer',
-  'landed',
-  'rejected',
-  'withdrawn',
-])
+import { applicationStageSchema } from './shared'
 
-export type ApplicationStage = z.infer<typeof applicationStageSchema>
-
-export const createApplicationSchema = z.object({
-  company: z.string().min(1, 'Company name is required'),
-  role: z.string().min(1, 'Job title is required'),
-  description: z
-    .string()
-    .max(50_000, 'Reached maximum description character limit')
-    .or(z.literal('')),
-})
-
-export type CreateApplicationInput = z.infer<typeof createApplicationSchema>
-
-export const updateApplicationSchema = z.object({
+export const applicationSchema = z.object({
   id: z.string().uuid(),
   company: z.string().min(1, 'Company name is required'),
   role: z.string().min(1, 'Job title is required'),
@@ -38,44 +16,34 @@ export const updateApplicationSchema = z.object({
     .string()
     .max(50_000, 'Reached maximum description character limit')
     .or(z.literal('')),
+  appliedAt: z.date().nullable(),
+  updatedAt: z.date(),
+  interviewAt: z.date(),
+  offerAt: z.date(),
 })
 
-export type UpdateApplicationInput = z.infer<typeof updateApplicationSchema>
-
-export const updateStageSchema = z.object({
-  id: z.string().uuid('Invalid application ID'),
-  stage: applicationStageSchema,
+export const newApplicationSchema = applicationSchema.pick({
+  company: true,
+  role: true,
+  description: true,
 })
 
-export type UpdateStageInput = z.infer<typeof updateStageSchema>
-
-export const deleteApplicationSchema = z.object({
-  id: z.string().uuid(),
+export const updateApplicationSchema = applicationSchema.omit({
+  appliedAt: true,
+  updatedAt: true,
+  interviewAt: true,
+  offerAt: true,
 })
 
-export const applicationIdSchema = z.object({
-  id: z.string().uuid(),
+export const deleteApplicationSchema = applicationSchema.pick({
+  id: true,
 })
 
-export const coPilotSearchSchema = z.object({
-  applicationId: z.string().uuid().optional(),
+export const getApplicationSchema = applicationSchema.pick({
+  id: true,
 })
 
-export type Application = {
-  id: string
-  company: string
-  role: string
-  description: string | null
-  url: string | null
-  location: string | null
-  salaryRange: string | null
-  notes: string | null
-  stage: ApplicationStage
-  status: string | null
-
-  appliedAt: Date | null
-  interviewAt: Date | null
-  createdAt: Date
-  updatedAt: Date
-  offerAt: Date | null
-}
+export const updateApplicationStageSchema = applicationSchema.pick({
+  id: true,
+  stage: true,
+})

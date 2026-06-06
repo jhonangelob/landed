@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import type { UpdatePasswordInput } from '#/types'
 import { EyeIcon, EyeOffIcon } from 'lucide-react'
 
 import { useForm } from '@tanstack/react-form'
@@ -9,7 +10,6 @@ import { Input } from '#/components/ui/input'
 import { Label } from '#/components/ui/label'
 
 import { updatePasswordSchema } from '#/validators/account'
-import type { UpdatePasswordInput } from '#/validators/account'
 
 interface PasswordFormProps {
   onUpdatePassword: (value: UpdatePasswordInput) => any
@@ -26,7 +26,7 @@ export default function PasswordForm({ onUpdatePassword }: PasswordFormProps) {
       currentPassword: '',
       newPassword: '',
       confirmPassword: '',
-    },
+    } satisfies UpdatePasswordInput,
     validators: { onSubmit: updatePasswordSchema },
     onSubmit: async ({ value }) => {
       const res = await onUpdatePassword(value)

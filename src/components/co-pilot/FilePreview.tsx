@@ -1,16 +1,18 @@
+import { useState } from 'react'
+
+import type { GeneratedDoc } from '#/types'
 import { DownloadIcon, PlusIcon, SparklesIcon } from 'lucide-react'
 
 import { useModal } from '#/lib/store/modal'
-
-import type { Document } from '#/validators/documents'
 
 import { Button } from '../ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
 
 interface FilePreviewProps {
-  showRegenerateButton?: boolean
-  documents?: Document[]
-  onRetailor?: () => void
+  showRetailorButton?: boolean
+  documents?: GeneratedDoc[]
+  onRetailor?: (type: 'cv' | 'cover_letter') => void
+  applicationId?: string
 }
 
 function EmptyFilePreview() {
@@ -37,14 +39,26 @@ function EmptyFilePreview() {
 }
 
 export default function FilePreview({
-  showRegenerateButton = false,
+  showRetailorButton = false,
   documents,
   onRetailor,
+  applicationId,
 }: FilePreviewProps) {
   const { open } = useModal()
+
+  const [fileType, setFileType] = useState<'cv' | 'cover_letter'>('cv')
+
   const cvDoc = documents?.find((d) => d.type === 'cv')
   const clDoc = documents?.find((d) => d.type === 'cover_letter')
-  const hasDocuments = documents && documents.length > 0
+
+  const documentExist = {
+    cv: !!cvDoc,
+    cover_letter: !!clDoc,
+  }
+
+  const handleRetailor = () => {
+    onRetailor && onRetailor(fileType)
+  }
 
   return (
     <div className="bg-surface-subtle w-full rounded-lg border p-5.5">
@@ -53,46 +67,48 @@ export default function FilePreview({
           <TabsTrigger
             value="cv"
             className="text-primary-text max-w-fit font-mono text-[11px] leading-[1.4] font-normal tracking-[1.3px] uppercase"
+            onClick={() => setFileType('cv')}
           >
             Tailored CV
           </TabsTrigger>
           <TabsTrigger
             value="cl"
             className="text-primary-text max-w-fit font-mono text-[11px] leading-[1.4] font-normal tracking-[1.3px] uppercase"
+            onClick={() => setFileType('cover_letter')}
           >
             Cover Letter
           </TabsTrigger>
 
           <div className="ml-auto flex flex-row gap-2">
-            {showRegenerateButton && (
+            {showRetailorButton && (
               <Button
                 className="text-primary-text flex h-fit flex-row gap-1.5 px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase"
                 variant="outline"
-                onClick={onRetailor}
+                onClick={handleRetailor}
               >
                 <SparklesIcon className="size-2.75" />
-                Retailor
+                {documentExist[fileType] ? 'Retailor' : 'Generate'}{' '}
+                {fileType === 'cover_letter' ? 'Cover Letter' : 'CV'}
               </Button>
             )}
 
-            {hasDocuments && (
+            {documentExist[fileType] && applicationId && (
               <Button
                 className="text-primary-text flex h-fit flex-row gap-1.5 px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase"
                 variant="outline"
                 onClick={() =>
                   open('exportFile', {
-                    applicationId: documents[0].applicationId,
+                    applicationId,
                   })
                 }
               >
                 <DownloadIcon className="size-2.75" />
-                <p className="hidden md:block">Pdf</p>
+                <p className="hidden md:block">Download</p>
               </Button>
             )}
           </div>
         </TabsList>
 
-        {/* CV tab */}
         <TabsContent value="cv">
           {cvDoc?.contentHtml ? (
             <div
@@ -104,7 +120,6 @@ export default function FilePreview({
           )}
         </TabsContent>
 
-        {/* Cover letter tab */}
         <TabsContent value="cl">
           {clDoc?.contentHtml ? (
             <div

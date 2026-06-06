@@ -1,11 +1,10 @@
 import { formatDate } from '#/helper/date'
+import type { Plan } from '#/types'
 import { ArrowUpIcon, CheckIcon } from 'lucide-react'
 
 import { Kicker } from '#/components/ui/kicker'
 
 import { cn } from '#/lib/utils'
-
-import type { Plan } from '#/validators/subscription'
 
 import { PLANS } from '#/constants/plan'
 
