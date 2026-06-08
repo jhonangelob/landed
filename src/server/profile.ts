@@ -7,7 +7,12 @@ import { ensureSession } from '#/server/session'
 import { db } from '#/lib/db/index.server'
 import { pilotProfiles } from '#/lib/db/schema'
 
-import { savePilotProfileSchema } from '#/validators/profile'
+import {
+  pilotProfileSchema,
+  savePilotProfileSchema,
+} from '#/validators/profile'
+import z from 'zod'
+import { AppError } from '#/lib/utils'
 
 export const getProfile = createServerFn({ method: 'GET' }).handler(
   async () => {
@@ -89,4 +94,103 @@ export const saveProfile = createServerFn({ method: 'POST' })
       })
 
     return { success: true }
+  })
+
+export const parseCvFile = createServerFn({ method: 'POST' })
+  .inputValidator((data: unknown) =>
+    z
+      .object({
+        fileContent: z.string(),
+        fileType: z.string(),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data }) => {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': process.env.ANTHROPIC_API_KEY!,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        system: `You are a CV parser. Extract structured data from the CV provided.
+          Return ONLY valid JSON — no explanation, no markdown, no backticks.
+          Use this exact structure:
+          {
+            "headline": "",
+            "summary": "",
+            "location": "",
+            "phone": "",
+            "skills": [],
+            "experience": [{
+              "company": "",
+              "role": "",
+              "dates": "",
+              "location": "",
+              "bullets": []
+            }],
+            "education": [{
+              "institution": "",
+              "degree": "",
+              "year": "",
+              "location": "",
+              "detail": ""
+            }],
+            "certifications": [{
+              "name": "",
+              "issuer": "",
+              "issueDate": "",
+              "expiryDate": "",
+              "url": ""
+            }],
+            "projects": [{
+              "name": "",
+              "url": "",
+              "role": "",
+              "dates": "",
+              "highlights": "",
+              "bullets": []
+            }],
+            "links": [{ "name": "", "url": "" }]
+          }
+          STRICT RULES:
+          - Only use data explicitly present in the CV
+          - Do NOT invent, infer, or assume anything
+          - If a field has no match use empty string "" or empty array []
+          - Never return null
+          - Never add fields not in the structure above
+        `,
+        messages: [
+          {
+            role: 'user',
+            content: [
+              {
+                type: 'document',
+                source: {
+                  type: 'base64',
+                  media_type: data.fileType,
+                  data: data.fileContent,
+                },
+              },
+              {
+                type: 'text',
+                text: 'Parse this CV and return the structured JSON.',
+              },
+            ],
+          },
+        ],
+      }),
+    })
+
+    if (!response.ok) throw new AppError('AI_PARSE_ERROR', 'Failed to parse CV')
+
+    const result = await response.json()
+    const text = result.content[0].text
+    const clean = text.replace(/```json|```/g, '').trim()
+    const parsed = JSON.parse(clean)
+
+    return pilotProfileSchema.partial().parse(parsed)
   })

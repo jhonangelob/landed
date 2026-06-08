@@ -140,7 +140,7 @@ function RouteComponent() {
                 <Label htmlFor="name">Full Name</Label>
                 <Input
                   id="name"
-                  placeholder="Jane Doe"
+                  placeholder="Juan Dela Cruz"
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}

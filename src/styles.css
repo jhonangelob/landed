@@ -5,6 +5,8 @@
 
 @import 'tw-animate-css';
 
+@custom-variant dark (&:is(.dark *));
+
 :root {
   /* Avionics Brand */
   --primary-text: #191b22;

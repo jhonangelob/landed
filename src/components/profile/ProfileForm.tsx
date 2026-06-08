@@ -25,11 +25,13 @@ import { PROFILE_LIMITS } from '#/validators/shared'
 interface ProfileFormProps {
   profile: PilotProfile | null
   onSaveProfile: (value: PilotProfileInput) => Promise<void> | void
+  className: string
 }
 
 export default function ProfileForm({
   profile,
   onSaveProfile,
+  className,
 }: ProfileFormProps) {
   const [skillInput, setSkillInput] = useState('')
   const [roleInput, setRoleInput] = useState('')
@@ -75,7 +77,7 @@ export default function ProfileForm({
 
   return (
     <form
-      className="flex max-w-4xl flex-col gap-4"
+      className={cn('flex max-w-4xl flex-col gap-4', className)}
       onSubmit={(e) => {
         e.preventDefault()
         form.handleSubmit()
@@ -94,7 +96,7 @@ export default function ProfileForm({
                 <Label htmlFor="name">Full Name</Label>
                 <Input
                   id="name"
-                  placeholder="Jane Doe"
+                  placeholder="Juan Dela Cruz"
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
