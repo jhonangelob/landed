@@ -1,5 +1,6 @@
-import { Button } from '#/components/ui/button'
 import { PlayIcon, PlusIcon } from 'lucide-react'
+
+import { Button } from '#/components/ui/button'
 
 export default function Hero() {
   return (

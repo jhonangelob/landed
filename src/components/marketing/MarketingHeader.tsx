@@ -100,7 +100,7 @@ export default function MarketingHeader() {
                 </Button>
               </Link>
               <Link to="/signup">
-                <Button className="w-full bg-primary" size="sm">
+                <Button className="bg-primary w-full" size="sm">
                   Get started
                 </Button>
               </Link>

@@ -1,7 +1,11 @@
+import { useState } from 'react'
+
 import { formatNumberCompact } from '#/helper/number'
 import type { Application } from '#/types'
 
 import { useNavigate } from '@tanstack/react-router'
+
+import { cn } from '#/lib/utils'
 
 import { KANBAN_COLUMNS } from '#/constants/stage'
 
@@ -16,21 +20,29 @@ export type KanbanItemBadgeProps = {
 
 export default function KanbanItem({ data }: KanbanItemProps) {
   const navigate = useNavigate()
+  const [isDragging, setIsDragging] = useState(false)
 
   const stageColor =
     KANBAN_COLUMNS.find((col) => col.stage === data.stage)?.color ?? '#94a3b8'
 
   const handleClickApplicationItem = () => {
-    navigate({
-      to: '/app/co-pilot',
-      search: { applicationId: data.id },
-    })
+    navigate({ to: '/app/co-pilot', search: { applicationId: data.id } })
   }
 
   return (
     <div
-      className="hover:border-primary/70 border-divider/50 flex cursor-pointer flex-col rounded-lg border bg-white px-3.5 pt-3.5 pb-3"
+      draggable
+      onDragStart={(e) => {
+        e.dataTransfer.setData('applicationId', data.id)
+        e.dataTransfer.effectAllowed = 'move'
+        setIsDragging(true)
+      }}
+      onDragEnd={() => setIsDragging(false)}
       onClick={handleClickApplicationItem}
+      className={cn(
+        'hover:border-primary/70 border-divider/50 flex flex-col rounded-lg border bg-white px-3.5 pt-3.5 pb-3 transition-opacity',
+        isDragging ? 'cursor-grabbing opacity-40' : 'cursor-grab',
+      )}
     >
       <div className="flex flex-col gap-1 border-b border-dashed pb-2">
         <p className="font-display text-primary-text truncate text-[15px] leading-[1.3] font-bold tracking-[-0.1px]">

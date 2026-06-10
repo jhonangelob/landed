@@ -1,4 +1,5 @@
 import { eq } from 'drizzle-orm'
+import z from 'zod'
 
 import { createServerFn } from '@tanstack/react-start'
 
@@ -6,11 +7,10 @@ import { ensureSession } from '#/server/session'
 
 import { db } from '#/lib/db/index.server'
 import { pilotProfiles } from '#/lib/db/schema'
+import { AppError } from '#/lib/utils'
 
 import { savePilotProfileSchema } from '#/validators/profile'
 import { PROFILE_LIMITS } from '#/validators/shared'
-import z from 'zod'
-import { AppError } from '#/lib/utils'
 
 export const getProfile = createServerFn({ method: 'GET' }).handler(
   async () => {

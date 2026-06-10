@@ -28,7 +28,10 @@ export type StatsSnapshot = z.infer<typeof statsSnapshotSchema>
 export const createTouchdownShare = createServerFn({ method: 'POST' })
   .inputValidator((data: unknown) =>
     z
-      .object({ applicationId: z.string().uuid(), statsSnapshot: statsSnapshotSchema })
+      .object({
+        applicationId: z.string().uuid(),
+        statsSnapshot: statsSnapshotSchema,
+      })
       .parse(data),
   )
   .handler(async ({ data }) => {
@@ -60,7 +63,9 @@ export const createTouchdownShare = createServerFn({ method: 'POST' })
   })
 
 export const getTouchdownShare = createServerFn({ method: 'GET' })
-  .inputValidator((data: unknown) => z.object({ shareToken: z.string() }).parse(data))
+  .inputValidator((data: unknown) =>
+    z.object({ shareToken: z.string() }).parse(data),
+  )
   .handler(async ({ data }) => {
     return await db
       .select({

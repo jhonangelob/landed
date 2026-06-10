@@ -8,7 +8,10 @@ import { Button } from '../ui/button'
 
 export default function Pricing() {
   return (
-    <div id="pricing" className="bg-surface-muted flex flex-col items-center gap-2 px-14 py-29">
+    <div
+      id="pricing"
+      className="bg-surface-muted flex flex-col items-center gap-2 px-14 py-29"
+    >
       <p className="text-muted font-mono text-[11px] leading-[1.4] font-medium tracking-[1.3] uppercase">
         Pricing
       </p>

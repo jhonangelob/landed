@@ -64,7 +64,7 @@ function RouteComponent() {
       const res = await signUp.email({
         email: value.email,
         password: value.password,
-        callbackURL: '/login?verified=true',
+        callbackURL: '/email-verified',
         name: value.name,
       })
 

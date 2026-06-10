@@ -1,15 +1,17 @@
-import { useApplicationsQuery } from '#/hooks/useApplicationQueries'
 import { useEffect, useState } from 'react'
 
+import { useApplicationsQuery } from '#/hooks/useApplicationQueries'
+import { SearchIcon } from 'lucide-react'
+
 import { createFileRoute } from '@tanstack/react-router'
+
+import { Input } from '#/components/ui/input'
 
 import KanbanBoard from '#/components/flight-deck/KanbanBoard'
 import SectionHeader from '#/components/layout/SectionHeader'
 
 import { getApplications } from '#/server/applications'
 import { getSession } from '#/server/session'
-import { SearchIcon } from 'lucide-react'
-import { Input } from '#/components/ui/input'
 
 export const Route = createFileRoute('/app/')({
   head: () => ({

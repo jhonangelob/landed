@@ -79,11 +79,21 @@ export default function ProfileForm({
 
   useEffect(() => {
     if (!parsedData) return
-    const knownKeys = ['headline', 'summary', 'location', 'phone', 'skills', 'experience', 'education', 'certifications', 'links'] as const
+    const knownKeys = [
+      'headline',
+      'summary',
+      'location',
+      'phone',
+      'skills',
+      'experience',
+      'education',
+      'certifications',
+      'links',
+    ] as const
     for (const key of knownKeys) {
       const value = parsedData[key]
-      if (value !== undefined && value !== null) {
-        form.setFieldValue(key, value as never)
+      if (value !== undefined) {
+        form.setFieldValue(key, value)
       }
     }
   }, [parsedData])

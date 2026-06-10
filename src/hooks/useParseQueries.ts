@@ -1,6 +1,9 @@
 import { useState } from 'react'
-import { parseCvFile } from '#/server/profile'
+
 import type { PilotProfileInput } from '#/types'
+
+import { parseCvFile } from '#/server/profile'
+
 import { notify } from '#/lib/toast'
 
 export function useParseCvMutation() {

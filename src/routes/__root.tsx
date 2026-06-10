@@ -9,8 +9,8 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 
 import { Toaster } from '#/components/ui/sonner'
 
-import NotFound from '#/components/layout/NotFound'
 import { NavigationProgress } from '#/components/layout/NavigationProgress'
+import NotFound from '#/components/layout/NotFound'
 
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 import appCss from '../styles.css?url'

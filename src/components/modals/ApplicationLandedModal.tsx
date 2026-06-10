@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import { formatDate } from '#/helper/date'
 import { formatNumberCompact } from '#/helper/number'
 import {
@@ -8,7 +10,6 @@ import {
   LinkedinIcon,
   TwitterIcon,
 } from 'lucide-react'
-import { useState } from 'react'
 
 import { useNavigate } from '@tanstack/react-router'
 

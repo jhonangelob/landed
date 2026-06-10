@@ -1,6 +1,8 @@
 import { useRef, useState } from 'react'
-import { cn } from '#/lib/utils'
+
 import { UploadIcon } from 'lucide-react'
+
+import { cn } from '#/lib/utils'
 
 interface DropzoneProps {
   onFileAccepted: (file: File) => void
@@ -13,7 +15,7 @@ interface DropzoneProps {
 export function Dropzone({
   onFileAccepted,
   accept = ['.pdf', '.docx'],
-  maxSize = 5 * 1024 * 1024, // 5MB
+  maxSize = 5 * 1024 * 1024,
   disabled = false,
   className,
 }: DropzoneProps) {
@@ -48,8 +50,8 @@ export function Dropzone({
     e.preventDefault()
     setIsDragging(false)
     if (disabled) return
-    const dropped = e.dataTransfer.files?.[0]
-    if (dropped) handleFile(dropped)
+    const dropped = e.dataTransfer.files[0]
+    handleFile(dropped)
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

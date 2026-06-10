@@ -4,9 +4,9 @@ import CallToAction from '#/components/marketing/CallToAction'
 import FAQ from '#/components/marketing/FAQ'
 import Features from '#/components/marketing/Features'
 import Hero from '#/components/marketing/Hero'
+import HowItWorks from '#/components/marketing/HowItworks'
 import InformationStrip from '#/components/marketing/InformationStrip'
 import Pricing from '#/components/marketing/Pricing'
-import HowItWorks from '#/components/marketing/HowItworks'
 
 export const Route = createFileRoute('/(marketing)/')({
   component: LandingPage,

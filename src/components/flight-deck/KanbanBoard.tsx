@@ -1,9 +1,20 @@
+import { useState } from 'react'
+
+import { applicationsQueryKey } from '#/hooks/useApplicationQueries'
+import type { Application, ApplicationStage } from '#/types'
+
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
+
+import { updateApplicationStage } from '#/server/applications'
+
+import { maybeCelebrateLanded } from '#/lib/store/landed'
+import { notify } from '#/lib/toast'
+import { cn } from '#/lib/utils'
 
 import { KANBAN_COLUMNS } from '#/constants/stage'
 
 import KanbanItem from './KanbanItem'
-import type { Application } from '#/types'
 
 interface KanbanBoardProps {
   applications: Application[]
@@ -22,10 +33,46 @@ export default function KanbanBoard({
   query = '',
 }: KanbanBoardProps) {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const isFiltering = query.trim() !== ''
+  const [dragOverStage, setDragOverStage] = useState<string | null>(null)
 
-  const handleNewApplication = (stage: any) => {
+  const { mutate: updateStage } = useMutation({
+    mutationFn: (vars: { id: string; stage: ApplicationStage }) =>
+      updateApplicationStage({ data: vars }),
+    onSuccess: async (_, vars) => {
+      await maybeCelebrateLanded(queryClient, vars.id, vars.stage)
+      queryClient.invalidateQueries({ queryKey: applicationsQueryKey })
+    },
+    onError: (error) => {
+      notify.fromError(error, 'Could not update stage')
+    },
+  })
+
+  const handleNewApplication = (stage: ApplicationStage) => {
     navigate({ to: '/app/co-pilot', search: { stage } })
+  }
+
+  const handleDragOver = (e: React.DragEvent, stage: string) => {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'move'
+    setDragOverStage(stage)
+  }
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      setDragOverStage(null)
+    }
+  }
+
+  const handleDrop = (e: React.DragEvent, stage: ApplicationStage) => {
+    e.preventDefault()
+    setDragOverStage(null)
+    const applicationId = e.dataTransfer.getData('applicationId')
+    if (!applicationId) return
+    const app = applications.find((a) => a.id === applicationId)
+    if (!app || app.stage === stage) return
+    updateStage({ id: applicationId, stage })
   }
 
   return (
@@ -36,9 +83,16 @@ export default function KanbanBoard({
           const visibleCount = isFiltering
             ? colApps.filter((a) => matchesQuery(a, query)).length
             : colApps.length
+          const isOver = dragOverStage === col.stage
 
           return (
-            <div key={index} className="flex min-h-0 flex-col gap-4.5">
+            <div
+              key={index}
+              className="flex min-h-0 flex-col gap-4.5"
+              onDragOver={(e) => handleDragOver(e, col.stage)}
+              onDragLeave={handleDragLeave}
+              onDrop={(e) => handleDrop(e, col.stage)}
+            >
               <div className="flex flex-row items-center justify-between gap-2 border-b pb-2">
                 <div
                   className="h-1.5 w-1.5 rounded-full"
@@ -51,7 +105,12 @@ export default function KanbanBoard({
                   {visibleCount}
                 </div>
               </div>
-              <div className="flex min-h-0 w-60 flex-1 flex-col overflow-y-auto pb-2">
+              <div
+                className={cn(
+                  'flex min-h-0 w-60 flex-1 flex-col overflow-y-auto rounded-lg pb-2 transition-colors',
+                  isOver && 'bg-accent/60 ring-primary ring-1',
+                )}
+              >
                 {colApps.map((application) => {
                   const visible =
                     !isFiltering || matchesQuery(application, query)

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 import type { LoginInput } from '#/types'
 import { EyeIcon, EyeOffIcon } from 'lucide-react'
@@ -13,7 +13,6 @@ import { Label } from '#/components/ui/label'
 import { getSession } from '#/server/session'
 
 import { signIn } from '#/lib/auth/client'
-import { notify } from '#/lib/toast'
 import { cn } from '#/lib/utils'
 
 import { loginSchema } from '#/validators/account'
@@ -28,10 +27,6 @@ export const Route = createFileRoute('/(auth)/login')({
       },
     ],
   }),
-  validateSearch: (search: Record<string, unknown>): { verified?: boolean } =>
-    search.verified === 'true' || search.verified === true
-      ? { verified: true }
-      : {},
   beforeLoad: async () => {
     const session = await getSession()
 
@@ -44,17 +39,10 @@ export const Route = createFileRoute('/(auth)/login')({
 
 function RouteComponent() {
   const navigate = useNavigate()
-  const { verified } = Route.useSearch()
 
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
-
-  useEffect(() => {
-    if (!verified) return
-    notify.success('Email verified', 'You can now sign in to your account.')
-    navigate({ to: '/login', search: {}, replace: true })
-  }, [verified, navigate])
 
   const form = useForm({
     defaultValues: { email: '', password: '' } satisfies LoginInput,

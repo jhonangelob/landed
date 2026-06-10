@@ -26,6 +26,7 @@ import { Route as authSignupRouteImport } from './routes/(auth)/signup'
 import { Route as authResetPasswordRouteImport } from './routes/(auth)/reset-password'
 import { Route as authLoginRouteImport } from './routes/(auth)/login'
 import { Route as authForgotPasswordRouteImport } from './routes/(auth)/forgot-password'
+import { Route as authEmailVerifiedRouteImport } from './routes/(auth)/email-verified'
 import { Route as adminAdminRouteImport } from './routes/(admin)/admin'
 import { Route as ApiPaymongoWebhookRouteImport } from './routes/api/paymongo/webhook'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
@@ -113,6 +114,11 @@ const authForgotPasswordRoute = authForgotPasswordRouteImport.update({
   path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const authEmailVerifiedRoute = authEmailVerifiedRouteImport.update({
+  id: '/(auth)/email-verified',
+  path: '/email-verified',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const adminAdminRoute = adminAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -132,6 +138,7 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 export interface FileRoutesByFullPath {
   '/app': typeof AppRouteRouteWithChildren
   '/admin': typeof adminAdminRoute
+  '/email-verified': typeof authEmailVerifiedRoute
   '/forgot-password': typeof authForgotPasswordRoute
   '/login': typeof authLoginRoute
   '/reset-password': typeof authResetPasswordRoute
@@ -151,6 +158,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/admin': typeof adminAdminRoute
+  '/email-verified': typeof authEmailVerifiedRoute
   '/forgot-password': typeof authForgotPasswordRoute
   '/login': typeof authLoginRoute
   '/reset-password': typeof authResetPasswordRoute
@@ -174,6 +182,7 @@ export interface FileRoutesById {
   '/(marketing)': typeof marketingRouteRouteWithChildren
   '/app': typeof AppRouteRouteWithChildren
   '/(admin)/admin': typeof adminAdminRoute
+  '/(auth)/email-verified': typeof authEmailVerifiedRoute
   '/(auth)/forgot-password': typeof authForgotPasswordRoute
   '/(auth)/login': typeof authLoginRoute
   '/(auth)/reset-password': typeof authResetPasswordRoute
@@ -196,6 +205,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/app'
     | '/admin'
+    | '/email-verified'
     | '/forgot-password'
     | '/login'
     | '/reset-password'
@@ -215,6 +225,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/admin'
+    | '/email-verified'
     | '/forgot-password'
     | '/login'
     | '/reset-password'
@@ -237,6 +248,7 @@ export interface FileRouteTypes {
     | '/(marketing)'
     | '/app'
     | '/(admin)/admin'
+    | '/(auth)/email-verified'
     | '/(auth)/forgot-password'
     | '/(auth)/login'
     | '/(auth)/reset-password'
@@ -259,6 +271,7 @@ export interface RootRouteChildren {
   adminRouteRoute: typeof adminRouteRouteWithChildren
   marketingRouteRoute: typeof marketingRouteRouteWithChildren
   AppRouteRoute: typeof AppRouteRouteWithChildren
+  authEmailVerifiedRoute: typeof authEmailVerifiedRoute
   authForgotPasswordRoute: typeof authForgotPasswordRoute
   authLoginRoute: typeof authLoginRoute
   authResetPasswordRoute: typeof authResetPasswordRoute
@@ -393,6 +406,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(auth)/email-verified': {
+      id: '/(auth)/email-verified'
+      path: '/email-verified'
+      fullPath: '/email-verified'
+      preLoaderRoute: typeof authEmailVerifiedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/(admin)/admin': {
       id: '/(admin)/admin'
       path: '/admin'
@@ -463,6 +483,7 @@ const rootRouteChildren: RootRouteChildren = {
   adminRouteRoute: adminRouteRouteWithChildren,
   marketingRouteRoute: marketingRouteRouteWithChildren,
   AppRouteRoute: AppRouteRouteWithChildren,
+  authEmailVerifiedRoute: authEmailVerifiedRoute,
   authForgotPasswordRoute: authForgotPasswordRoute,
   authLoginRoute: authLoginRoute,
   authResetPasswordRoute: authResetPasswordRoute,

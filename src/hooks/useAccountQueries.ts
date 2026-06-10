@@ -1,4 +1,5 @@
 import type { UpdateAccountInput, UpdatePasswordInput } from '#/types'
+import { revokeSession } from 'better-auth/api'
 
 import {
   useMutation,
@@ -15,7 +16,6 @@ import {
 
 import { changePassword, signOut } from '#/lib/auth/client'
 import { notify } from '#/lib/toast'
-import { revokeSession } from 'better-auth/api'
 
 export const accountQueryKey = ['account_details'] as const
 

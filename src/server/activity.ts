@@ -32,7 +32,9 @@ export const getActivities = createServerFn({
           `.mapWith(Number),
         })
         .from(applications)
-        .where(and(eq(applications.userId, uid), isNull(applications.deletedAt))),
+        .where(
+          and(eq(applications.userId, uid), isNull(applications.deletedAt)),
+        ),
 
       db
         .select({

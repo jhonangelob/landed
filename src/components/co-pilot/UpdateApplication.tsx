@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import { formatNumber, parseNumber } from '#/helper/number'
 import {
   useUpdateApplicationMutation,
@@ -13,10 +15,9 @@ import type {
   UpdateApplicationInput,
 } from '#/types'
 import { CheckIcon, CopyIcon, SaveIcon } from 'lucide-react'
-import { useState } from 'react'
 
-import { useQuery } from '@tanstack/react-query'
 import { useForm } from '@tanstack/react-form'
+import { useQuery } from '@tanstack/react-query'
 
 import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
@@ -32,8 +33,9 @@ import { Textarea } from '#/components/ui/textarea'
 
 import SectionHeader from '#/components/layout/SectionHeader'
 
-import { useModal } from '#/lib/store/modal'
 import { getShareTokenForApplication } from '#/server/touchdown'
+
+import { useModal } from '#/lib/store/modal'
 
 import { updateApplicationSchema } from '#/validators/application'
 import { applicationStageSchema } from '#/validators/shared'

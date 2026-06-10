@@ -1,22 +1,28 @@
+import { useParseCvMutation } from '#/hooks/useParseQueries'
 import {
   useProfileQuery,
   useSaveProfileMutation,
 } from '#/hooks/useProfileQueries'
 import type { PilotProfile, PilotProfileInput } from '#/types'
+import {
+  BatteryMediumIcon,
+  CheckIcon,
+  CircleIcon,
+  UploadIcon,
+} from 'lucide-react'
 
 import { createFileRoute } from '@tanstack/react-router'
 
-import { BatteryMediumIcon, CheckIcon, CircleIcon, UploadIcon } from 'lucide-react'
+import { Dropzone } from '#/components/ui/dropzone'
+import { Progress } from '#/components/ui/progress'
 
 import SectionHeader from '#/components/layout/SectionHeader'
 import ProfileForm from '#/components/profile/ProfileForm'
 import SecondarySectionCard from '#/components/profile/SecondarySectionCard'
-import { Dropzone } from '#/components/ui/dropzone'
 
 import { getProfile } from '#/server/profile'
-import { useParseCvMutation } from '#/hooks/useParseQueries'
+
 import { cn } from '#/lib/utils'
-import { Progress } from '#/components/ui/progress'
 
 export const Route = createFileRoute('/app/profile')({
   head: () => ({
@@ -36,11 +42,11 @@ const profileChecklist: {
 }[] = [
   {
     label: 'Contact details',
-    check: (p) => !!(p?.name && p?.email && p?.phone && p?.location),
+    check: (p) => !!(p?.name && p.email && p.phone && p.location),
   },
   {
     label: 'Headline written',
-    check: (p) => !!(p?.headline),
+    check: (p) => !!p?.headline,
   },
   {
     label: '2+ roles detailed',
@@ -52,11 +58,11 @@ const profileChecklist: {
   },
   {
     label: 'Profile links added',
-    check: (p) => (p?.links?.filter((l) => l.url)?.length ?? 0) >= 1,
+    check: (p) => (p?.links?.filter((l) => l.url).length ?? 0) >= 1,
   },
   {
     label: 'Voice & tone set',
-    check: (p) => !!(p?.preferences?.preferredVoice),
+    check: (p) => !!p?.preferences?.preferredVoice,
   },
 ]
 
