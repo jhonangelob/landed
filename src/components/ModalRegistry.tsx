@@ -68,6 +68,7 @@ export function ModalRegistry({ userName }: ModalRegistryProps) {
           appliedCount={payload.applicationLanded.appliedCount}
           interviewedCount={payload.applicationLanded.interviewedCount}
           daysCount={payload.applicationLanded.daysCount}
+          shareToken={payload.applicationLanded.shareToken}
         />
       )}
       {payload.usageLimit && (

@@ -1,4 +1,4 @@
-import type { PilotProfile } from '#/validators/profile'
+import type { PilotProfile } from '#/types'
 
 export function buildCvSystemPrompt(): string {
   return `
@@ -32,7 +32,6 @@ export function buildCvSystemPrompt(): string {
       "certifications": [
         { "name": "string", "issuer": "string", "date": "string" }
       ],
-      "skills": ["string"],
       "skillGroups": [
         { "label": "string", "value": "string" }
       ],
@@ -67,6 +66,7 @@ export function buildCvSystemPrompt(): string {
     - Write in the candidate's Preferred Voice when one is provided
     - Never use any of the candidate's Words to Avoid — choose natural alternatives instead
 
+    - For experiences, each bullet must be tailored to have a combination of strong action verb + specific work done + results
     - For certifications: copy name and issuer from the profile; map the profile's issueDate field to the output's date field; omit if none
     - For links: the profile provides links as an array of { name, url } objects; map them to the output's github/linkedin/portfolio fields by matching the name case-insensitively (e.g. "GitHub" → github, "LinkedIn" → linkedin, "Portfolio" → portfolio); drop unrecognised names; omit the whole field if none match
     - Group the skills into 2-3 themed categories in "skillGroups" (e.g. Languages, Frameworks, Tools) while still returning the flat "skills" array
@@ -104,7 +104,7 @@ export function buildUserPrompt(opts: {
   profile: PilotProfile
 }): string {
   const { company, role, description, profile } = opts
-  const { roles, preferredVoice, wordsToAvoid } = profile.preferences
+
   return `
     Job Details:
     Company: ${company}
@@ -114,19 +114,19 @@ export function buildUserPrompt(opts: {
     ${description}
 
     Candidate Profile:
-    Name: ${profile.fullName}
+    Name: ${profile.name}
     Headline: ${profile.headline}
     Location: ${profile.location}
-    Preferred Roles: ${roles.join(', ')}
+    Preferred Roles: ${profile.preferences?.roles.join(', ')}
     Summary: ${profile.summary}
-    Skills: ${profile.skills.join(', ')}
+    Skills: ${profile.skills?.join(', ')}
     Experience: ${JSON.stringify(profile.experience, null, 2)}
     Education: ${JSON.stringify(profile.education, null, 2)}
     Certifications: ${JSON.stringify(profile.certifications, null, 2)}
-    Links: ${JSON.stringify([profile.email, profile.phone, ...profile.links], null, 2)}
+    Links: ${JSON.stringify([profile.email, profile.phone, profile.links], null, 2)}
 
     Writing Preferences:
-    Preferred Voice: ${preferredVoice || 'no preference'}
-    Words to Avoid: ${wordsToAvoid.length ? wordsToAvoid.join(', ') : 'none'}
+    Preferred Voice: ${profile.preferences?.preferredVoice || 'no preference'}
+    Words to Avoid: ${profile.preferences?.wordsToAvoid.length ? profile.preferences.wordsToAvoid.join(', ') : 'none'}
   `.trim()
 }

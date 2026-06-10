@@ -35,7 +35,7 @@ const features = [
 
 export default function Features() {
   return (
-    <div className="bg-surface-subtle px-16 py-29">
+    <div id="features" className="bg-surface-subtle px-16 py-29">
       <div className="mx-auto flex max-w-295 flex-col gap-4">
         <p className="text-muted font-mono text-[11px] leading-[1.3] font-medium tracking-[1.3px] uppercase">
           Features

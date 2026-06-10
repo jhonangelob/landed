@@ -12,8 +12,10 @@ import type {
   ApplicationStage,
   UpdateApplicationInput,
 } from '#/types'
-import { SaveIcon } from 'lucide-react'
+import { CheckIcon, CopyIcon, SaveIcon } from 'lucide-react'
+import { useState } from 'react'
 
+import { useQuery } from '@tanstack/react-query'
 import { useForm } from '@tanstack/react-form'
 
 import { Button } from '#/components/ui/button'
@@ -31,6 +33,7 @@ import { Textarea } from '#/components/ui/textarea'
 import SectionHeader from '#/components/layout/SectionHeader'
 
 import { useModal } from '#/lib/store/modal'
+import { getShareTokenForApplication } from '#/server/touchdown'
 
 import { updateApplicationSchema } from '#/validators/application'
 import { applicationStageSchema } from '#/validators/shared'
@@ -50,6 +53,25 @@ export default function UpdateApplication({
   application,
 }: UpdateApplicationProps) {
   const { open } = useModal()
+  const isLanded = application?.stage === 'landed'
+  const [copied, setCopied] = useState(false)
+
+  const { data: shareToken } = useQuery({
+    queryKey: ['touchdown-share', applicationId],
+    queryFn: () => getShareTokenForApplication({ data: { applicationId } }),
+    enabled: isLanded,
+  })
+
+  const shareUrl = shareToken
+    ? `${window.location.origin}/share/${shareToken}`
+    : null
+
+  const handleCopyLink = async () => {
+    if (!shareUrl) return
+    await navigator.clipboard.writeText(shareUrl)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
 
   const { mutateAsync: updateStage } =
     useUpdateApplicationStageMutation(applicationId)
@@ -124,6 +146,7 @@ export default function UpdateApplication({
                           value={field.state.value}
                           onChange={(e) => field.handleChange(e.target.value)}
                           onBlur={field.handleBlur}
+                          disabled={isLanded}
                         />
                         {field.state.meta.errors.map((err, i) => (
                           <p key={i} className="text-destructive text-xs">
@@ -145,6 +168,7 @@ export default function UpdateApplication({
                           value={field.state.value}
                           onChange={(e) => field.handleChange(e.target.value)}
                           onBlur={field.handleBlur}
+                          disabled={isLanded}
                         />
                         {field.state.meta.errors.map((err, i) => (
                           <p key={i} className="text-destructive text-xs">
@@ -166,6 +190,7 @@ export default function UpdateApplication({
                         value={field.state.value}
                         onChange={(e) => field.handleChange(e.target.value)}
                         onBlur={field.handleBlur}
+                        disabled={isLanded}
                       />
                       {field.state.meta.errors.map((err, i) => (
                         <p key={i} className="text-destructive text-xs">
@@ -189,6 +214,7 @@ export default function UpdateApplication({
                             field.handleChange(parseNumber(e.target.value))
                           }
                           onBlur={field.handleBlur}
+                          disabled={isLanded}
                         />
                         {field.state.meta.errors.map((err, i) => (
                           <p key={i} className="text-destructive text-xs">
@@ -209,6 +235,7 @@ export default function UpdateApplication({
                           value={field.state.value}
                           onChange={(e) => field.handleChange(e.target.value)}
                           onBlur={field.handleBlur}
+                          disabled={isLanded}
                         />
                         {field.state.meta.errors.map((err, i) => (
                           <p key={i} className="text-destructive text-xs">
@@ -237,6 +264,7 @@ export default function UpdateApplication({
                         value={field.state.value}
                         onChange={(e) => field.handleChange(e.target.value)}
                         onBlur={field.handleBlur}
+                        disabled={isLanded}
                       />
                       {field.state.meta.errors.map((err, i) => (
                         <p key={i} className="text-destructive text-xs">
@@ -262,6 +290,7 @@ export default function UpdateApplication({
                         value={field.state.value}
                         onChange={(e) => field.handleChange(e.target.value)}
                         onBlur={field.handleBlur}
+                        disabled={isLanded}
                       />
                       {field.state.meta.errors.map((err, i) => (
                         <p key={i} className="text-destructive text-xs">
@@ -285,13 +314,18 @@ export default function UpdateApplication({
                         <SelectTrigger
                           id="stage"
                           onBlur={field.handleBlur}
-                          className="bg-surface-muted! h-10.5! w-full shadow-none!"
+                          className="bg-surface-muted! h-10.5! w-full capitalize shadow-none!"
+                          disabled={isLanded}
                         >
                           <SelectValue placeholder="Select stage" />
                         </SelectTrigger>
                         <SelectContent>
                           {applicationStageSchema.options.map((s) => (
-                            <SelectItem key={s} value={s}>
+                            <SelectItem
+                              key={s}
+                              value={s}
+                              className="capitalize"
+                            >
                               {s.replace('_', ' ')}
                             </SelectItem>
                           ))}
@@ -321,6 +355,7 @@ export default function UpdateApplication({
                       value={field.state.value}
                       onChange={(e) => field.handleChange(e.target.value)}
                       onBlur={field.handleBlur}
+                      disabled={isLanded}
                     />
                     {field.state.meta.errors.map((err, i) => (
                       <p key={i} className="text-destructive text-xs">
@@ -333,18 +368,31 @@ export default function UpdateApplication({
             </SectionCard>
 
             <div className="sticky bottom-4 flex justify-end rounded-lg border bg-white p-4 pt-3.5">
-              <form.Subscribe
-                selector={(s) => [s.isSubmitting, s.isDirty]}
-                children={([isSubmitting, isDirty]) => (
-                  <Button
-                    type="submit"
-                    className="w-full text-[12px] text-white! uppercase md:w-auto"
-                    disabled={isSubmitting || !isDirty}
-                  >
-                    <SaveIcon /> Save Changes
-                  </Button>
-                )}
-              />
+              {isLanded ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full text-[12px] uppercase md:w-auto"
+                  disabled={!shareUrl}
+                  onClick={handleCopyLink}
+                >
+                  {copied ? <CheckIcon /> : <CopyIcon />}
+                  {copied ? 'Copied!' : 'Copy Share Link'}
+                </Button>
+              ) : (
+                <form.Subscribe
+                  selector={(s) => [s.isSubmitting, s.isDirty]}
+                  children={([isSubmitting, isDirty]) => (
+                    <Button
+                      type="submit"
+                      className="w-full text-[12px] text-white! uppercase md:w-auto"
+                      disabled={isSubmitting || !isDirty}
+                    >
+                      <SaveIcon /> Save Changes
+                    </Button>
+                  )}
+                />
+              )}
             </div>
           </form>
 
@@ -360,7 +408,8 @@ export default function UpdateApplication({
             <div className="flex flex-col space-y-2">
               <p className="text-muted font-sans text-[14px] leading-[1.4]">
                 Permanently removes this application from your Flight Deck along
-                with any generated CV/Cover Letter for it. This cannot be
+                with
+                <br /> any generated CV/Cover Letter for it. This cannot be
                 undone.
               </p>
               <Button

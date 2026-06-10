@@ -45,7 +45,7 @@ export const Route = createFileRoute('/app/co-pilot')({
 })
 
 function RouteComponent() {
-  const { applicationId } = Route.useSearch()
+  const { applicationId, stage } = Route.useSearch()
 
   const isEditMode = !!applicationId
 
@@ -73,7 +73,7 @@ function RouteComponent() {
           application={normalizedApplication}
         />
       ) : (
-        <NewApplication profile={profile} />
+        <NewApplication profile={profile} stage={stage} />
       )}
     </div>
   )

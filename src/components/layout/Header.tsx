@@ -1,10 +1,4 @@
-import {
-  BellIcon,
-  CircleQuestionMarkIcon,
-  LogOutIcon,
-  MenuIcon,
-  PlusIcon,
-} from 'lucide-react'
+import { LogOutIcon, MenuIcon, PlusIcon } from 'lucide-react'
 
 import { Link, useLocation, useNavigate } from '@tanstack/react-router'
 
@@ -23,17 +17,12 @@ import {
 } from '../ui/sheet'
 import logo from '/landed-logo.svg'
 
-export default function Header({ isAdmin }: { isAdmin: boolean }) {
+export default function Header() {
   const location = useLocation()
   const navigate = useNavigate()
 
-  const navigation = NAVIGATION.filter((item) => !item.admin || isAdmin)
-
   const checkIfSelected = (path: string) => location.pathname === path
 
-  const handleClickNotification = () => {
-    console.log('unimplemented: Notification')
-  }
   const handleClickLogout = async () => {
     await signOut()
     navigate({ to: '/login' })
@@ -55,7 +44,7 @@ export default function Header({ isAdmin }: { isAdmin: boolean }) {
         </div>
 
         <div className="hidden flex-row md:flex">
-          {navigation.map((item) => (
+          {NAVIGATION.map((item) => (
             <Link
               to={item.url}
               key={item.url}
@@ -71,7 +60,7 @@ export default function Header({ isAdmin }: { isAdmin: boolean }) {
           ))}
         </div>
 
-        <div className="hidden flex-row items-center gap-4 md:flex lg:ml-auto">
+        <div className="hidden flex-row items-center gap-6 md:flex lg:ml-auto">
           <Button
             className="bg-primary rounded-md"
             onClick={handleNewApplication}
@@ -80,14 +69,6 @@ export default function Header({ isAdmin }: { isAdmin: boolean }) {
             New Application
           </Button>
 
-          <Button
-            variant="outline"
-            size="icon"
-            className="rounded-full"
-            onClick={handleClickNotification}
-          >
-            <CircleQuestionMarkIcon className="size-3.5" />
-          </Button>
           <Button
             variant="outline"
             size="icon"
@@ -110,7 +91,7 @@ export default function Header({ isAdmin }: { isAdmin: boolean }) {
             </SheetHeader>
 
             <nav className="flex flex-1 flex-col gap-1 px-3 py-3">
-              {navigation.map((item) => (
+              {NAVIGATION.map((item) => (
                 <Link
                   to={item.url}
                   key={item.url}
@@ -129,14 +110,7 @@ export default function Header({ isAdmin }: { isAdmin: boolean }) {
             <div className="border-border flex items-center gap-3 border-t px-4 py-4">
               <div className="ml-auto flex gap-1">
                 <Button variant="ghost" size="icon" onClick={handleClickLogout}>
-                  <BellIcon className="text-foreground-soft" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleClickNotification}
-                >
-                  <CircleQuestionMarkIcon className="text-foreground-soft" />
+                  <LogOutIcon className="text-foreground-soft" />
                 </Button>
               </div>
             </div>

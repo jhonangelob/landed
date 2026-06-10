@@ -1,7 +1,5 @@
+import type { ApplicationStage, Plan } from '#/types'
 import { create } from 'zustand'
-
-import type { ApplicationStage } from '#/validators/application'
-import type { Plan, PlanId } from '#/validators/subscription'
 
 export type DeleteAccountPayload = {
   onDelete: () => void
@@ -39,13 +37,14 @@ export type ApplicationLandedPayload = {
   appliedCount: number
   interviewedCount: number
   daysCount: number
+  shareToken?: string
 }
 
 export type UsageLimitReason = 'generation' | 'application'
 
 export type UsageLimitPayload = {
   reason: UsageLimitReason
-  planId: PlanId
+  planId: string
   used: number
   limit: number
   resetAt: Date | null

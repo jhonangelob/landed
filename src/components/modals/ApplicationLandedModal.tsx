@@ -2,12 +2,13 @@ import { formatDate } from '#/helper/date'
 import { formatNumberCompact } from '#/helper/number'
 import {
   ArrowRightIcon,
+  CheckIcon,
   ChevronRightIcon,
   CopyIcon,
-  DownloadIcon,
   LinkedinIcon,
   TwitterIcon,
 } from 'lucide-react'
+import { useState } from 'react'
 
 import { useNavigate } from '@tanstack/react-router'
 
@@ -37,6 +38,7 @@ interface ApplicationLandedModalProps {
   appliedCount: number
   interviewedCount: number
   daysCount: number
+  shareToken?: string
 }
 
 function getCompanyCode(name: string) {
@@ -59,8 +61,39 @@ export default function ApplicationLandedModal({
   appliedCount,
   interviewedCount,
   daysCount,
+  shareToken,
 }: ApplicationLandedModalProps) {
   const navigate = useNavigate()
+  const [copied, setCopied] = useState(false)
+
+  const shareUrl = shareToken
+    ? `${typeof window !== 'undefined' ? window.location.origin : ''}/share/${shareToken}`
+    : null
+
+  const shareText = `Just landed the ${role} role at ${company}! 🛬 It took ${daysCount} days and ${appliedCount} applications. Tracked with Landed.`
+
+  const handleCopyLink = async () => {
+    if (!shareUrl) return
+    await navigator.clipboard.writeText(shareUrl)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  const handlePostToX = () => {
+    if (!shareUrl) return
+    const params = new URLSearchParams({ text: shareText, url: shareUrl })
+    window.open(`https://x.com/intent/tweet?${params}`, '_blank', 'noopener')
+  }
+
+  const handlePostToLinkedIn = () => {
+    if (!shareUrl) return
+    const params = new URLSearchParams({ url: shareUrl })
+    window.open(
+      `https://www.linkedin.com/sharing/share-offsite/?${params}`,
+      '_blank',
+      'noopener',
+    )
+  }
 
   const handleViewFlightDeck = () => {
     onOpenChange(false)
@@ -230,6 +263,8 @@ export default function ApplicationLandedModal({
             <Button
               className="text-primary-text font-mono text-[11px] leading-[1.4] tracking-[0.9px] uppercase"
               variant="outline"
+              disabled={!shareUrl}
+              onClick={handlePostToX}
             >
               <TwitterIcon />
               Post to X
@@ -237,6 +272,8 @@ export default function ApplicationLandedModal({
             <Button
               className="text-primary-text font-mono text-[11px] leading-[1.4] tracking-[0.9px] uppercase"
               variant="outline"
+              disabled={!shareUrl}
+              onClick={handlePostToLinkedIn}
             >
               <LinkedinIcon />
               Post to LinkedIn
@@ -244,16 +281,11 @@ export default function ApplicationLandedModal({
             <Button
               className="text-primary-text font-mono text-[11px] leading-[1.4] tracking-[0.9px] uppercase"
               variant="outline"
+              disabled={!shareUrl}
+              onClick={handleCopyLink}
             >
-              <CopyIcon />
-              Copy Link
-            </Button>
-            <Button
-              className="text-primary-text font-mono text-[11px] leading-[1.4] tracking-[0.9px] uppercase"
-              variant="outline"
-            >
-              <DownloadIcon />
-              Save Image
+              {copied ? <CheckIcon /> : <CopyIcon />}
+              {copied ? 'Copied!' : 'Copy Link'}
             </Button>
           </div>
         </div>

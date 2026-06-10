@@ -87,6 +87,7 @@ export const createApplication = createServerFn({
         company: data.company,
         role: data.role,
         description: data.description,
+        stage: data.stage,
       })
       .returning()
 
@@ -153,6 +154,7 @@ export const deleteApplication = createServerFn({ method: 'POST' })
         and(
           eq(applications.userId, session.user.id),
           eq(applications.id, data.id),
+          isNull(applications.deletedAt),
         ),
       )
   })

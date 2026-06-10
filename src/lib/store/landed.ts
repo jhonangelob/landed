@@ -4,12 +4,11 @@ import { subscriptionQueryKey } from '#/hooks/useSubscriptionQueries'
 
 import type { QueryClient } from '@tanstack/react-query'
 
-import type { Application, ApplicationStage } from '#/validators/application'
-import type { PilotProfile } from '#/validators/profile'
-
 import { getPlanById } from '#/constants/plan'
+import { createTouchdownShare } from '#/server/touchdown'
 
 import { useModalStore } from './modal'
+import type { Application, ApplicationStage, PilotProfile } from '#/types'
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24
 
@@ -39,11 +38,11 @@ const INTERVIEWED_STAGES: ApplicationStage[] = ['interview', 'offer', 'landed']
  * the query cache (applications, subscription, pilot profile). Anything not yet
  * cached degrades gracefully — the modal hides the optional fields.
  */
-export function maybeCelebrateLanded(
+export async function maybeCelebrateLanded(
   queryClient: QueryClient,
   applicationId: string,
   newStage: ApplicationStage,
-): boolean {
+): Promise<boolean> {
   if (newStage !== 'landed') return false
 
   const apps =
@@ -74,7 +73,33 @@ export function maybeCelebrateLanded(
   const planTier = getPlanById(subscription?.planId ?? 'economy').name
 
   const profile = queryClient.getQueryData<PilotProfile | null>(profileQueryKey)
-  const currentJob = profile?.experience[0]
+  const currentJob = profile?.experience?.[0]
+
+  let shareToken: string | undefined
+  try {
+    const result = await createTouchdownShare({
+      data: {
+        applicationId,
+        statsSnapshot: {
+          company: app?.company ?? '',
+          role: app?.role ?? '',
+          planTier,
+          previousCompany: currentJob?.company,
+          previousRole: currentJob?.role,
+          appliedAt: appliedAt?.toISOString() ?? null,
+          landedAt: landedAt.toISOString(),
+          compensation: app?.salaryRange ?? undefined,
+          location: app?.location ?? undefined,
+          appliedCount,
+          interviewedCount,
+          daysCount,
+        },
+      },
+    })
+    shareToken = result.shareToken
+  } catch {
+    // Non-fatal: modal still shows without share functionality
+  }
 
   useModalStore.getState().open('applicationLanded', {
     applicationId,
@@ -90,6 +115,7 @@ export function maybeCelebrateLanded(
     appliedCount,
     interviewedCount,
     daysCount,
+    shareToken,
   })
 
   return true

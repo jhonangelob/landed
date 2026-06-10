@@ -1,5 +1,7 @@
 import type {
   Certification,
+  CoverLetterContent,
+  CvContent,
   Education,
   Experience,
   Links,

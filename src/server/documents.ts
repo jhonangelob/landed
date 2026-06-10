@@ -99,6 +99,14 @@ export const generateDocuments = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const session = await ensureSession()
 
+    if (!process.env.ANTHROPIC_HAIKU_MODEL)
+      throw new AppError(
+        'MISSING_ENV',
+        'API Key is not defined in the environment variables',
+      )
+
+    const model = process.env.ANTHROPIC_HAIKU_MODEL
+
     await checkGenerationLimit()
     await checkRateLimit()
 
@@ -157,7 +165,12 @@ export const generateDocuments = createServerFn({ method: 'POST' })
       role: application.role,
       description: application.description || '',
       profile: {
-        fullName: user.name,
+        id: profile.id,
+        updatedAt: profile.updatedAt,
+        userId: profile.userId,
+        timezone: profile.timezone ?? null,
+        projects: profile.projects ?? [],
+        name: user.name,
         email: user.email,
         phone: profile.phone ?? '',
         location: profile.location ?? '',
@@ -168,17 +181,17 @@ export const generateDocuments = createServerFn({ method: 'POST' })
         certifications: profile.certifications ?? [],
         education: profile.education ?? [],
         links: profile.links ?? [],
-        preferences: {
-          roles: profile.preferences?.roles ?? [],
-          preferredVoice: profile.preferences?.preferredVoice ?? '',
-          wordsToAvoid: profile.preferences?.wordsToAvoid ?? [],
+        preferences: profile.preferences ?? {
+          roles: [''],
+          preferredVoice: '',
+          wordsToAvoid: [''],
         },
       },
     })
 
     const callModel = (system: string) =>
       generateText({
-        model: anthropic(process.env.ANTHROPIC_HAIKU_MODEL!),
+        model: anthropic(model),
         system,
         prompt: userPrompt,
         maxOutputTokens: 4000,

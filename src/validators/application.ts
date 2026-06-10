@@ -26,6 +26,7 @@ export const newApplicationSchema = applicationSchema.pick({
   company: true,
   role: true,
   description: true,
+  stage: true,
 })
 
 export const updateApplicationSchema = applicationSchema.omit({

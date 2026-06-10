@@ -15,6 +15,7 @@ import {
 
 import { changePassword, signOut } from '#/lib/auth/client'
 import { notify } from '#/lib/toast'
+import { revokeSession } from 'better-auth/api'
 
 export const accountQueryKey = ['account_details'] as const
 
@@ -44,6 +45,7 @@ export function useDeleteAccountMutation() {
   return useMutation({
     mutationFn: () => deleteAccount(),
     onSuccess: () => {
+      revokeSession()
       signOut()
       navigate({ to: '/login' })
     },

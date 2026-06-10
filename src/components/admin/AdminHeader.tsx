@@ -1,10 +1,14 @@
-import { MenuIcon } from 'lucide-react'
+import {
+  BellIcon,
+  CircleQuestionMarkIcon,
+  LogOutIcon,
+  MenuIcon,
+} from 'lucide-react'
 
-import { Link, useLocation } from '@tanstack/react-router'
+import { Link, useLocation, useNavigate } from '@tanstack/react-router'
 
+import { signOut } from '#/lib/auth/client'
 import { cn } from '#/lib/utils'
-
-import { MARKETING_NAVIGATION } from '#/constants/navigations'
 
 import { Button } from '../ui/button'
 import {
@@ -15,54 +19,55 @@ import {
   SheetTrigger,
 } from '../ui/sheet'
 import logo from '/landed-logo.svg'
+import { ADMIN_NAVIGATION } from '#/constants/navigations'
 
-export default function MarketingHeader() {
+export default function AdminHeader() {
   const location = useLocation()
+  const navigate = useNavigate()
 
-  const checkIfSelected = (href: string) =>
-    location.hash ? `/${location.hash}` === href.slice(1) : href === '/'
+  const checkIfSelected = (path: string) => location.pathname === path
+
+  const handleClickLogout = async () => {
+    await signOut()
+    navigate({ to: '/login' })
+  }
 
   return (
     <header className="fixed top-0 left-0 z-91 w-full border-b bg-white">
       <div className="max-w-8xl mx-auto flex h-16 flex-row items-center justify-between gap-8 px-4 md:px-8">
         <div className="flex flex-row items-center gap-0.5 lg:mr-14">
-          <Link to="/">
-            <img src={logo} alt="Landed Logo" className="h-8 min-w-fit" />
-          </Link>
-
+          <img src={logo} alt="FlightDeck Logo" className="h-8 min-w-fit" />
           <p className="text-muted hidden font-mono text-[10px] font-medium tracking-[1.4px] text-nowrap uppercase md:block">
             Your job search, Navigated
           </p>
         </div>
 
         <div className="hidden flex-row md:flex">
-          {MARKETING_NAVIGATION.map((item) => (
-            <a
-              href={item.href}
-              key={item.href}
+          {ADMIN_NAVIGATION.map((item) => (
+            <Link
+              to={item.url}
+              key={item.url}
               className={cn(
                 'border-primary flex h-16 items-center px-4 pt-0.5 font-sans text-[13px] leading-[19.5px] font-semibold text-nowrap',
-                checkIfSelected(item.href)
+                checkIfSelected(item.url)
                   ? 'text-primary! border-b-3'
                   : 'text-muted-foreground! pb-0.5',
               )}
             >
               {item.label}
-            </a>
+            </Link>
           ))}
         </div>
 
-        <div className="hidden flex-row items-center gap-3 md:flex lg:ml-auto">
-          <Link to="/login">
-            <Button variant="ghost" size="sm">
-              Log in
-            </Button>
-          </Link>
-          <Link to="/signup">
-            <Button size="sm" className="bg-primary rounded-md">
-              Get started
-            </Button>
-          </Link>
+        <div className="hidden flex-row items-center gap-4 md:flex lg:ml-auto">
+          <Button
+            variant="outline"
+            size="icon"
+            className="rounded-full"
+            onClick={handleClickLogout}
+          >
+            <LogOutIcon className="size-3.5" />
+          </Button>
         </div>
 
         <Sheet>
@@ -77,33 +82,31 @@ export default function MarketingHeader() {
             </SheetHeader>
 
             <nav className="flex flex-1 flex-col gap-1 px-3 py-3">
-              {MARKETING_NAVIGATION.map((item) => (
-                <a
-                  href={item.href}
-                  key={item.href}
+              {ADMIN_NAVIGATION.map((item) => (
+                <Link
+                  to={item.url}
+                  key={item.url}
                   className={cn(
                     'rounded px-3 py-2.5 font-sans text-[14px] font-semibold text-nowrap transition-colors',
-                    checkIfSelected(item.href)
+                    checkIfSelected(item.url)
                       ? 'text-primary bg-accent'
                       : 'text-muted-foreground hover:text-foreground hover:bg-secondary',
                   )}
                 >
                   {item.label}
-                </a>
+                </Link>
               ))}
             </nav>
 
-            <div className="border-border flex flex-col gap-2 border-t px-4 py-4">
-              <Link to="/login">
-                <Button variant="outline" className="w-full" size="sm">
-                  Log in
+            <div className="border-border flex items-center gap-3 border-t px-4 py-4">
+              <div className="ml-auto flex gap-1">
+                <Button variant="ghost" size="icon" onClick={handleClickLogout}>
+                  <BellIcon className="text-foreground-soft" />
                 </Button>
-              </Link>
-              <Link to="/signup">
-                <Button className="w-full bg-primary" size="sm">
-                  Get started
+                <Button variant="ghost" size="icon">
+                  <CircleQuestionMarkIcon className="text-foreground-soft" />
                 </Button>
-              </Link>
+              </div>
             </div>
           </SheetContent>
         </Sheet>

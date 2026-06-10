@@ -1,4 +1,4 @@
-import type { ApplicationStage } from '#/validators/application'
+import type { ApplicationStage } from '#/types'
 
 export const KANBAN_COLUMNS = [
   {

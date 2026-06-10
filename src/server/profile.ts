@@ -7,10 +7,8 @@ import { ensureSession } from '#/server/session'
 import { db } from '#/lib/db/index.server'
 import { pilotProfiles } from '#/lib/db/schema'
 
-import {
-  pilotProfileSchema,
-  savePilotProfileSchema,
-} from '#/validators/profile'
+import { savePilotProfileSchema } from '#/validators/profile'
+import { PROFILE_LIMITS } from '#/validators/shared'
 import z from 'zod'
 import { AppError } from '#/lib/utils'
 
@@ -114,7 +112,7 @@ export const parseCvFile = createServerFn({ method: 'POST' })
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: process.env.ANTHROPIC_HAIKU_MODEL!,
         max_tokens: 4000,
         system: `You are a CV parser. Extract structured data from the CV provided.
           Return ONLY valid JSON — no explanation, no markdown, no backticks.
@@ -190,7 +188,55 @@ export const parseCvFile = createServerFn({ method: 'POST' })
     const result = await response.json()
     const text = result.content[0].text
     const clean = text.replace(/```json|```/g, '').trim()
-    const parsed = JSON.parse(clean)
+    const parsed: any = JSON.parse(clean)
 
-    return pilotProfileSchema.partial().parse(parsed)
+    const tryUrl = (u: string): string => {
+      if (!u) return ''
+      return /^https?:\/\//.test(u) ? u : `https://${u}`
+    }
+
+    return {
+      headline: parsed.headline || undefined,
+      summary: parsed.summary || undefined,
+      location: parsed.location || undefined,
+      phone: parsed.phone || undefined,
+      skills: Array.isArray(parsed.skills)
+        ? parsed.skills.filter(Boolean).slice(0, PROFILE_LIMITS.skills)
+        : undefined,
+      experience: Array.isArray(parsed.experience)
+        ? parsed.experience
+            .slice(0, PROFILE_LIMITS.experience)
+            .map((e: any) => ({
+              company: e.company ?? '',
+              role: e.role ?? '',
+              dates: e.dates ?? '',
+              bullets: Array.isArray(e.bullets)
+                ? e.bullets.filter(Boolean).slice(0, PROFILE_LIMITS.bullets)
+                : [''],
+            }))
+        : undefined,
+      education: Array.isArray(parsed.education)
+        ? parsed.education.slice(0, PROFILE_LIMITS.education).map((e: any) => ({
+            institution: e.institution ?? '',
+            degree: e.degree ?? '',
+            year: e.year ?? '',
+          }))
+        : undefined,
+      certifications: Array.isArray(parsed.certifications)
+        ? parsed.certifications
+            .slice(0, PROFILE_LIMITS.certifications)
+            .map((c: any) => ({
+              name: c.name ?? '',
+              issuer: c.issuer ?? '',
+              issueDate: c.issueDate ?? '',
+              expiryDate: c.expiryDate ?? '',
+              url: tryUrl(c.url ?? ''),
+            }))
+        : undefined,
+      links: Array.isArray(parsed.links)
+        ? parsed.links
+            .map((l: any) => ({ name: l.name ?? '', url: tryUrl(l.url ?? '') }))
+            .slice(0, PROFILE_LIMITS.links)
+        : undefined,
+    }
   })

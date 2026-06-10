@@ -10,8 +10,8 @@ export const Route = createFileRoute('/(marketing)')({
 function AppLayout() {
   return (
     <div className="bg-background min-h-screen border">
-      <main className="mx-auto mt-16 w-full pt-4 md:pt-7">
-        <MarketingHeader />
+      <MarketingHeader />
+      <main className="mt-16 w-full">
         <Outlet />
         <MarketingFooter />
       </main>

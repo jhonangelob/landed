@@ -11,8 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AppRouteRouteImport } from './routes/app/route'
 import { Route as marketingRouteRouteImport } from './routes/(marketing)/route'
+import { Route as adminRouteRouteImport } from './routes/(admin)/route'
 import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as marketingIndexRouteImport } from './routes/(marketing)/index'
+import { Route as ShareShareTokenRouteImport } from './routes/share.$shareToken'
 import { Route as PaymentSuccessRouteImport } from './routes/payment/success'
 import { Route as PaymentReturnRouteImport } from './routes/payment/return'
 import { Route as PaymentFailedRouteImport } from './routes/payment/failed'
@@ -20,11 +22,11 @@ import { Route as PaymentCheckoutRouteImport } from './routes/payment/checkout'
 import { Route as AppProfileRouteImport } from './routes/app/profile'
 import { Route as AppHangarRouteImport } from './routes/app/hangar'
 import { Route as AppCoPilotRouteImport } from './routes/app/co-pilot'
-import { Route as AppAdminRouteImport } from './routes/app/admin'
 import { Route as authSignupRouteImport } from './routes/(auth)/signup'
 import { Route as authResetPasswordRouteImport } from './routes/(auth)/reset-password'
 import { Route as authLoginRouteImport } from './routes/(auth)/login'
 import { Route as authForgotPasswordRouteImport } from './routes/(auth)/forgot-password'
+import { Route as adminAdminRouteImport } from './routes/(admin)/admin'
 import { Route as ApiPaymongoWebhookRouteImport } from './routes/api/paymongo/webhook'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
@@ -37,6 +39,10 @@ const marketingRouteRoute = marketingRouteRouteImport.update({
   id: '/(marketing)',
   getParentRoute: () => rootRouteImport,
 } as any)
+const adminRouteRoute = adminRouteRouteImport.update({
+  id: '/(admin)',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -46,6 +52,11 @@ const marketingIndexRoute = marketingIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => marketingRouteRoute,
+} as any)
+const ShareShareTokenRoute = ShareShareTokenRouteImport.update({
+  id: '/share/$shareToken',
+  path: '/share/$shareToken',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const PaymentSuccessRoute = PaymentSuccessRouteImport.update({
   id: '/payment/success',
@@ -82,11 +93,6 @@ const AppCoPilotRoute = AppCoPilotRouteImport.update({
   path: '/co-pilot',
   getParentRoute: () => AppRouteRoute,
 } as any)
-const AppAdminRoute = AppAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => AppRouteRoute,
-} as any)
 const authSignupRoute = authSignupRouteImport.update({
   id: '/(auth)/signup',
   path: '/signup',
@@ -107,6 +113,11 @@ const authForgotPasswordRoute = authForgotPasswordRouteImport.update({
   path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const adminAdminRoute = adminAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => adminRouteRoute,
+} as any)
 const ApiPaymongoWebhookRoute = ApiPaymongoWebhookRouteImport.update({
   id: '/api/paymongo/webhook',
   path: '/api/paymongo/webhook',
@@ -120,11 +131,11 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/app': typeof AppRouteRouteWithChildren
+  '/admin': typeof adminAdminRoute
   '/forgot-password': typeof authForgotPasswordRoute
   '/login': typeof authLoginRoute
   '/reset-password': typeof authResetPasswordRoute
   '/signup': typeof authSignupRoute
-  '/app/admin': typeof AppAdminRoute
   '/app/co-pilot': typeof AppCoPilotRoute
   '/app/hangar': typeof AppHangarRoute
   '/app/profile': typeof AppProfileRoute
@@ -132,17 +143,18 @@ export interface FileRoutesByFullPath {
   '/payment/failed': typeof PaymentFailedRoute
   '/payment/return': typeof PaymentReturnRoute
   '/payment/success': typeof PaymentSuccessRoute
+  '/share/$shareToken': typeof ShareShareTokenRoute
   '/': typeof marketingIndexRoute
   '/app/': typeof AppIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/paymongo/webhook': typeof ApiPaymongoWebhookRoute
 }
 export interface FileRoutesByTo {
+  '/admin': typeof adminAdminRoute
   '/forgot-password': typeof authForgotPasswordRoute
   '/login': typeof authLoginRoute
   '/reset-password': typeof authResetPasswordRoute
   '/signup': typeof authSignupRoute
-  '/app/admin': typeof AppAdminRoute
   '/app/co-pilot': typeof AppCoPilotRoute
   '/app/hangar': typeof AppHangarRoute
   '/app/profile': typeof AppProfileRoute
@@ -150,6 +162,7 @@ export interface FileRoutesByTo {
   '/payment/failed': typeof PaymentFailedRoute
   '/payment/return': typeof PaymentReturnRoute
   '/payment/success': typeof PaymentSuccessRoute
+  '/share/$shareToken': typeof ShareShareTokenRoute
   '/': typeof marketingIndexRoute
   '/app': typeof AppIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -157,13 +170,14 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/(admin)': typeof adminRouteRouteWithChildren
   '/(marketing)': typeof marketingRouteRouteWithChildren
   '/app': typeof AppRouteRouteWithChildren
+  '/(admin)/admin': typeof adminAdminRoute
   '/(auth)/forgot-password': typeof authForgotPasswordRoute
   '/(auth)/login': typeof authLoginRoute
   '/(auth)/reset-password': typeof authResetPasswordRoute
   '/(auth)/signup': typeof authSignupRoute
-  '/app/admin': typeof AppAdminRoute
   '/app/co-pilot': typeof AppCoPilotRoute
   '/app/hangar': typeof AppHangarRoute
   '/app/profile': typeof AppProfileRoute
@@ -171,6 +185,7 @@ export interface FileRoutesById {
   '/payment/failed': typeof PaymentFailedRoute
   '/payment/return': typeof PaymentReturnRoute
   '/payment/success': typeof PaymentSuccessRoute
+  '/share/$shareToken': typeof ShareShareTokenRoute
   '/(marketing)/': typeof marketingIndexRoute
   '/app/': typeof AppIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -180,11 +195,11 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/app'
+    | '/admin'
     | '/forgot-password'
     | '/login'
     | '/reset-password'
     | '/signup'
-    | '/app/admin'
     | '/app/co-pilot'
     | '/app/hangar'
     | '/app/profile'
@@ -192,17 +207,18 @@ export interface FileRouteTypes {
     | '/payment/failed'
     | '/payment/return'
     | '/payment/success'
+    | '/share/$shareToken'
     | '/'
     | '/app/'
     | '/api/auth/$'
     | '/api/paymongo/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/admin'
     | '/forgot-password'
     | '/login'
     | '/reset-password'
     | '/signup'
-    | '/app/admin'
     | '/app/co-pilot'
     | '/app/hangar'
     | '/app/profile'
@@ -210,19 +226,21 @@ export interface FileRouteTypes {
     | '/payment/failed'
     | '/payment/return'
     | '/payment/success'
+    | '/share/$shareToken'
     | '/'
     | '/app'
     | '/api/auth/$'
     | '/api/paymongo/webhook'
   id:
     | '__root__'
+    | '/(admin)'
     | '/(marketing)'
     | '/app'
+    | '/(admin)/admin'
     | '/(auth)/forgot-password'
     | '/(auth)/login'
     | '/(auth)/reset-password'
     | '/(auth)/signup'
-    | '/app/admin'
     | '/app/co-pilot'
     | '/app/hangar'
     | '/app/profile'
@@ -230,6 +248,7 @@ export interface FileRouteTypes {
     | '/payment/failed'
     | '/payment/return'
     | '/payment/success'
+    | '/share/$shareToken'
     | '/(marketing)/'
     | '/app/'
     | '/api/auth/$'
@@ -237,6 +256,7 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  adminRouteRoute: typeof adminRouteRouteWithChildren
   marketingRouteRoute: typeof marketingRouteRouteWithChildren
   AppRouteRoute: typeof AppRouteRouteWithChildren
   authForgotPasswordRoute: typeof authForgotPasswordRoute
@@ -247,6 +267,7 @@ export interface RootRouteChildren {
   PaymentFailedRoute: typeof PaymentFailedRoute
   PaymentReturnRoute: typeof PaymentReturnRoute
   PaymentSuccessRoute: typeof PaymentSuccessRoute
+  ShareShareTokenRoute: typeof ShareShareTokenRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiPaymongoWebhookRoute: typeof ApiPaymongoWebhookRoute
 }
@@ -267,6 +288,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof marketingRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(admin)': {
+      id: '/(admin)'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof adminRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/app/': {
       id: '/app/'
       path: '/'
@@ -280,6 +308,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof marketingIndexRouteImport
       parentRoute: typeof marketingRouteRoute
+    }
+    '/share/$shareToken': {
+      id: '/share/$shareToken'
+      path: '/share/$shareToken'
+      fullPath: '/share/$shareToken'
+      preLoaderRoute: typeof ShareShareTokenRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/payment/success': {
       id: '/payment/success'
@@ -330,13 +365,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCoPilotRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/app/admin': {
-      id: '/app/admin'
-      path: '/admin'
-      fullPath: '/app/admin'
-      preLoaderRoute: typeof AppAdminRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
     '/(auth)/signup': {
       id: '/(auth)/signup'
       path: '/signup'
@@ -365,6 +393,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(admin)/admin': {
+      id: '/(admin)/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof adminAdminRouteImport
+      parentRoute: typeof adminRouteRoute
+    }
     '/api/paymongo/webhook': {
       id: '/api/paymongo/webhook'
       path: '/api/paymongo/webhook'
@@ -382,6 +417,18 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface adminRouteRouteChildren {
+  adminAdminRoute: typeof adminAdminRoute
+}
+
+const adminRouteRouteChildren: adminRouteRouteChildren = {
+  adminAdminRoute: adminAdminRoute,
+}
+
+const adminRouteRouteWithChildren = adminRouteRoute._addFileChildren(
+  adminRouteRouteChildren,
+)
+
 interface marketingRouteRouteChildren {
   marketingIndexRoute: typeof marketingIndexRoute
 }
@@ -395,7 +442,6 @@ const marketingRouteRouteWithChildren = marketingRouteRoute._addFileChildren(
 )
 
 interface AppRouteRouteChildren {
-  AppAdminRoute: typeof AppAdminRoute
   AppCoPilotRoute: typeof AppCoPilotRoute
   AppHangarRoute: typeof AppHangarRoute
   AppProfileRoute: typeof AppProfileRoute
@@ -403,7 +449,6 @@ interface AppRouteRouteChildren {
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
-  AppAdminRoute: AppAdminRoute,
   AppCoPilotRoute: AppCoPilotRoute,
   AppHangarRoute: AppHangarRoute,
   AppProfileRoute: AppProfileRoute,
@@ -415,6 +460,7 @@ const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
 )
 
 const rootRouteChildren: RootRouteChildren = {
+  adminRouteRoute: adminRouteRouteWithChildren,
   marketingRouteRoute: marketingRouteRouteWithChildren,
   AppRouteRoute: AppRouteRouteWithChildren,
   authForgotPasswordRoute: authForgotPasswordRoute,
@@ -425,6 +471,7 @@ const rootRouteChildren: RootRouteChildren = {
   PaymentFailedRoute: PaymentFailedRoute,
   PaymentReturnRoute: PaymentReturnRoute,
   PaymentSuccessRoute: PaymentSuccessRoute,
+  ShareShareTokenRoute: ShareShareTokenRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiPaymongoWebhookRoute: ApiPaymongoWebhookRoute,
 }

@@ -2,11 +2,11 @@ import {
   useProfileQuery,
   useSaveProfileMutation,
 } from '#/hooks/useProfileQueries'
-import type { PilotProfileInput } from '#/types'
+import type { PilotProfile, PilotProfileInput } from '#/types'
 
 import { createFileRoute } from '@tanstack/react-router'
 
-import { BatteryMediumIcon, CheckIcon, UploadIcon } from 'lucide-react'
+import { BatteryMediumIcon, CheckIcon, CircleIcon, UploadIcon } from 'lucide-react'
 
 import SectionHeader from '#/components/layout/SectionHeader'
 import ProfileForm from '#/components/profile/ProfileForm'
@@ -30,24 +30,59 @@ export const Route = createFileRoute('/app/profile')({
   component: RouteComponent,
 })
 
-const profileChecklist = [
-  { label: 'Contact details' },
-  { label: 'Headline written' },
-  { label: '2+ roles detailed' },
-  { label: '6+ skills listed' },
-  { label: 'Profile links added' },
-  { label: 'Voice & tone set' },
+const profileChecklist: {
+  label: string
+  check: (p: PilotProfile | null) => boolean
+}[] = [
+  {
+    label: 'Contact details',
+    check: (p) => !!(p?.name && p?.email && p?.phone && p?.location),
+  },
+  {
+    label: 'Headline written',
+    check: (p) => !!(p?.headline),
+  },
+  {
+    label: '2+ roles detailed',
+    check: (p) => (p?.experience?.length ?? 0) >= 2,
+  },
+  {
+    label: '6+ skills listed',
+    check: (p) => (p?.skills?.length ?? 0) >= 6,
+  },
+  {
+    label: 'Profile links added',
+    check: (p) => (p?.links?.filter((l) => l.url)?.length ?? 0) >= 1,
+  },
+  {
+    label: 'Voice & tone set',
+    check: (p) => !!(p?.preferences?.preferredVoice),
+  },
 ]
+
+function strengthLabel(percent: number) {
+  if (percent === 100) return 'Flight-ready'
+  if (percent >= 80) return 'Almost ready'
+  if (percent >= 60) return 'Looking good'
+  if (percent >= 40) return 'Building up'
+  return 'Getting started'
+}
 
 function RouteComponent() {
   const { data: profile } = useProfileQuery()
   const { mutateAsync: saveProfileDetails } = useSaveProfileMutation()
 
-  const { parse, isParsing } = useParseCvMutation()
+  const { parse, isParsing, data: parsedData } = useParseCvMutation()
 
   const handleSave = async (value: PilotProfileInput) => {
     await saveProfileDetails(value)
   }
+
+  const checks = profileChecklist.map((item) => item.check(profile))
+  const completedCount = checks.filter(Boolean).length
+  const strengthPercent = Math.round(
+    (completedCount / profileChecklist.length) * 100,
+  )
 
   return (
     <div className="section">
@@ -61,6 +96,7 @@ function RouteComponent() {
         <ProfileForm
           key={profile?.updatedAt.getTime() ?? 'new'}
           profile={profile}
+          parsedData={parsedData}
           onSaveProfile={handleSave}
           className="w-2/3"
         />
@@ -89,24 +125,29 @@ function RouteComponent() {
               <div>
                 <div className="space-x-4">
                   <span className="font-display text-ink-strong text-[34px] leading-[1.4] font-bold tracking-[-0.8px]">
-                    100%
+                    {strengthPercent}%
                   </span>
                   <span className="text-muted font-mono text-[10px] leading-[1.4] tracking-[1.2px] uppercase">
-                    Flight-ready
+                    {strengthLabel(strengthPercent)}
                   </span>
                 </div>
-                <Progress value={0} className="w-full" />
+                <Progress value={strengthPercent} className="w-full" />
               </div>
               <div>
                 {profileChecklist.map((item, index) => (
                   <div
+                    key={item.label}
                     className={cn(
                       'text-ink-muted flex flex-row items-center gap-3 py-2.25 text-[13px] leading-[1.4]',
                       index + 1 !== profileChecklist.length &&
                         'border-b border-dashed',
                     )}
                   >
-                    <CheckIcon className="size-4.5 rounded-full bg-green-800 stroke-4 p-1 text-white" />{' '}
+                    {checks[index] ? (
+                      <CheckIcon className="size-4.5 shrink-0 rounded-full bg-green-800 stroke-4 p-1 text-white" />
+                    ) : (
+                      <CircleIcon className="text-muted-foreground size-4.5 shrink-0" />
+                    )}
                     {item.label}
                   </div>
                 ))}

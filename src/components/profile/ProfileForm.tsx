@@ -24,12 +24,14 @@ import { PROFILE_LIMITS } from '#/validators/shared'
 
 interface ProfileFormProps {
   profile: PilotProfile | null
+  parsedData?: Partial<PilotProfileInput> | null
   onSaveProfile: (value: PilotProfileInput) => Promise<void> | void
   className: string
 }
 
 export default function ProfileForm({
   profile,
+  parsedData,
   onSaveProfile,
   className,
 }: ProfileFormProps) {
@@ -74,6 +76,17 @@ export default function ProfileForm({
       await onSaveProfile(value)
     },
   })
+
+  useEffect(() => {
+    if (!parsedData) return
+    const knownKeys = ['headline', 'summary', 'location', 'phone', 'skills', 'experience', 'education', 'certifications', 'links'] as const
+    for (const key of knownKeys) {
+      const value = parsedData[key]
+      if (value !== undefined && value !== null) {
+        form.setFieldValue(key, value as never)
+      }
+    }
+  }, [parsedData])
 
   return (
     <form

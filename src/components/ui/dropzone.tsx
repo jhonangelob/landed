@@ -48,6 +48,8 @@ export function Dropzone({
     e.preventDefault()
     setIsDragging(false)
     if (disabled) return
+    const dropped = e.dataTransfer.files?.[0]
+    if (dropped) handleFile(dropped)
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -69,8 +69,8 @@ export function useUpdateApplicationMutation(applicationId: string) {
   return useMutation({
     mutationFn: (values: UpdateApplicationInput) =>
       updateApplication({ data: { ...values, id: applicationId } }),
-    onSuccess: (_, values) => {
-      const celebrated = maybeCelebrateLanded(
+    onSuccess: async (_, values) => {
+      const celebrated = await maybeCelebrateLanded(
         queryClient,
         applicationId,
         values.stage,
@@ -95,8 +95,8 @@ export function useUpdateApplicationStageMutation(applicationId: string) {
   return useMutation({
     mutationFn: (values: UpdateApplicationStageInput) =>
       updateApplicationStage({ data: values }),
-    onSuccess: (_, values) => {
-      const celebrated = maybeCelebrateLanded(
+    onSuccess: async (_, values) => {
+      const celebrated = await maybeCelebrateLanded(
         queryClient,
         applicationId,
         values.stage,

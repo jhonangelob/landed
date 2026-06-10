@@ -4,7 +4,7 @@ import SectionHeader from '#/components/layout/SectionHeader'
 
 import { getSession } from '#/server/session'
 
-export const Route = createFileRoute('/app/admin')({
+export const Route = createFileRoute('/(admin)/admin')({
   head: () => ({
     meta: [
       {

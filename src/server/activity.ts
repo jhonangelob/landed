@@ -1,4 +1,4 @@
-import { count, eq, max, sql } from 'drizzle-orm'
+import { and, count, eq, isNull, max, sql } from 'drizzle-orm'
 
 import { createServerFn } from '@tanstack/react-start'
 
@@ -32,7 +32,7 @@ export const getActivities = createServerFn({
           `.mapWith(Number),
         })
         .from(applications)
-        .where(eq(applications.userId, uid)),
+        .where(and(eq(applications.userId, uid), isNull(applications.deletedAt))),
 
       db
         .select({

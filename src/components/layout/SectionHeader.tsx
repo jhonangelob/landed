@@ -12,7 +12,7 @@ export default function SectionHeader({
   description,
 }: SectionHeader) {
   return (
-    <div className="border-b pt-1.5 pb-8.5">
+    <div className="border-b pt-1.5 pb-4">
       <p className="text-muted font-mono text-[11px] leading-[1.4] font-medium tracking-[1.3px] uppercase">
         {subTitle}
       </p>

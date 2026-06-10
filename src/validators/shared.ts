@@ -91,4 +91,5 @@ export const templateSchema = z
 
 export const applicationSearchSchema = z.object({
   applicationId: z.string().uuid().optional(),
+  stage: applicationStageSchema.optional(),
 })

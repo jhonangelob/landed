@@ -74,12 +74,10 @@ function RouteComponent() {
           'Check your inbox to verify your email address.',
         )
 
-        console.log(res)
         try {
           await createSubscription({ userId: res.data.user.id })
           navigate({ to: '/app' })
         } catch (er) {
-          console.log(er)
           setErrorMessage(
             'Account created but setup failed. Please contact support.',
           )

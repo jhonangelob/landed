@@ -9,6 +9,7 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 
 import { Toaster } from '#/components/ui/sonner'
 
+import NotFound from '#/components/layout/NotFound'
 import { NavigationProgress } from '#/components/layout/NavigationProgress'
 
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
@@ -19,6 +20,7 @@ interface MyRouterContext {
 }
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
+  notFoundComponent: NotFound,
   head: () => ({
     meta: [
       {

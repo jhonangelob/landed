@@ -1,5 +1,5 @@
 import { useCreateApplicationMutation } from '#/hooks/useApplicationQueries'
-import type { ApplicationInput, PilotProfile } from '#/types'
+import type { ApplicationInput, ApplicationStage, PilotProfile } from '#/types'
 import { PlusIcon } from 'lucide-react'
 
 import { useForm } from '@tanstack/react-form'
@@ -17,9 +17,13 @@ import FilePreview from './FilePreview'
 
 interface NewApplicationProps {
   profile?: PilotProfile | null
+  stage?: ApplicationStage
 }
 
-export default function NewApplication({ profile }: NewApplicationProps) {
+export default function NewApplication({
+  profile,
+  stage = 'spotted',
+}: NewApplicationProps) {
   const navigate = useNavigate()
 
   const { mutateAsync: createApplication } = useCreateApplicationMutation()
@@ -29,6 +33,7 @@ export default function NewApplication({ profile }: NewApplicationProps) {
       company: '',
       role: '',
       description: '',
+      stage,
     } satisfies ApplicationInput,
     validators: { onSubmit: newApplicationSchema },
     onSubmit: async ({ value }) => {

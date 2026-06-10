@@ -6,7 +6,7 @@ import { Button } from '../ui/button'
 
 export default function NotFound() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-2">
+    <div className="flex h-screen flex-col items-center justify-center gap-2 border border-red-400">
       <img src="/assets/airplane_crash.svg" alt="" className="h-140 w-auto" />
       <p className="font-display text-primary-text text-[44px] leading-[1.02] font-bold tracking-[-1.7px] uppercase">
         404 - Altitude lost
