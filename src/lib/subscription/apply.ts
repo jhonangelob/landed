@@ -1,9 +1,8 @@
+import type { Plan } from '#/types'
 import { eq } from 'drizzle-orm'
 
 import { db } from '#/lib/db/index.server'
 import { subscriptions } from '#/lib/db/schema'
-
-import type { Plan } from '#/validators/subscription'
 
 /**
  * Applies a paid plan to a user's subscription. This is server-only and is NOT

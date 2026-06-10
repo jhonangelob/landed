@@ -1,8 +1,7 @@
+import type { Plan } from '#/types'
 import { CheckIcon } from 'lucide-react'
 
 import { cn } from '#/lib/utils'
-
-import type { Plan } from '#/validators/subscription'
 
 interface SubscriptionCardProps {
   data: Plan
@@ -19,7 +18,7 @@ export default function SubscriptionCard({
     <div
       className={cn(
         'hover:border-muted-foreground/40 bg-surface-muted flex w-full cursor-pointer flex-col gap-2 rounded-lg border p-4 shadow-none',
-        current && 'border-primary bg-primary/30 hover:none',
+        current && 'border-primary bg-primary/10 hover:none',
       )}
       onClick={onSelect}
     >

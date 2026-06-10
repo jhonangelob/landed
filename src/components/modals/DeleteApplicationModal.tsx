@@ -1,4 +1,5 @@
 import { useDeleteApplicationMutation } from '#/hooks/useApplicationQueries'
+import type { ApplicationStage } from '#/types'
 import { TrashIcon } from 'lucide-react'
 
 import { Button } from '#/components/ui/button'
@@ -11,8 +12,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '#/components/ui/dialog'
-
-import type { ApplicationStage } from '#/validators/application'
 
 interface DeleteApplicationModalProps {
   open: boolean

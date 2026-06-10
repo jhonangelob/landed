@@ -1,4 +1,4 @@
-import type { Plan } from '#/validators/subscription'
+import type { Plan } from '#/types'
 
 export const PLANS: Plan[] = [
   {

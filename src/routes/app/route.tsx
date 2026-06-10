@@ -2,7 +2,6 @@ import { Outlet, createFileRoute, redirect } from '@tanstack/react-router'
 
 import { ModalRegistry } from '#/components/ModalRegistry'
 import AdminHeader from '#/components/admin/AdminHeader'
-import Footer from '#/components/layout/Footer'
 import Header from '#/components/layout/Header'
 
 import { getSession } from '#/server/session'
@@ -17,9 +16,9 @@ export const Route = createFileRoute('/app')({
 
     if (
       session.user.role === 'admin' &&
-      !location.pathname.startsWith('/app/admin')
+      !location.pathname.startsWith('/admin')
     ) {
-      throw redirect({ to: '/app/admin' })
+      throw redirect({ to: '/admin' })
     }
 
     return { user: session.user }
@@ -36,7 +35,6 @@ function AppLayout() {
       <main className="mx-auto mt-16 w-full max-w-370 px-4 pt-4 pb-12 md:px-7 md:pt-7 md:pb-20">
         <Outlet />
       </main>
-      <Footer />
       <ModalRegistry userName={user.name} />
     </div>
   )

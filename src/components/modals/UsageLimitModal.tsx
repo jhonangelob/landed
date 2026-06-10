@@ -18,15 +18,13 @@ import { useModal } from '#/lib/store/modal'
 import type { UsageLimitReason } from '#/lib/store/modal'
 import { cn } from '#/lib/utils'
 
-import type { PlanId } from '#/validators/subscription'
-
 import { PAID_PLAN, PAID_PLAN_3MO, getPlanById } from '#/constants/plan'
 
 interface UsageLimitModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   reason: UsageLimitReason
-  planId: PlanId
+  planId: string
   used: number
   limit: number
   resetAt: Date | string | null

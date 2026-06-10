@@ -1,4 +1,4 @@
-import type { CoverLetterContent, CvContent } from '#/validators/documents'
+import type { CoverLetterContent, CvContent } from '#/types'
 
 const esc = (value: unknown): string =>
   String(value ?? '').replace(

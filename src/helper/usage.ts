@@ -1,4 +1,4 @@
-import type { Subscription } from '#/validators/subscription'
+import type { Subscription } from '#/types'
 
 export interface UsageInfo {
   planId: Subscription['planId']

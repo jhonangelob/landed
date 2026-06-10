@@ -1,9 +1,8 @@
 import { getUsageInfo } from '#/helper/usage'
 import { subscriptionQueryKey } from '#/hooks/useSubscriptionQueries'
+import type { Subscription } from '#/types'
 
 import type { QueryClient } from '@tanstack/react-query'
-
-import type { Subscription } from '#/validators/subscription'
 
 import { FREE_PLAN } from '#/constants/plan'
 

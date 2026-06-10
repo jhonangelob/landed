@@ -1,6 +1,5 @@
+import type { Plan } from '#/types'
 import { MoveUpIcon, PlusIcon } from 'lucide-react'
-
-import type { Plan } from '#/validators/subscription'
 
 import {
   Dialog,
