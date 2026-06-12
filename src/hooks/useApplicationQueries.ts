@@ -49,16 +49,19 @@ export function useCreateApplicationMutation() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (value: ApplicationInput) => createApplication({ data: value }),
+    mutationFn: (value: ApplicationInput) =>
+      notify.promise(createApplication({ data: value }), {
+        loading: 'Creating application...',
+        success: 'Application created',
+        error: (err) => parseError(err).message || 'Failed to add application',
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: applicationsQueryKey })
     },
     onError: (error) => {
       if (parseError(error).code === 'GENERATION_LIMIT_REACHED') {
         openUsageLimitModal(queryClient, 'application')
-        return
       }
-      notify.fromError(error, 'Could not add application')
     },
   })
 }
@@ -68,23 +71,21 @@ export function useUpdateApplicationMutation(applicationId: string) {
 
   return useMutation({
     mutationFn: (values: UpdateApplicationInput) =>
-      updateApplication({ data: { ...values, id: applicationId } }),
+      notify.promise(
+        updateApplication({ data: { ...values, id: applicationId } }),
+        {
+          loading: 'Saving changes…',
+          success: 'Application updated',
+          error: (err) =>
+            parseError(err).message || 'Could not update application',
+        },
+      ),
     onSuccess: async (_, values) => {
-      const celebrated = await maybeCelebrateLanded(
-        queryClient,
-        applicationId,
-        values.stage,
-      )
-
+      await maybeCelebrateLanded(queryClient, applicationId, values.stage)
       queryClient.invalidateQueries({
         queryKey: applicationQueryKey(applicationId),
       })
       queryClient.invalidateQueries({ queryKey: applicationsQueryKey })
-
-      if (!celebrated) notify.success('Application updated')
-    },
-    onError: (error) => {
-      notify.fromError(error, 'Could not update application')
     },
   })
 }
@@ -93,29 +94,22 @@ export function useUpdateApplicationStageMutation(applicationId: string) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (values: UpdateApplicationStageInput) =>
-      updateApplicationStage({ data: values }),
+    mutationFn: (values: UpdateApplicationStageInput) => {
+      const label =
+        values.stage.charAt(0).toUpperCase() +
+        values.stage.slice(1).replace('_', ' ')
+      return notify.promise(updateApplicationStage({ data: values }), {
+        loading: 'Updating stage…',
+        success: `Moved to ${label}`,
+        error: (err) => parseError(err).message || 'Could not update stage',
+      })
+    },
     onSuccess: async (_, values) => {
-      const celebrated = await maybeCelebrateLanded(
-        queryClient,
-        applicationId,
-        values.stage,
-      )
-
+      await maybeCelebrateLanded(queryClient, applicationId, values.stage)
       queryClient.invalidateQueries({
         queryKey: applicationQueryKey(applicationId),
       })
       queryClient.invalidateQueries({ queryKey: applicationsQueryKey })
-
-      if (!celebrated) {
-        notify.info(
-          'Status Update',
-          `Moved to ${values.stage.charAt(0).toUpperCase() + values.stage.slice(1).replace('_', ' ')}`,
-        )
-      }
-    },
-    onError: (error) => {
-      notify.fromError(error, 'Could not update stage')
     },
   })
 }
@@ -126,14 +120,15 @@ export function useDeleteApplicationMutation() {
 
   return useMutation({
     mutationFn: (values: DeleteApplicationInput) =>
-      deleteApplication({ data: values }),
+      notify.promise(deleteApplication({ data: values }), {
+        loading: 'Deleting application…',
+        success: 'Application deleted',
+        error: (err) =>
+          parseError(err).message || 'Could not delete application',
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: applicationsQueryKey })
       navigate({ to: '/app' })
-      notify.success('Application Update', 'Application deleted')
-    },
-    onError: (error) => {
-      notify.fromError(error, 'Could not delete application')
     },
   })
 }

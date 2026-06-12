@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 import { useExportDocumentsMutation } from '#/hooks/useDocumentQueries'
-import { DownloadIcon, FileIcon, TicketsPlaneIcon } from 'lucide-react'
+import { DownloadIcon, FileIcon } from 'lucide-react'
 
 import {
   Dialog,
@@ -30,15 +30,11 @@ export default function ExportFileModal({
   onOpenChange,
   applicationId,
 }: ExportFileModalProps) {
-  const [template, setTemplate] = useState<
-    'templateA' | 'templateC' | 'templateB'
-  >('templateA')
+  const [template, setTemplate] = useState<'classic' | 'modern' | 'minimal'>(
+    'classic',
+  )
 
   const { mutateAsync: exportDocuments } = useExportDocumentsMutation()
-
-  const handleClickPremium = () => {
-    console.log('unimplemented: premium')
-  }
 
   const handleExport = async () => {
     const result = await exportDocuments({ applicationId, template })
@@ -73,7 +69,7 @@ export default function ExportFileModal({
               key={item.id}
               onClick={() =>
                 item.enabled &&
-                setTemplate(item.id as 'templateA' | 'templateC' | 'templateB')
+                setTemplate(item.id as 'classic' | 'modern' | 'minimal')
               }
             >
               <div className="flex h-40 items-center justify-center rounded-sm bg-gray-200 text-white">
@@ -93,7 +89,9 @@ export default function ExportFileModal({
             </div>
           ))}
         </div>
-        <div className="flex justify-center rounded-md border border-dashed p-4 text-center text-[12px]">
+
+        {/* Temporarily disabled, all templates are currently free */}
+        {/* <div className="flex justify-center rounded-md border border-dashed p-4 text-center text-[12px]">
           <TicketsPlaneIcon className="mr-2 size-4" />
           Unlock Premium templates with
           <span
@@ -102,7 +100,7 @@ export default function ExportFileModal({
           >
             Premium
           </span>
-        </div>
+        </div> */}
         <DialogFooter>
           <DialogClose asChild>
             <Button
@@ -116,7 +114,7 @@ export default function ExportFileModal({
             className="font-sans text-[13px] uppercase"
             onClick={handleExport}
           >
-            <DownloadIcon /> Download
+            <DownloadIcon /> Download {template}
           </Button>
         </DialogFooter>
       </DialogContent>

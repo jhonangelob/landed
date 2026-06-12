@@ -1,3 +1,4 @@
+import { RATE_LIMIT_MAX_GENERATIONS, RATE_LIMIT_WINDOW_MINUTES } from '#/config'
 import { clToHtml, cvToHtml } from '#/helper/document'
 import {
   buildCoverLetterSystemPrompt,
@@ -41,9 +42,9 @@ import { isTemplateLocked } from '#/constants/templates'
 import { checkGenerationLimit, increaseGenerationUsed } from './subscription'
 
 const TEMPLATES = {
-  templateA: TemplateA,
-  templateC: TemplateC,
-  templateB: TemplateB,
+  classic: TemplateA,
+  modern: TemplateC,
+  minimal: TemplateB,
 } as const
 
 function parseAiResponse<T>(text: string, schema: ZodType<T>): T {
@@ -160,6 +161,11 @@ export const generateDocuments = createServerFn({ method: 'POST' })
 
     const nextVersion = (latest?.version ?? 0) + 1
 
+    const links = profile.links?.map((link) => ({
+      ...link,
+      url: link.url.replace(/^https?:\/\/(www\.)?/, ''),
+    }))
+
     const userPrompt = buildUserPrompt({
       company: application.company,
       role: application.role,
@@ -180,7 +186,7 @@ export const generateDocuments = createServerFn({ method: 'POST' })
         experience: profile.experience ?? [],
         certifications: profile.certifications ?? [],
         education: profile.education ?? [],
-        links: profile.links ?? [],
+        links: links ?? [],
         preferences: profile.preferences ?? {
           roles: [''],
           preferredVoice: '',
@@ -302,7 +308,9 @@ export const checkRateLimit = createServerFn({ method: 'GET' }).handler(
   async () => {
     const session = await ensureSession()
 
-    const windowStart = new Date(Date.now() - 30 * 60 * 1000)
+    const windowStart = new Date(
+      Date.now() - RATE_LIMIT_WINDOW_MINUTES * 60 * 1000,
+    )
 
     const result = await db
       .select({ total: count() })
@@ -316,14 +324,14 @@ export const checkRateLimit = createServerFn({ method: 'GET' }).handler(
       .then((r) => r.at(0) ?? null)
 
     const generations = Math.floor((result?.total ?? 0) / 2)
-    const limit = 10
+    const limit = RATE_LIMIT_MAX_GENERATIONS
     const remaining = Math.max(0, limit - generations)
     const exceeded = generations >= limit
 
     if (exceeded) {
       throw new AppError(
         'RATE_LIMIT_EXCEEDED',
-        `You've generated ${limit} documents in the last 30 minutes. Please wait before generating again.`,
+        `You've generated ${limit} documents in the last ${RATE_LIMIT_WINDOW_MINUTES} minutes. Please wait before generating again.`,
       )
     }
 

@@ -1,8 +1,9 @@
+import { FREE_GENERATION_LIMIT } from '#/config'
+
 export const FAQS = [
   {
     question: 'Is the free plan actually free?',
-    answer:
-      'Yes. Economy is free forever — unlimited applications on the Flight Deck, a full Pilot Profile, and 10 Co-Pilot generations a month. No card required to start, and you only upgrade if you want more Co-Pilot.',
+    answer: `Yes. Economy is free forever — unlimited applications on the Flight Deck, a full Pilot Profile, and ${FREE_GENERATION_LIMIT} Co-Pilot generations a month. No card required to start, and you only upgrade if you want more Co-Pilot.`,
   },
   {
     question: 'Will my card be charged automatically?',

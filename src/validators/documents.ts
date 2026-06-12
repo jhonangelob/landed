@@ -78,6 +78,15 @@ export const cvSchema = z.object({
     )
     .optional(),
   links: z.array(z.string()),
+  optimizationTips: z
+    .array(
+      z.object({
+        category: z.string(),
+        tip: z.string(),
+        priority: z.enum(['high', 'medium', 'low']),
+      }),
+    )
+    .optional(),
 })
 
 export const coverLetterSchema = z.object({

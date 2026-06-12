@@ -1,22 +1,21 @@
+import type { CvContent } from '#/types'
+
 import { TemplateA } from '#/lib/pdf/templates/TemplateA'
 import { TemplateB } from '#/lib/pdf/templates/TemplateB'
 import { TemplateC } from '#/lib/pdf/templates/TemplateC'
-
-import type { CvContent } from '#/validators/documents'
-import type { PlanId } from '#/validators/subscription'
 
 export interface CvTemplate {
   id: string
   name: string
   description: string
-  plan: PlanId
+  plan: string
   preview: string
   enabled: boolean
 }
 
 export const CV_TEMPLATES: CvTemplate[] = [
   {
-    id: 'templateA',
+    id: 'classic',
     name: 'Classic',
     description:
       'Single column, traditional layout. ATS-friendly and safe for any industry.',
@@ -25,21 +24,21 @@ export const CV_TEMPLATES: CvTemplate[] = [
     enabled: true,
   },
   {
-    id: 'templateB',
+    id: 'minimal',
     name: 'Minimal',
     description: 'Clean lines, generous whitespace. Lets your content breathe.',
-    plan: 'premium',
+    plan: 'economy',
     preview: '🗒️',
-    enabled: false,
+    enabled: true,
   },
   {
-    id: 'templateC',
+    id: 'modern',
     name: 'Modern',
     description:
       'Two column with sidebar. Visually distinct, great for tech and design roles.',
-    plan: 'premium',
+    plan: 'economy',
     preview: '📋',
-    enabled: false,
+    enabled: true,
   },
 ] as const
 
@@ -53,7 +52,7 @@ export const getTemplateById = (id: string): CvTemplate | undefined =>
 
 export const isTemplateLocked = (
   templateId: string,
-  planId: PlanId,
+  planId: string,
 ): boolean => {
   const template = getTemplateById(templateId)
   if (!template) return true
@@ -65,7 +64,7 @@ export const TEMPLATE_MAP: Record<
   CvTemplateId,
   React.ComponentType<{ content: CvContent; email?: string }>
 > = {
-  templateA: TemplateA,
-  templateB: TemplateB,
-  templateC: TemplateC,
+  classic: TemplateA,
+  minimal: TemplateB,
+  modern: TemplateC,
 }

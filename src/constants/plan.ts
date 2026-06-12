@@ -1,3 +1,11 @@
+import {
+  BUSINESS_DURATION_DAYS,
+  BUSINESS_PRICE_PHP,
+  FREE_APPLICATION_LIMIT,
+  FREE_GENERATION_LIMIT,
+  PREMIUM_DURATION_DAYS,
+  PREMIUM_PRICE_PHP,
+} from '#/config'
 import type { Plan } from '#/types'
 
 export const PLANS: Plan[] = [
@@ -7,11 +15,11 @@ export const PLANS: Plan[] = [
     price: 0,
     currency: 'PHP',
     duration: null,
-    generations: 10,
-    applications: 10,
+    generations: FREE_GENERATION_LIMIT,
+    applications: FREE_APPLICATION_LIMIT,
     features: [
-      '10 AI generations',
-      '10 applications',
+      `${FREE_GENERATION_LIMIT} AI generations`,
+      `${FREE_APPLICATION_LIMIT} applications`,
       'Classic CV template',
       'PDF export',
       'Flight Deck kanban',
@@ -20,9 +28,9 @@ export const PLANS: Plan[] = [
   {
     id: 'premium' as const,
     name: 'Premium',
-    price: 299,
+    price: PREMIUM_PRICE_PHP,
     currency: 'PHP',
-    duration: 30,
+    duration: PREMIUM_DURATION_DAYS,
     generations: null,
     applications: null,
     features: [
@@ -36,9 +44,9 @@ export const PLANS: Plan[] = [
   {
     id: 'business' as const,
     name: 'Business',
-    price: 799,
+    price: BUSINESS_PRICE_PHP,
     currency: 'PHP',
-    duration: 90,
+    duration: BUSINESS_DURATION_DAYS,
     generations: null,
     applications: null,
     features: [
@@ -47,7 +55,7 @@ export const PLANS: Plan[] = [
       'All CV templates',
       'PDF export',
       'Version history',
-      '3-month access (~₱266/mo)',
+      `3-month access (~₱${Math.round(BUSINESS_PRICE_PHP / 3)}/mo)`,
     ],
   },
 ]

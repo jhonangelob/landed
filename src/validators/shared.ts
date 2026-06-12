@@ -86,8 +86,8 @@ export const preferencesSchema = z.object({
 export const documentTypeSchema = z.enum(['cv', 'cover_letter'])
 
 export const templateSchema = z
-  .enum(['templateA', 'templateC', 'templateB'])
-  .default('templateA')
+  .enum(['classic', 'modern', 'minimal'])
+  .default('classic')
 
 export const applicationSearchSchema = z.object({
   applicationId: z.string().uuid().optional(),

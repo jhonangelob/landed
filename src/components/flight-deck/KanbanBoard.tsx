@@ -8,6 +8,7 @@ import { useNavigate } from '@tanstack/react-router'
 
 import { updateApplicationStage } from '#/server/applications'
 
+import { parseError } from '#/lib/error'
 import { maybeCelebrateLanded } from '#/lib/store/landed'
 import { notify } from '#/lib/toast'
 import { cn } from '#/lib/utils'
@@ -39,13 +40,14 @@ export default function KanbanBoard({
 
   const { mutate: updateStage } = useMutation({
     mutationFn: (vars: { id: string; stage: ApplicationStage }) =>
-      updateApplicationStage({ data: vars }),
+      notify.promise(updateApplicationStage({ data: vars }), {
+        loading: 'Updating application stage...',
+        success: 'Application stage updated',
+        error: (err) => parseError(err).message || '',
+      }),
     onSuccess: async (_, vars) => {
       await maybeCelebrateLanded(queryClient, vars.id, vars.stage)
       queryClient.invalidateQueries({ queryKey: applicationsQueryKey })
-    },
-    onError: (error) => {
-      notify.fromError(error, 'Could not update stage')
     },
   })
 

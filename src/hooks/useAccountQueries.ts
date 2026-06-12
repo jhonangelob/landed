@@ -15,6 +15,7 @@ import {
 } from '#/server/account'
 
 import { changePassword, signOut } from '#/lib/auth/client'
+import { parseError } from '#/lib/error'
 import { notify } from '#/lib/toast'
 
 export const accountQueryKey = ['account_details'] as const
@@ -31,10 +32,14 @@ export function useUpdateAccountMutation() {
 
   return useMutation({
     mutationFn: (value: UpdateAccountInput) =>
-      updateAccountDetails({ data: value }),
+      notify.promise(updateAccountDetails({ data: value }), {
+        loading: 'Updating account details...',
+        success: 'Account updated',
+        error: (err) =>
+          parseError(err).message || 'Successfully updated Account details',
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: accountQueryKey })
-      notify.success('Account Update', 'Successfully updated Account details')
     },
   })
 }
@@ -55,9 +60,10 @@ export function useDeleteAccountMutation() {
 export function useUpdatePasswordMutation() {
   return useMutation({
     mutationFn: (value: UpdatePasswordInput) =>
-      changePassword({ ...value, revokeOtherSessions: true }),
-    onSuccess: () => {
-      notify.success('Account Update', 'Successfully updated password')
-    },
+      notify.promise(changePassword({ ...value, revokeOtherSessions: true }), {
+        loading: 'Updating password...',
+        success: 'Successfully updated password',
+        error: (err) => parseError(err).message || 'Failed to update password',
+      }),
   })
 }

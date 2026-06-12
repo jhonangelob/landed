@@ -1,6 +1,5 @@
+import type { CvContent } from '#/types'
 import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer'
-
-import type { CvContent } from '#/validators/documents'
 
 /**
  * Harvard CV template (Harvard FAS Mignone Center for Career Success layout).

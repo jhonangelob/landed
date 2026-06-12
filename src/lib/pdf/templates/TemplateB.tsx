@@ -1,6 +1,5 @@
+import type { CvContent } from '#/types'
 import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer'
-
-import type { CvContent } from '#/validators/documents'
 
 /**
  * Harvard CV — "Crimson Column" variant.
@@ -23,48 +22,48 @@ const CRIMSON = '#8B0000'
 
 const s = StyleSheet.create({
   page: {
-    fontSize: 10.5,
+    fontSize: 10,
     color: '#111111',
-    paddingTop: 40,
-    paddingBottom: 36,
-    paddingHorizontal: 48,
-    lineHeight: 1.4,
+    paddingTop: 30,
+    paddingBottom: 28,
+    paddingHorizontal: 44,
+    lineHeight: 1.3,
     fontFamily: 'Times-Roman',
   },
 
   // ── header ────────────────────────────────────────────────
   header: {
-    marginBottom: 8,
-    paddingBottom: 8,
+    marginBottom: 6,
+    paddingBottom: 6,
     borderBottom: `1pt solid #111111`,
   },
   name: {
-    fontSize: 22,
+    fontSize: 20,
     fontFamily: 'Times-Bold',
     textAlign: 'left',
-    marginBottom: 2,
+    marginBottom: 10,
     letterSpacing: 0.5,
   },
   headline: {
     fontSize: 10,
     fontFamily: 'Times-Italic',
     color: CRIMSON,
-    marginBottom: 4,
+    marginBottom: 2,
   },
   contactLine: {
-    fontSize: 9.5,
+    fontSize: 9,
     color: '#333333',
     textAlign: 'left',
   },
 
   // ── section ───────────────────────────────────────────────
   section: {
-    marginBottom: 7,
+    marginBottom: 5,
   },
   sectionTitleWrapper: {
     flexDirection: 'row',
     alignItems: 'stretch',
-    marginBottom: 5,
+    marginBottom: 4,
   },
   sectionBar: {
     width: 3,
@@ -84,7 +83,7 @@ const s = StyleSheet.create({
 
   // ── entry ─────────────────────────────────────────────────
   entry: {
-    marginBottom: 5,
+    marginBottom: 3,
     paddingLeft: 9,
   },
   rowBetween: {
@@ -95,32 +94,32 @@ const s = StyleSheet.create({
 
   // org row — bold left (not all-caps), italic location right
   orgLeft: {
-    fontSize: 10.5,
+    fontSize: 10,
     fontFamily: 'Times-Bold',
     flex: 1,
     paddingRight: 8,
   },
   orgRight: {
-    fontSize: 9.5,
+    fontSize: 9,
     fontFamily: 'Times-Italic',
     color: '#444444',
     textAlign: 'right',
-    width: 110,
+    flexShrink: 0,
   },
 
   // role row — italic left, dates right in fixed column
   roleLeft: {
-    fontSize: 10.5,
+    fontSize: 10,
     fontFamily: 'Times-Italic',
     flex: 1,
     paddingRight: 8,
   },
   roleRight: {
-    fontSize: 9.5,
+    fontSize: 9,
     fontFamily: 'Times-Roman',
     color: '#444444',
     textAlign: 'right',
-    width: 110,
+    flexShrink: 0,
   },
 
   plainLine: {
@@ -132,11 +131,11 @@ const s = StyleSheet.create({
 
   // ── bullets ───────────────────────────────────────────────
   bullets: {
-    marginTop: 3,
+    marginTop: 2,
   },
   bullet: {
     flexDirection: 'row',
-    marginBottom: 2,
+    marginBottom: 1,
     paddingLeft: 4,
   },
   bulletDash: {
@@ -236,6 +235,15 @@ export function TemplateB({ content }: Props) {
           {content.headline ? (
             <Text style={s.headline}>{content.headline}</Text>
           ) : null}
+          <Text style={s.contactLine}>
+            {[
+              content.contact.location,
+              content.contact.email,
+              content.contact.phone,
+            ]
+              .filter(Boolean)
+              .join('  ·  ')}
+          </Text>
           {content.links.length > 0 && (
             <Text style={s.contactLine}>{content.links.join('  ·  ')}</Text>
           )}
