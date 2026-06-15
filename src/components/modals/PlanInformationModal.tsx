@@ -1,6 +1,9 @@
 import type { Plan } from '#/types'
-import { MoveUpIcon, PlusIcon } from 'lucide-react'
+import { MoveRightIcon, MoveUpIcon, PlusIcon } from 'lucide-react'
 
+import { useNavigate } from '@tanstack/react-router'
+
+import { Button } from '../ui/button'
 import {
   Dialog,
   DialogContent,
@@ -36,6 +39,8 @@ export default function PlanInformationModal({
   newPlan,
   currentExpiresAt,
 }: PlanInformationModalProps) {
+  const navigate = useNavigate()
+
   const accessThrough = newPlan.duration
     ? new Date(Date.now() + newPlan.duration * DAY_MS)
     : null
@@ -45,6 +50,11 @@ export default function PlanInformationModal({
     expiresAt && expiresAt.getTime() > Date.now()
       ? Math.ceil((expiresAt.getTime() - Date.now()) / DAY_MS)
       : null
+
+  const handleUpgradeSeat = () => {
+    onOpenChange(false)
+    navigate({ to: '/payment/checkout', search: { planId: newPlan.id } })
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -146,7 +156,14 @@ export default function PlanInformationModal({
                 : '—'}
             </p>
           </div>
-          <div className="bg-neutral-tint/10 flex h-10 flex-row items-center justify-between p-3"></div>
+          <div className="bg-neutral-tint/10 flex h-12 flex-row items-center justify-end p-3">
+            <Button
+              onClick={handleUpgradeSeat}
+              className="font-mono text-[12px] leading-[1.4] font-semibold tracking-[0.7px] uppercase"
+            >
+              Confirm Upgrade <MoveRightIcon />
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

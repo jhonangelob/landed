@@ -20,7 +20,7 @@ export const CV_TEMPLATES: CvTemplate[] = [
     description:
       'Single column, traditional layout. ATS-friendly and safe for any industry.',
     plan: 'economy',
-    preview: '📄',
+    preview: '/assets/template_classic.svg',
     enabled: true,
   },
   {
@@ -28,7 +28,7 @@ export const CV_TEMPLATES: CvTemplate[] = [
     name: 'Minimal',
     description: 'Clean lines, generous whitespace. Lets your content breathe.',
     plan: 'economy',
-    preview: '🗒️',
+    preview: '/assets/template_minimal.svg',
     enabled: true,
   },
   {
@@ -37,7 +37,7 @@ export const CV_TEMPLATES: CvTemplate[] = [
     description:
       'Two column with sidebar. Visually distinct, great for tech and design roles.',
     plan: 'economy',
-    preview: '📋',
+    preview: '/assets/template_modern.svg',
     enabled: true,
   },
 ] as const

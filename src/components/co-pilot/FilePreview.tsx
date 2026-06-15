@@ -80,7 +80,7 @@ export default function FilePreview({
           </TabsTrigger>
 
           <div className="ml-auto flex flex-row gap-2">
-            {showRetailorButton && (
+            {showRetailorButton ? (
               <Button
                 className="text-primary-text flex h-fit flex-row gap-1.5 px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase"
                 variant="outline"
@@ -90,6 +90,11 @@ export default function FilePreview({
                 {documentExist[fileType] ? 'Retailor' : 'Generate'}{' '}
                 {fileType === 'cover_letter' ? 'Cover Letter' : 'CV'}
               </Button>
+            ) : (
+              <span className="text-muted text-right font-sans text-[11px] leading-[1.4]">
+                AI generation is unavailable for applications at
+                <br /> or past the 'Applied' stage.
+              </span>
             )}
 
             {documentExist[fileType] && applicationId && (

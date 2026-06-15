@@ -10,6 +10,7 @@ import { useCompleteOnboardingMutation } from '#/hooks/useAccountQueries'
 
 import { Button } from '#/components/ui/button'
 
+import { useOnboardingStore } from '#/lib/store/onboarding'
 import { cn } from '#/lib/utils'
 
 interface TourStep {
@@ -72,9 +73,11 @@ export function OnboardingTour({ userName }: { userName: string }) {
   const steps = useMemo(() => buildSteps(userName), [userName])
 
   const [index, setIndex] = useState(0)
-  const [dismissed, setDismissed] = useState(false)
   const [mounted, setMounted] = useState(false)
   const [rect, setRect] = useState<DOMRect | null>(null)
+
+  const isOpen = useOnboardingStore((s) => s.isOpen)
+  const close = useOnboardingStore((s) => s.close)
 
   const { mutate: completeOnboarding } = useCompleteOnboardingMutation()
 
@@ -83,8 +86,13 @@ export function OnboardingTour({ userName }: { userName: string }) {
 
   useEffect(() => setMounted(true), [])
 
+  // Restart from the first step every time the tour is opened.
+  useEffect(() => {
+    if (isOpen) setIndex(0)
+  }, [isOpen])
+
   useIsomorphicLayoutEffect(() => {
-    if (!mounted) return
+    if (!mounted || !isOpen) return
 
     if (!step.target) {
       setRect(null)
@@ -110,12 +118,12 @@ export function OnboardingTour({ userName }: { userName: string }) {
       window.removeEventListener('resize', measure)
       window.removeEventListener('scroll', measure, true)
     }
-  }, [mounted, step.target])
+  }, [mounted, isOpen, step.target])
 
   const finish = useCallback(() => {
-    setDismissed(true)
+    close()
     completeOnboarding()
-  }, [completeOnboarding])
+  }, [close, completeOnboarding])
 
   const next = useCallback(
     () => setIndex((i) => Math.min(steps.length - 1, i + 1)),
@@ -124,7 +132,7 @@ export function OnboardingTour({ userName }: { userName: string }) {
   const prev = useCallback(() => setIndex((i) => Math.max(0, i - 1)), [])
 
   useEffect(() => {
-    if (!mounted || dismissed) return
+    if (!mounted || !isOpen) return
 
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -142,9 +150,9 @@ export function OnboardingTour({ userName }: { userName: string }) {
 
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [mounted, dismissed, isLast, finish, next, prev])
+  }, [mounted, isOpen, isLast, finish, next, prev])
 
-  if (!mounted || dismissed) return null
+  if (!mounted || !isOpen) return null
 
   const vw = window.innerWidth
   const centered = !rect

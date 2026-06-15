@@ -18,8 +18,8 @@ export const RATE_LIMIT_MAX_GENERATIONS = 10
 
 // ── Plan pricing (PHP) ────────────────────────────────────────────────────────
 
-export const PREMIUM_PRICE_PHP = 399
-export const BUSINESS_PRICE_PHP = 899
+export const PREMIUM_PRICE_PHP = 349
+export const BUSINESS_PRICE_PHP = 999
 
 // ── Plan durations (days) ─────────────────────────────────────────────────────
 

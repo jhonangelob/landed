@@ -19,7 +19,7 @@ export const PLANS: Plan[] = [
     applications: FREE_APPLICATION_LIMIT,
     features: [
       `${FREE_GENERATION_LIMIT} AI generations`,
-      `${FREE_APPLICATION_LIMIT} applications`,
+      `Unlimited applications`,
       'Classic CV template',
       'PDF export',
       'Flight Deck kanban',

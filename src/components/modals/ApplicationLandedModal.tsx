@@ -1,17 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { formatDate } from '#/helper/date'
 import { formatNumberCompact } from '#/helper/number'
-import {
-  ArrowRightIcon,
-  CheckIcon,
-  ChevronRightIcon,
-  CopyIcon,
-  LinkedinIcon,
-  TwitterIcon,
-} from 'lucide-react'
-
-import { useNavigate } from '@tanstack/react-router'
+import confetti from 'canvas-confetti'
+import { CheckIcon, ChevronRightIcon, CopyIcon } from 'lucide-react'
+import { QRCodeSVG } from 'qrcode.react'
 
 import { Button } from '#/components/ui/button'
 import {
@@ -64,14 +57,85 @@ export default function ApplicationLandedModal({
   daysCount,
   shareToken,
 }: ApplicationLandedModalProps) {
-  const navigate = useNavigate()
   const [copied, setCopied] = useState(false)
 
   const shareUrl = shareToken
     ? `${typeof window !== 'undefined' ? window.location.origin : ''}/share/${shareToken}`
     : null
 
-  const shareText = `Just landed the ${role} role at ${company}! 🛬 It took ${daysCount} days and ${appliedCount} applications. Tracked with Landed.`
+  // Celebratory confetti burst each time the modal opens.
+  useEffect(() => {
+    if (!open) return
+
+    const CONFETTI_DURATION = 5 * 1000
+    const end = Date.now() + CONFETTI_DURATION
+    const colors = ['#a786ff', '#fd8bbc', '#eca184', '#f8deb1']
+    // Above the dialog (shadcn content sits at z-50).
+    const zIndex = 9999
+
+    const randomInRange = (min: number, max: number) =>
+      Math.random() * (max - min) + min
+
+    let rafId: number
+
+    // Side cannons
+    const frame = () => {
+      if (Date.now() > end) return
+      confetti({
+        particleCount: 2,
+        angle: 60,
+        spread: 55,
+        startVelocity: 60,
+        origin: { x: 0, y: 0.5 },
+        colors,
+        zIndex,
+      })
+      confetti({
+        particleCount: 2,
+        angle: 120,
+        spread: 55,
+        startVelocity: 60,
+        origin: { x: 1, y: 0.5 },
+        colors,
+        zIndex,
+      })
+      rafId = requestAnimationFrame(frame)
+    }
+    frame()
+
+    // Fireworks
+    const fireworkDefaults = {
+      startVelocity: 30,
+      spread: 360,
+      ticks: 60,
+      zIndex,
+    }
+    const fireworksInterval = setInterval(() => {
+      const timeLeft = end - Date.now()
+      if (timeLeft <= 0) return clearInterval(fireworksInterval)
+
+      const particleCount = 50 * (timeLeft / CONFETTI_DURATION)
+      confetti({
+        ...fireworkDefaults,
+        particleCount,
+        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+        colors,
+      })
+      confetti({
+        ...fireworkDefaults,
+        particleCount,
+        origin: { x: randomInRange(0.4, 0.6), y: Math.random() - 0.2 },
+        colors,
+      })
+    }, 250)
+
+    return () => {
+      cancelAnimationFrame(rafId)
+      clearInterval(fireworksInterval)
+    }
+  }, [open])
+
+  // const shareText = `Just landed the ${role} role at ${company}! 🛬 It took ${daysCount} days and ${appliedCount} applications. Tracked with Landed.`
 
   const handleCopyLink = async () => {
     if (!shareUrl) return
@@ -80,32 +144,32 @@ export default function ApplicationLandedModal({
     setTimeout(() => setCopied(false), 2000)
   }
 
-  const handlePostToX = () => {
-    if (!shareUrl) return
-    const params = new URLSearchParams({ text: shareText, url: shareUrl })
-    window.open(`https://x.com/intent/tweet?${params}`, '_blank', 'noopener')
-  }
+  // const handlePostToX = () => {
+  //   if (!shareUrl) return
+  //   const params = new URLSearchParams({ text: shareText, url: shareUrl })
+  //   window.open(`https://x.com/intent/tweet?${params}`, '_blank', 'noopener')
+  // }
 
-  const handlePostToLinkedIn = () => {
-    if (!shareUrl) return
-    const params = new URLSearchParams({ url: shareUrl })
-    window.open(
-      `https://www.linkedin.com/sharing/share-offsite/?${params}`,
-      '_blank',
-      'noopener',
-    )
-  }
+  // const handlePostToLinkedIn = () => {
+  //   if (!shareUrl) return
+  //   const params = new URLSearchParams({ url: shareUrl })
+  //   window.open(
+  //     `https://www.linkedin.com/sharing/share-offsite/?${params}`,
+  //     '_blank',
+  //     'noopener',
+  //   )
+  // }
 
-  const handleViewFlightDeck = () => {
-    onOpenChange(false)
-    navigate({ to: '/app' })
-  }
+  // const handleViewFlightDeck = () => {
+  //   onOpenChange(false)
+  //   navigate({ to: '/app' })
+  // }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={false}
-        className="min-w-220 space-y-2.25 bg-white px-10 pt-8.5 pb-6.5"
+        className="min-w-260 space-y-2.25 bg-white px-10 pt-8.5 pb-6.5"
       >
         <DialogHeader className="flex flex-row items-center">
           <DialogTitle className="text-primary flex flex-row items-center gap-1 font-mono text-[11px] leading-[1.4] font-semibold tracking-[1.1px] uppercase">
@@ -241,8 +305,12 @@ export default function ApplicationLandedModal({
                 {daysCount}
               </p>
             </div>
-            <div>
-              <div></div>
+            <div className="space-y-2">
+              {shareUrl && (
+                <div className="flex justify-center">
+                  <QRCodeSVG value={shareUrl} size={88} bgColor="transparent" />
+                </div>
+              )}
               <p className="text-muted text-center font-mono text-[9px] leading-[1.4] tracking-[0.9px]">
                 LND·{formatDate(landedAt)}·{getCompanyCode(company)}
               </p>
@@ -251,7 +319,7 @@ export default function ApplicationLandedModal({
         </div>
 
         <div className="bg-surface-subtle flex flex-row justify-between gap-2 rounded-lg border px-5 py-4">
-          <div className="w-45 space-y-1.5">
+          <div className="w-1/2 space-y-1.5">
             <p className="text-primary-text font-display text-[18px] leading-[1.4] font-bold tracking-[-0.5px]">
               Tell the tower.
             </p>
@@ -261,7 +329,7 @@ export default function ApplicationLandedModal({
             </p>
           </div>
           <div className="flex flex-row items-end gap-2">
-            <Button
+            {/* <Button
               className="text-primary-text font-mono text-[11px] leading-[1.4] tracking-[0.9px] uppercase"
               variant="outline"
               disabled={!shareUrl}
@@ -278,7 +346,7 @@ export default function ApplicationLandedModal({
             >
               <LinkedinIcon />
               Post to LinkedIn
-            </Button>
+            </Button> */}
             <Button
               className="text-primary-text font-mono text-[11px] leading-[1.4] tracking-[0.9px] uppercase"
               variant="outline"
@@ -299,13 +367,13 @@ export default function ApplicationLandedModal({
           >
             Back to the deck
           </Button>
-          <Button
+          {/* <Button
             className="font-mono text-[12px] leading-[1.4] font-semibold tracking-[0.7px] uppercase"
             onClick={handleViewFlightDeck}
           >
             Invite 3 friends, get a month free
             <ArrowRightIcon />
-          </Button>
+          </Button> */}
         </DialogFooter>
       </DialogContent>
     </Dialog>

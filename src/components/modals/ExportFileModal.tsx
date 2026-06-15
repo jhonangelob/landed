@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 import { useExportDocumentsMutation } from '#/hooks/useDocumentQueries'
-import { DownloadIcon, FileIcon } from 'lucide-react'
+import { DownloadIcon } from 'lucide-react'
 
 import {
   Dialog,
@@ -73,7 +73,7 @@ export default function ExportFileModal({
               }
             >
               <div className="flex h-40 items-center justify-center rounded-sm bg-gray-200 text-white">
-                <FileIcon />
+                <img src={item.preview} alt={item.id} />
               </div>
               <div>
                 <p className="text-primary h-4 font-mono text-[11px] font-semibold uppercase">

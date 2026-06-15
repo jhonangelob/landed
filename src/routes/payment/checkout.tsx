@@ -7,7 +7,7 @@ import PaymentForm from '#/components/checkout/PaymentForm'
 
 import { planIdSchema } from '#/validators/subscription'
 
-import { PLANS } from '#/constants/plan'
+import { PAID_PLAN, getPlanById } from '#/constants/plan'
 
 export const Route = createFileRoute('/payment/checkout')({
   validateSearch: (search: Record<string, unknown>): { planId?: string } => {
@@ -18,7 +18,10 @@ export const Route = createFileRoute('/payment/checkout')({
 })
 
 function CheckoutPage() {
-  const [selectedPlan, setSelectedPlan] = useState(PLANS[1])
+  const { planId } = Route.useSearch()
+  const [selectedPlan, setSelectedPlan] = useState(
+    planId ? getPlanById(planId) : PAID_PLAN,
+  )
 
   return (
     <div className="mx-auto flex min-h-screen items-center justify-center">

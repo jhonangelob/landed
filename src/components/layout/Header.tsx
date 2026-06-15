@@ -1,10 +1,11 @@
 import { useState } from 'react'
 
-import { LogOutIcon, MenuIcon, PlusIcon } from 'lucide-react'
+import { InfoIcon, LogOutIcon, MenuIcon, PlusIcon } from 'lucide-react'
 
 import { Link, useLocation, useNavigate } from '@tanstack/react-router'
 
 import { signOut, useSession } from '#/lib/auth/client'
+import { useOnboardingStore } from '#/lib/store/onboarding'
 import { cn } from '#/lib/utils'
 
 import { MARKETING_NAVIGATION, NAVIGATION } from '#/constants/navigations'
@@ -42,6 +43,8 @@ export default function Header() {
 
   const [logoutOpen, setLogoutOpen] = useState(false)
   const [loggingOut, setLoggingOut] = useState(false)
+
+  const openOnboarding = useOnboardingStore((s) => s.open)
 
   const inApp = location.pathname.startsWith('/app')
 
@@ -120,6 +123,16 @@ export default function Header() {
                 variant="outline"
                 size="icon"
                 className="rounded-full"
+                aria-label="Replay onboarding tour"
+                onClick={() => openOnboarding()}
+              >
+                <InfoIcon className="size-3.5" />
+              </Button>
+
+              <Button
+                variant="outline"
+                size="icon"
+                className="rounded-full"
                 onClick={() => setLogoutOpen(true)}
               >
                 <LogOutIcon className="size-3.5" />
@@ -186,6 +199,14 @@ export default function Header() {
             <div className="border-border flex items-center gap-3 border-t px-4 py-4">
               {inApp ? (
                 <div className="ml-auto flex gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Replay onboarding tour"
+                    onClick={() => openOnboarding()}
+                  >
+                    <InfoIcon className="text-foreground-soft" />
+                  </Button>
                   <Button
                     variant="ghost"
                     size="icon"

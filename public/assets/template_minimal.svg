@@ -1,0 +1,24 @@
+<svg viewBox="0 0 120 152" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="120" height="152" fill="#F7F8FA" rx="4"/>
+  <!-- Name block -->
+  <rect x="16" y="16" width="60" height="7" rx="2" fill="#0F1B2D" opacity=".8"/>
+  <rect x="16" y="27" width="40" height="4" rx="2" fill="#0F1B2D" opacity=".3"/>
+  <!-- Divider -->
+  <line x1="16" y1="38" x2="104" y2="38" stroke="#0F1B2D" stroke-opacity=".15" stroke-width="1"/>
+  <!-- Section header -->
+  <rect x="16" y="46" width="30" height="3.5" rx="1.5" fill="#1FA1F8" opacity=".7"/>
+  <!-- Text lines -->
+  <rect x="16" y="54" width="88" height="3" rx="1.5" fill="#0F1B2D" opacity=".15"/>
+  <rect x="16" y="61" width="72" height="3" rx="1.5" fill="#0F1B2D" opacity=".15"/>
+  <rect x="16" y="68" width="80" height="3" rx="1.5" fill="#0F1B2D" opacity=".15"/>
+  <!-- Section header 2 -->
+  <rect x="16" y="80" width="30" height="3.5" rx="1.5" fill="#1FA1F8" opacity=".7"/>
+  <rect x="16" y="88" width="88" height="3" rx="1.5" fill="#0F1B2D" opacity=".15"/>
+  <rect x="16" y="95" width="60" height="3" rx="1.5" fill="#0F1B2D" opacity=".15"/>
+  <rect x="16" y="102" width="76" height="3" rx="1.5" fill="#0F1B2D" opacity=".15"/>
+  <!-- Section 3 -->
+  <rect x="16" y="114" width="30" height="3.5" rx="1.5" fill="#1FA1F8" opacity=".7"/>
+  <rect x="16" y="122" width="50" height="3" rx="1.5" fill="#0F1B2D" opacity=".15"/>
+  <rect x="16" y="129" width="66" height="3" rx="1.5" fill="#0F1B2D" opacity=".15"/>
+  <rect x="16" y="136" width="44" height="3" rx="1.5" fill="#0F1B2D" opacity=".15"/>
+</svg>

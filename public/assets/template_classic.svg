@@ -1,0 +1,20 @@
+<svg viewBox="0 0 120 152" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="120" height="152" fill="#FAFAFA" rx="4"/>
+  <!-- Name — large, airy -->
+  <rect x="16" y="18" width="70" height="8" rx="2" fill="#0F1B2D" opacity=".75"/>
+  <rect x="16" y="31" width="45" height="4" rx="2" fill="#0F1B2D" opacity=".25"/>
+  <!-- Generous gap — section label -->
+  <rect x="16" y="50" width="22" height="2.5" rx="1" fill="#0F1B2D" opacity=".2"/>
+  <!-- Spaced lines -->
+  <rect x="16" y="58" width="88" height="2.5" rx="1" fill="#0F1B2D" opacity=".1"/>
+  <rect x="16" y="66" width="68" height="2.5" rx="1" fill="#0F1B2D" opacity=".1"/>
+  <!-- Big gap -->
+  <rect x="16" y="84" width="22" height="2.5" rx="1" fill="#0F1B2D" opacity=".2"/>
+  <rect x="16" y="92" width="80" height="2.5" rx="1" fill="#0F1B2D" opacity=".1"/>
+  <rect x="16" y="100" width="55" height="2.5" rx="1" fill="#0F1B2D" opacity=".1"/>
+  <rect x="16" y="108" width="72" height="2.5" rx="1" fill="#0F1B2D" opacity=".1"/>
+  <!-- Big gap -->
+  <rect x="16" y="126" width="22" height="2.5" rx="1" fill="#0F1B2D" opacity=".2"/>
+  <rect x="16" y="134" width="62" height="2.5" rx="1" fill="#0F1B2D" opacity=".1"/>
+  <rect x="16" y="142" width="48" height="2.5" rx="1" fill="#0F1B2D" opacity=".1"/>
+</svg>
