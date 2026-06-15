@@ -99,10 +99,10 @@ function RouteComponent() {
   }
 
   return (
-    <div className="bg-background flex h-screen flex-col items-center justify-start gap-4 p-12 md:justify-center">
+    <div className="mx-auto flex h-screen w-full flex-col items-center justify-start gap-4 bg-transparent p-12 md:justify-center">
       <img
         src={logo}
-        alt="Landed Logo"
+        alt="FlightDeck Logo"
         className="mb-4 h-10 min-w-fit md:h-14"
       />
 

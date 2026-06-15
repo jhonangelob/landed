@@ -9,6 +9,7 @@ import {
 import { useNavigate } from '@tanstack/react-router'
 
 import {
+  completeOnboarding,
   deleteAccount,
   getAccountDetails,
   updateAccountDetails,
@@ -53,6 +54,17 @@ export function useDeleteAccountMutation() {
       revokeSession()
       signOut()
       navigate({ to: '/login' })
+    },
+  })
+}
+
+export function useCompleteOnboardingMutation() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: () => completeOnboarding(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: accountQueryKey })
     },
   })
 }

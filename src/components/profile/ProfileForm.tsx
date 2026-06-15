@@ -1240,7 +1240,7 @@ export default function ProfileForm({
           isDirty: s.isDirty,
         })}
         children={({ isSubmitting, isDirty }) => (
-          <div className="sticky bottom-4 flex items-center justify-between rounded-lg border bg-white p-4">
+          <div className="sticky bottom-4 mt-4 flex items-center justify-between rounded-lg border bg-white p-4">
             <div className="flex flex-row items-center gap-3.5">
               <div
                 className={cn(

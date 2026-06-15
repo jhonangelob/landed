@@ -1,6 +1,10 @@
+import { useEffect, useState } from 'react'
+
 import { formatDate } from '#/helper/date'
 import { formatNumberCompact } from '#/helper/number'
-import { ArrowRightIcon, ChevronRightIcon } from 'lucide-react'
+import confetti from 'canvas-confetti'
+import { ArrowRightIcon } from 'lucide-react'
+import { QRCodeSVG } from 'qrcode.react'
 
 import { Link, createFileRoute, notFound } from '@tanstack/react-router'
 
@@ -8,6 +12,8 @@ import { Button } from '#/components/ui/button'
 
 import type { StatsSnapshot } from '#/server/touchdown'
 import { getTouchdownShare } from '#/server/touchdown'
+
+import { cn } from '#/lib/utils'
 
 export const Route = createFileRoute('/share/$shareToken')({
   head: ({ loaderData }) => {
@@ -49,18 +55,99 @@ function getCompanyCode(name: string) {
 
 function SharePage() {
   const share = Route.useLoaderData()
+  const { shareToken } = Route.useParams()
   const snap = share?.statsSnapshot as StatsSnapshot
 
-  return (
-    <div className="bg-background flex min-h-screen flex-col items-center justify-center px-4 py-12">
-      <div className="w-full max-w-2xl space-y-6">
-        <div className="flex flex-row items-center gap-1 font-mono text-[11px] font-semibold tracking-[1.1px] text-zinc-400 uppercase">
-          status
-          <ChevronRightIcon className="size-3" /> Landed
-        </div>
+  const apiUrl = import.meta.env.VITE_API_URL
+  const shareUrl = `${apiUrl}/share/${shareToken}`
 
+  const [isCelebrating, setIsCelebrating] = useState(true)
+
+  useEffect(() => {
+    const CONFETTI_DURATION = 5 * 1000 // confetti runs for 5 seconds
+    const PAUSE_DURATION = 10 * 1000 // then count to 10 before firing again
+    const colors = ['#a786ff', '#fd8bbc', '#eca184', '#f8deb1']
+
+    const randomInRange = (min: number, max: number) =>
+      Math.random() * (max - min) + min
+
+    let rafId: number
+    let fireworksInterval: ReturnType<typeof setInterval>
+    let stopTimeout: ReturnType<typeof setTimeout>
+
+    const fire = () => {
+      setIsCelebrating(true)
+      const end = Date.now() + CONFETTI_DURATION
+
+      // Side cannons
+      const frame = () => {
+        if (Date.now() > end) return
+        confetti({
+          particleCount: 2,
+          angle: 60,
+          spread: 55,
+          startVelocity: 60,
+          origin: { x: 0, y: 0.5 },
+          colors,
+        })
+        confetti({
+          particleCount: 2,
+          angle: 120,
+          spread: 55,
+          startVelocity: 60,
+          origin: { x: 1, y: 0.5 },
+          colors,
+        })
+        rafId = requestAnimationFrame(frame)
+      }
+      frame()
+
+      // Fireworks
+      const fireworkDefaults = {
+        startVelocity: 30,
+        spread: 360,
+        ticks: 60,
+        zIndex: 0,
+      }
+      fireworksInterval = setInterval(() => {
+        const timeLeft = end - Date.now()
+        if (timeLeft <= 0) return clearInterval(fireworksInterval)
+
+        const particleCount = 50 * (timeLeft / CONFETTI_DURATION)
+        confetti({
+          ...fireworkDefaults,
+          particleCount,
+          origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+          colors,
+        })
+        confetti({
+          ...fireworkDefaults,
+          particleCount,
+          origin: { x: randomInRange(0.4, 0.6), y: Math.random() - 0.2 },
+          colors,
+        })
+      }, 250)
+
+      // Stop the wiggle once the confetti finishes, then pause before the next burst
+      stopTimeout = setTimeout(() => setIsCelebrating(false), CONFETTI_DURATION)
+    }
+
+    fire()
+    const loop = setInterval(fire, CONFETTI_DURATION + PAUSE_DURATION)
+
+    return () => {
+      cancelAnimationFrame(rafId)
+      clearInterval(fireworksInterval)
+      clearTimeout(stopTimeout)
+      clearInterval(loop)
+    }
+  }, [])
+
+  return (
+    <div className="flex min-h-screen w-screen flex-col items-center justify-center bg-white px-4 pt-4 pb-12">
+      <div className="mx-auto w-full max-w-4xl space-y-6">
         <h1 className="font-display text-primary-text text-[56px] leading-[0.95] font-bold tracking-[-2px]">
-          They <span className="text-primary italic">landed</span>.
+          They <span className="text-primary italic">landed!</span>
         </h1>
 
         <p className="text-ink-muted max-w-lg font-sans text-[15px] leading-normal">
@@ -70,7 +157,12 @@ function SharePage() {
         </p>
 
         {/* Boarding Pass */}
-        <div className="flex flex-row rounded-lg border">
+        <div
+          className={cn(
+            'z-10 flex flex-row overflow-hidden rounded-xl border',
+            isCelebrating && 'wiggle',
+          )}
+        >
           <div className="border-divider bg-surface-muted flex-1 border-r border-dashed px-6 py-6">
             <div className="flex flex-row justify-between pb-4">
               <div>
@@ -90,7 +182,7 @@ function SharePage() {
                 </p>
               </div>
             </div>
-            <div className="flex flex-row justify-between border-y py-4">
+            <div className="flex flex-1 flex-row justify-between border-y py-4">
               <div className="w-1/3 space-y-1">
                 <p className="text-primary-text font-mono text-[42px] leading-none font-medium tracking-[1.7px] uppercase">
                   {snap.previousCompany
@@ -156,7 +248,9 @@ function SharePage() {
               )}
             </div>
           </div>
-          <div className="bg-surface-info w-48 space-y-6 px-5 py-6">
+          <div className="bg-surface-info relative w-48 space-y-4 px-5 py-6">
+            <div className="absolute -top-3 -left-3 h-6 w-6 rounded-full border bg-white" />
+            <div className="absolute -bottom-7 -left-3 h-6 w-6 rounded-full border bg-white" />
             <div className="flex flex-row justify-between">
               <p className="text-muted font-mono text-[11px] leading-[1.4] tracking-[1.7px] uppercase">
                 Stub
@@ -189,6 +283,11 @@ function SharePage() {
                 {snap.daysCount}
               </p>
             </div>
+
+            <div className="mx-auto flex justify-center">
+              <QRCodeSVG value={shareUrl} size={88} bgColor="transparent" />
+            </div>
+
             <div>
               <p className="text-muted text-center font-mono text-[9px] leading-[1.4] tracking-[0.9px]">
                 LND·{formatDate(snap.landedAt)}·{getCompanyCode(snap.company)}
@@ -198,7 +297,7 @@ function SharePage() {
         </div>
 
         {/* CTA */}
-        <div className="bg-surface-subtle flex flex-row items-center justify-between gap-4 rounded-lg border px-5 py-4">
+        <div className="flex flex-row items-center justify-between gap-4 rounded-lg border bg-white px-5 py-4">
           <div>
             <p className="text-primary-text font-display text-[18px] leading-[1.4] font-bold tracking-[-0.5px]">
               Track your own job search.
@@ -209,8 +308,8 @@ function SharePage() {
             </p>
           </div>
           <Button asChild className="shrink-0">
-            <Link to="/">
-              Try Landed free
+            <Link to="/" className="text-white!">
+              Try Landed for free
               <ArrowRightIcon />
             </Link>
           </Button>

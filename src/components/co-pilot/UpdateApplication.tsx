@@ -31,6 +31,7 @@ import {
 } from '#/components/ui/select'
 import { Textarea } from '#/components/ui/textarea'
 
+import SectionCard from '#/components/layout/SectionCard'
 import SectionHeader from '#/components/layout/SectionHeader'
 
 import { getShareTokenForApplication } from '#/server/touchdown'
@@ -42,7 +43,6 @@ import { applicationStageSchema } from '#/validators/shared'
 
 import ApplicationSummary from './ApplicationSummary'
 import FilePreview from './FilePreview'
-import SectionCard from '#/components/layout/SectionCard'
 import StageBar from './StageBar'
 
 interface UpdateApplicationProps {
@@ -391,7 +391,7 @@ export default function UpdateApplication({
                   children={([isSubmitting, isDirty]) => (
                     <Button
                       type="submit"
-                      className="w-full text-[12px] text-white! uppercase md:w-auto"
+                      className="flex w-full text-[12px] text-white! uppercase md:w-auto"
                       disabled={isSubmitting || !isDirty}
                     >
                       <SaveIcon /> Save Changes

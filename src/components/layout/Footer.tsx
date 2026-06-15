@@ -4,9 +4,9 @@ import logo from '/landed-logo.svg'
 
 export default function Footer() {
   return (
-    <footer className="w-full border-t bg-white pt-16 pb-9">
+    <footer className="w-full border-t bg-white px-4 pt-4 pb-4 md:pt-16 md:pb-9">
       <div className="mx-auto max-w-7xl">
-        <div className="grid grid-cols-5 gap-7 border-b pb-12">
+        <div className="flex grid-cols-5 flex-col gap-7 border-b pb-4 md:grid md:pb-12">
           <div className="col-span-2 space-y-2">
             <img src={logo} alt="FlightDeck Logo" className="h-10 min-w-fit" />
             <p className="text-muted font-sans text-[14px] leading-[1.6]">
@@ -33,7 +33,7 @@ export default function Footer() {
             </div>
           ))}
         </div>
-        <div className="text-muted flex flex-row items-center justify-between pt-6 font-mono text-[11px] leading-[1.4] tracking-[0.7px]">
+        <div className="text-muted flex flex-col items-center justify-between pt-4 font-mono text-[11px] leading-[1.4] tracking-[0.7px] md:flex-row md:pt-6">
           <p>© 2026 Landed, Inc. · Your job search, navigated</p>
           <p className="uppercase">KLND · 27L · MADE AT THE GATE</p>
         </div>

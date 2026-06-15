@@ -54,7 +54,7 @@ function PaymentSuccess() {
     : '—'
 
   return (
-    <div className="flex h-screen items-center justify-center">
+    <div className="mx-auto flex h-screen items-center justify-center">
       <div className="flex w-120 flex-col gap-5 rounded-lg border bg-white px-10 pt-11 pb-8">
         <div className="flex flex-col items-center gap-2 text-center">
           <CheckCircleIcon className="text-success size-14" />

@@ -48,6 +48,19 @@ export const updateAccountDetails = createServerFn({ method: 'POST' })
     return { success: true }
   })
 
+export const completeOnboarding = createServerFn({ method: 'POST' }).handler(
+  async () => {
+    const session = await ensureSession()
+
+    await db
+      .update(users)
+      .set({ hasOnboarded: true, updatedAt: new Date() })
+      .where(eq(users.id, session.user.id))
+
+    return { success: true }
+  },
+)
+
 export const deleteAccount = createServerFn({ method: 'POST' }).handler(
   async () => {
     const session = await ensureSession()

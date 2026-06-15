@@ -1,6 +1,7 @@
 import { Outlet, createFileRoute, redirect } from '@tanstack/react-router'
 
 import { ModalRegistry } from '#/components/ModalRegistry'
+import { OnboardingTour } from '#/components/onboarding/OnboardingTour'
 
 import { getSession } from '#/server/session'
 
@@ -24,6 +25,7 @@ function AppLayout() {
     <div className="mx-auto flex w-full max-w-370 pt-7 pb-24">
       <Outlet />
       <ModalRegistry userName={user.name} />
+      {!user.hasOnboarded && <OnboardingTour userName={user.name} />}
     </div>
   )
 }

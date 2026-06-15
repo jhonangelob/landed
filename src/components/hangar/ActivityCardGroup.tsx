@@ -30,7 +30,7 @@ const cards = (data: ActivityData) => [
 
 export default function ActivityCardGroup({ data }: { data: ActivityData }) {
   return (
-    <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
       {cards(data).map(({ value, label }) => (
         <div key={label} className={CARD_CLASS}>
           <p

@@ -24,8 +24,6 @@ export const MARKETING_NAVIGATION = [
   },
 ]
 
-export const ADMIN_NAVIGATION = [{ label: 'Mission Control', url: '/admin' }]
-
 export const FOOTER_NAVIGATION = [
   {
     title: 'Product',

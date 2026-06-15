@@ -35,7 +35,10 @@ const features = [
 
 export default function Features() {
   return (
-    <div id="features" className="bg-surface-subtle px-16 py-29">
+    <div
+      id="features"
+      className="bg-surface-subtle px-4 py-12 md:px-16 md:py-29"
+    >
       <div className="mx-auto flex max-w-295 flex-col gap-4">
         <p className="text-muted font-mono text-[11px] leading-[1.3] font-medium tracking-[1.3px] uppercase">
           Features
@@ -50,7 +53,7 @@ export default function Features() {
           the prep that
           <br /> usually lives in a dozen scattered docs.
         </p>
-        <div className="mt-4 grid grid-cols-3 gap-4">
+        <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
           {features.map((item, index) => (
             <div
               className="flex flex-col gap-2.5 rounded-lg border bg-white p-6"

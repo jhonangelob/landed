@@ -4,6 +4,7 @@ import {
   HeadContent,
   Scripts,
   createRootRouteWithContext,
+  useLocation,
 } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 
@@ -46,7 +47,20 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
   shellComponent: RootDocument,
 })
 
+/** Routes that render their own full-screen layout (no Header/Footer). */
+const AUTH_ROUTES = new Set([
+  '/login',
+  '/signup',
+  '/forgot-password',
+  '/reset-password',
+  '/email-verified',
+])
+
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const { pathname } = useLocation()
+  const isAuthRoute =
+    AUTH_ROUTES.has(pathname) || pathname.startsWith('/share/')
+
   return (
     <html lang="en">
       <head>
@@ -54,11 +68,17 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <NavigationProgress />
-        <Header />
-        <main className="mx-4 mt-14 flex min-h-[calc(100vh-56px)]">
-          {children}
-        </main>
-        <Footer />
+        {isAuthRoute ? (
+          children
+        ) : (
+          <>
+            <Header />
+            <main className="mx-4 mt-14 flex min-h-[calc(100vh-56px)]">
+              {children}
+            </main>
+            <Footer />
+          </>
+        )}
         <Toaster
           position="bottom-right"
           closeButton

@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { string, z } from 'zod'
 
 const passwordField = z
   .string()
@@ -47,7 +47,7 @@ export const loginSchema = accountSchema
     email: true,
   })
   .extend({
-    password: passwordField,
+    password: string(),
   })
 
 export const forgotPasswordSchema = accountSchema.pick({

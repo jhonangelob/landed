@@ -57,6 +57,8 @@ function RouteComponent() {
         callbackURL: '/app',
       })
 
+      form.reset()
+
       if (res.error) {
         setErrorMessage(res.error.message || '')
       }
@@ -74,7 +76,7 @@ function RouteComponent() {
   }
 
   return (
-    <div className="bg-background flex h-screen flex-col items-center justify-start gap-4 p-12 md:justify-center">
+    <div className="mx-auto flex h-screen flex-col items-center justify-start gap-4 bg-transparent p-12 md:justify-center">
       <img
         src={logo}
         alt="FlightDeck Logo"
@@ -129,7 +131,15 @@ function RouteComponent() {
             name="password"
             children={(field) => (
               <div className="flex w-full flex-col space-y-1.5">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">
+                  Password
+                  <span
+                    className="text-muted ml-auto cursor-pointer font-mono text-[10px]! leading-[1.4] font-medium tracking-[1.3px] uppercase hover:underline md:text-[12px]!"
+                    onClick={handleForgotPassword}
+                  >
+                    Forgot Password
+                  </span>
+                </Label>
                 <div className="relative">
                   <Input
                     id="password"
@@ -151,19 +161,15 @@ function RouteComponent() {
                     )}
                   </button>
                 </div>
-                <div className="flex flex-row items-center justify-between">
+                <div className="flex flex-col justify-between">
                   {field.state.meta.errors.map((err, i) => (
-                    <p key={i} className="text-destructive text-[13px]">
+                    <p
+                      key={i}
+                      className="text-destructive flex-nowrap text-[13px]"
+                    >
                       {err?.message as string}
                     </p>
                   ))}
-
-                  <div
-                    className="text-muted ml-auto cursor-pointer font-mono text-[10px]! leading-[1.4] font-medium tracking-[1.3px] uppercase hover:underline md:text-[12px]!"
-                    onClick={handleForgotPassword}
-                  >
-                    Forgot Password
-                  </div>
                 </div>
               </div>
             )}

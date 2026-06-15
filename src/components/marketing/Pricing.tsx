@@ -10,7 +10,7 @@ export default function Pricing() {
   return (
     <div
       id="pricing"
-      className="bg-surface-muted flex flex-col items-center gap-2 px-14 py-29"
+      className="bg-surface-muted flex flex-col items-center gap-2 px-4 py-12 md:px-14 md:py-29"
     >
       <p className="text-muted font-mono text-[11px] leading-[1.4] font-medium tracking-[1.3] uppercase">
         Pricing
@@ -23,7 +23,7 @@ export default function Pricing() {
         Pilot Profile.
         <br /> You only pay for more Co-Pilot.
       </p>
-      <div className="mt-8 mb-4 grid grid-cols-3 gap-4">
+      <div className="mt-8 mb-4 grid grid-cols-1 gap-4 md:grid-cols-3">
         {PLANS.map((item, index) => (
           <div
             className={cn(

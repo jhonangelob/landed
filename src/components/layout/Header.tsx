@@ -7,11 +7,7 @@ import { Link, useLocation, useNavigate } from '@tanstack/react-router'
 import { signOut, useSession } from '#/lib/auth/client'
 import { cn } from '#/lib/utils'
 
-import {
-  ADMIN_NAVIGATION,
-  MARKETING_NAVIGATION,
-  NAVIGATION,
-} from '#/constants/navigations'
+import { MARKETING_NAVIGATION, NAVIGATION } from '#/constants/navigations'
 
 import { Button } from '../ui/button'
 import {
@@ -31,6 +27,14 @@ import {
 } from '../ui/sheet'
 import logo from '/landed-logo.svg'
 
+/** Maps app nav URLs to the `data-tour` anchors the onboarding tour points at. */
+const TOUR_IDS: Record<string, string> = {
+  '/app': 'flight-deck',
+  '/app/co-pilot': 'co-pilot',
+  '/app/profile': 'profile',
+  '/app/hangar': 'hangar',
+}
+
 export default function Header() {
   const location = useLocation()
   const navigate = useNavigate()
@@ -39,12 +43,7 @@ export default function Header() {
   const [logoutOpen, setLogoutOpen] = useState(false)
   const [loggingOut, setLoggingOut] = useState(false)
 
-  const inApp =
-    location.pathname.startsWith('/app') ||
-    location.pathname.startsWith('/admin')
-  const isAdmin = session?.user.role === 'admin'
-
-  const appNav = isAdmin ? [...NAVIGATION, ...ADMIN_NAVIGATION] : NAVIGATION
+  const inApp = location.pathname.startsWith('/app')
 
   const checkIfSelected = (path: string) => location.pathname === path
 
@@ -72,7 +71,7 @@ export default function Header() {
   }
 
   return (
-    <header className="fixed top-0 left-0 z-91 w-full border-b bg-white">
+    <header className="fixed top-0 left-0 z-91 w-full max-w-screen border-b bg-white">
       <div className="max-w-8xl mx-auto flex h-14 flex-row items-center justify-between gap-8 px-4 md:px-8">
         <div className="flex flex-row items-center gap-0.5 lg:mr-14">
           <img src={logo} alt="FlightDeck Logo" className="h-8 min-w-fit" />
@@ -84,10 +83,11 @@ export default function Header() {
 
         <div className="hidden flex-row md:flex">
           {inApp
-            ? appNav.map((item) => (
+            ? NAVIGATION.map((item) => (
                 <Link
                   to={item.url}
                   key={item.url}
+                  data-tour={TOUR_IDS[item.url]}
                   className={appLinkClass(item.url)}
                 >
                   {item.label}
@@ -104,14 +104,15 @@ export default function Header() {
               ))}
         </div>
 
-        <div className="hidden flex-row items-center gap-6 md:flex lg:ml-auto">
+        <div className="hidden flex-row items-center gap-4 md:flex lg:ml-auto">
           {inApp ? (
             <>
               <Button
                 className="bg-primary rounded-md"
+                data-tour="new-application"
                 onClick={handleNewApplication}
               >
-                <PlusIcon />
+                <PlusIcon className="size-3 stroke-4" />
                 New Application
               </Button>
 
@@ -130,11 +131,15 @@ export default function Header() {
             </Button>
           ) : (
             <>
-              <Button asChild variant="ghost">
-                <Link to="/login">Log in</Link>
+              <Button asChild variant="outline">
+                <Link to="/login" className="text-ink-strong! shadow-none!">
+                  Log in
+                </Link>
               </Button>
               <Button asChild className="bg-primary rounded-md">
-                <Link to="/signup">Get started</Link>
+                <Link to="/signup" className="text-white!">
+                  Get started
+                </Link>
               </Button>
             </>
           )}
@@ -153,7 +158,7 @@ export default function Header() {
 
             <nav className="flex flex-1 flex-col gap-1 px-3 py-3">
               {inApp
-                ? appNav.map((item) => (
+                ? NAVIGATION.map((item) => (
                     <Link
                       to={item.url}
                       key={item.url}
@@ -191,15 +196,21 @@ export default function Header() {
                 </div>
               ) : session ? (
                 <Button asChild className="bg-primary w-full rounded-md">
-                  <Link to="/app">Go to Flight Deck</Link>
+                  <Link to="/app" className="text-white!">
+                    Go to Flight Deck
+                  </Link>
                 </Button>
               ) : (
                 <div className="flex w-full gap-2">
                   <Button asChild variant="outline" className="flex-1">
-                    <Link to="/login">Log in</Link>
+                    <Link to="/login" className="text-white!">
+                      Log in
+                    </Link>
                   </Button>
                   <Button asChild className="bg-primary flex-1 rounded-md">
-                    <Link to="/signup">Get started</Link>
+                    <Link to="/signup" className="text-white!">
+                      Get started
+                    </Link>
                   </Button>
                 </div>
               )}

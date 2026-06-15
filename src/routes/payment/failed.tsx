@@ -4,13 +4,6 @@ import { Link, createFileRoute } from '@tanstack/react-router'
 
 import { Button } from '#/components/ui/button'
 
-const REASONS: Record<string, string> = {
-  '3ds_failed': 'Card authentication was declined.',
-  ewallet_cancelled: 'The e-wallet payment was cancelled.',
-  subscription_update_failed:
-    'Your payment went through but we could not update your plan. Please contact support.',
-}
-
 export const Route = createFileRoute('/payment/failed')({
   head: () => ({
     meta: [{ title: 'Landed | Payment Failed' }],
@@ -22,11 +15,8 @@ export const Route = createFileRoute('/payment/failed')({
 })
 
 function PaymentFailed() {
-  const { reason } = Route.useSearch()
-  const detail = reason ? REASONS[reason] : undefined
-
   return (
-    <div className="flex h-screen items-center justify-center">
+    <div className="mx-auto flex h-screen items-center justify-center">
       <div className="flex w-120 flex-col gap-5 rounded-lg border bg-white px-10 pt-11 pb-8">
         <div className="flex flex-col items-center gap-2 text-center">
           <CircleOffIcon className="text-danger-strong size-14" />

@@ -26,12 +26,6 @@ export const BUSINESS_PRICE_PHP = 899
 export const PREMIUM_DURATION_DAYS = 30
 export const BUSINESS_DURATION_DAYS = 90
 
-// ── Claude API pricing (USD per million tokens) ───────────────────────────────
-// Estimates for the Haiku model used by Co-Pilot; powers admin cost analytics.
-
-export const HAIKU_INPUT_USD_PER_MTOK = 1
-export const HAIKU_OUTPUT_USD_PER_MTOK = 5
-
 export const PROFILE_LIMITS = {
   skills: 30,
   experience: 8,

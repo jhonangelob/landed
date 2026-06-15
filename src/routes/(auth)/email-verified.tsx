@@ -40,7 +40,9 @@ function RouteComponent() {
         </div>
 
         <Button asChild className="w-full">
-          <Link to="/login">Sign in to Landed</Link>
+          <Link to="/login" className="text-white!">
+            Sign in to Landed
+          </Link>
         </Button>
       </div>
     </div>

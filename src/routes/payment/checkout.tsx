@@ -21,7 +21,7 @@ function CheckoutPage() {
   const [selectedPlan, setSelectedPlan] = useState(PLANS[1])
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
+    <div className="mx-auto flex min-h-screen items-center justify-center">
       <div className="flex w-250 flex-row overflow-hidden rounded-lg border">
         <InformationPanel
           selectedPlan={selectedPlan}

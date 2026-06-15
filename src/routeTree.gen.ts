@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AppRouteRouteImport } from './routes/app/route'
 import { Route as marketingRouteRouteImport } from './routes/(marketing)/route'
-import { Route as adminRouteRouteImport } from './routes/(admin)/route'
 import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as marketingIndexRouteImport } from './routes/(marketing)/index'
 import { Route as ShareShareTokenRouteImport } from './routes/share.$shareToken'
@@ -27,7 +26,6 @@ import { Route as authResetPasswordRouteImport } from './routes/(auth)/reset-pas
 import { Route as authLoginRouteImport } from './routes/(auth)/login'
 import { Route as authForgotPasswordRouteImport } from './routes/(auth)/forgot-password'
 import { Route as authEmailVerifiedRouteImport } from './routes/(auth)/email-verified'
-import { Route as adminAdminRouteImport } from './routes/(admin)/admin'
 import { Route as ApiPaymongoWebhookRouteImport } from './routes/api/paymongo/webhook'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
@@ -38,10 +36,6 @@ const AppRouteRoute = AppRouteRouteImport.update({
 } as any)
 const marketingRouteRoute = marketingRouteRouteImport.update({
   id: '/(marketing)',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const adminRouteRoute = adminRouteRouteImport.update({
-  id: '/(admin)',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppIndexRoute = AppIndexRouteImport.update({
@@ -119,11 +113,6 @@ const authEmailVerifiedRoute = authEmailVerifiedRouteImport.update({
   path: '/email-verified',
   getParentRoute: () => rootRouteImport,
 } as any)
-const adminAdminRoute = adminAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => adminRouteRoute,
-} as any)
 const ApiPaymongoWebhookRoute = ApiPaymongoWebhookRouteImport.update({
   id: '/api/paymongo/webhook',
   path: '/api/paymongo/webhook',
@@ -137,7 +126,6 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/app': typeof AppRouteRouteWithChildren
-  '/admin': typeof adminAdminRoute
   '/email-verified': typeof authEmailVerifiedRoute
   '/forgot-password': typeof authForgotPasswordRoute
   '/login': typeof authLoginRoute
@@ -157,7 +145,6 @@ export interface FileRoutesByFullPath {
   '/api/paymongo/webhook': typeof ApiPaymongoWebhookRoute
 }
 export interface FileRoutesByTo {
-  '/admin': typeof adminAdminRoute
   '/email-verified': typeof authEmailVerifiedRoute
   '/forgot-password': typeof authForgotPasswordRoute
   '/login': typeof authLoginRoute
@@ -178,10 +165,8 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/(admin)': typeof adminRouteRouteWithChildren
   '/(marketing)': typeof marketingRouteRouteWithChildren
   '/app': typeof AppRouteRouteWithChildren
-  '/(admin)/admin': typeof adminAdminRoute
   '/(auth)/email-verified': typeof authEmailVerifiedRoute
   '/(auth)/forgot-password': typeof authForgotPasswordRoute
   '/(auth)/login': typeof authLoginRoute
@@ -204,7 +189,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/app'
-    | '/admin'
     | '/email-verified'
     | '/forgot-password'
     | '/login'
@@ -224,7 +208,6 @@ export interface FileRouteTypes {
     | '/api/paymongo/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/admin'
     | '/email-verified'
     | '/forgot-password'
     | '/login'
@@ -244,10 +227,8 @@ export interface FileRouteTypes {
     | '/api/paymongo/webhook'
   id:
     | '__root__'
-    | '/(admin)'
     | '/(marketing)'
     | '/app'
-    | '/(admin)/admin'
     | '/(auth)/email-verified'
     | '/(auth)/forgot-password'
     | '/(auth)/login'
@@ -268,7 +249,6 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  adminRouteRoute: typeof adminRouteRouteWithChildren
   marketingRouteRoute: typeof marketingRouteRouteWithChildren
   AppRouteRoute: typeof AppRouteRouteWithChildren
   authEmailVerifiedRoute: typeof authEmailVerifiedRoute
@@ -299,13 +279,6 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: ''
       preLoaderRoute: typeof marketingRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/(admin)': {
-      id: '/(admin)'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof adminRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app/': {
@@ -413,13 +386,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authEmailVerifiedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(admin)/admin': {
-      id: '/(admin)/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof adminAdminRouteImport
-      parentRoute: typeof adminRouteRoute
-    }
     '/api/paymongo/webhook': {
       id: '/api/paymongo/webhook'
       path: '/api/paymongo/webhook'
@@ -436,18 +402,6 @@ declare module '@tanstack/react-router' {
     }
   }
 }
-
-interface adminRouteRouteChildren {
-  adminAdminRoute: typeof adminAdminRoute
-}
-
-const adminRouteRouteChildren: adminRouteRouteChildren = {
-  adminAdminRoute: adminAdminRoute,
-}
-
-const adminRouteRouteWithChildren = adminRouteRoute._addFileChildren(
-  adminRouteRouteChildren,
-)
 
 interface marketingRouteRouteChildren {
   marketingIndexRoute: typeof marketingIndexRoute
@@ -480,7 +434,6 @@ const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
 )
 
 const rootRouteChildren: RootRouteChildren = {
-  adminRouteRoute: adminRouteRouteWithChildren,
   marketingRouteRoute: marketingRouteRouteWithChildren,
   AppRouteRoute: AppRouteRouteWithChildren,
   authEmailVerifiedRoute: authEmailVerifiedRoute,
