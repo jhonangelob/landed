@@ -22,7 +22,7 @@ import { Button } from '#/components/ui/button'
 import AccountForm from '#/components/hangar/AccountForm'
 import ActivityCardGroup from '#/components/hangar/ActivityCardGroup'
 import PasswordForm from '#/components/hangar/PasswordForm'
-import SectionCard from '#/components/hangar/SectionCard'
+import SectionCard from '#/components/layout/SectionCard'
 import SubscriptionCard from '#/components/hangar/SubscriptionCard'
 import SectionHeader from '#/components/layout/SectionHeader'
 
@@ -84,7 +84,7 @@ function RouteComponent() {
     })
   }
   return (
-    <div className="flex flex-col gap-4">
+    <div className="section">
       <SectionHeader
         subTitle="Settings & billing"
         title1="The"
@@ -93,7 +93,8 @@ function RouteComponent() {
       />
       <div className="flex flex-col gap-4 lg:flex-row">
         <SectionCard
-          subTitle="Bay 01 · Account"
+          variant="hangar"
+          label="Bay 01 · Account"
           title="Account details"
           description="The name printed on every CV and Cover Letter Co-Pilot generates. Use the name you would want a recruiter to call out on a phone screen."
           order={1}
@@ -102,7 +103,8 @@ function RouteComponent() {
           <AccountForm data={account} onConfirmUpdate={updateAccount} />
         </SectionCard>
         <SectionCard
-          subTitle="Bay 02 · Security"
+          variant="hangar"
+          label="Bay 02 · Security"
           title="Password "
           description="Lock down access. Two-factor is on by default for accounts older than 30 days."
           order={2}
@@ -112,7 +114,8 @@ function RouteComponent() {
         </SectionCard>
       </div>
       <SectionCard
-        subTitle="Bay 03 · Subscription"
+        variant="hangar"
+        label="Bay 03 · Subscription"
         title="Choose your plan"
         description="Every plan includes unlimited applications, the Flight Deck, and the Pilot Profile. Co-Pilot generations and extras vary."
         order={3}
@@ -148,7 +151,8 @@ function RouteComponent() {
       </SectionCard>
       <div className="flex flex-col gap-4 lg:flex-row">
         <SectionCard
-          subTitle="Bay 04 · Usage this month"
+          variant="hangar"
+          label="Bay 04 · Usage this month"
           title="Activity"
           description={`Your activity since ${activitySince}. Resets monthly.`}
           order={4}
@@ -157,7 +161,8 @@ function RouteComponent() {
           <ActivityCardGroup data={activities} />
         </SectionCard>
         <SectionCard
-          subTitle="Bay 05 · Delete account"
+          variant="hangar"
+          label="Bay 05 · Delete account"
           title="Delete account"
           description="Permanently delete your Pilot Profile, application history, and every document Co-Pilot has generated. This cannot be undone."
           order={5}

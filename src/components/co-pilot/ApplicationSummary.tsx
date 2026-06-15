@@ -45,7 +45,7 @@ export default function ApplicationSummary({ data }: ApplicationSummaryProps) {
   ]
 
   return (
-    <div className="grid grid-cols-3 gap-2">
+    <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
       {items.map((item, index) => (
         <div
           key={item.label}

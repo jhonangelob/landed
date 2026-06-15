@@ -8,6 +8,7 @@ import {
 
 import { getProfile, saveProfile } from '#/server/profile'
 
+import { parseError } from '#/lib/error'
 import { notify } from '#/lib/toast'
 
 export const profileQueryKey = ['profile'] as const
@@ -23,13 +24,14 @@ export function useSaveProfileMutation() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (value: PilotProfileInput) => saveProfile({ data: value }),
+    mutationFn: (value: PilotProfileInput) =>
+      notify.promise(saveProfile({ data: value }), {
+        loading: 'Saving profile...',
+        success: 'Profile saved',
+        error: (err) => parseError(err).message || 'Could not save profile',
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: profileQueryKey })
-      notify.success('Profile updated', 'Your Pilot Profile has been saved')
-    },
-    onError: (error) => {
-      notify.fromError(error, 'Could not update profile')
     },
   })
 }

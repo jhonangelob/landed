@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 
+import { PROFILE_LIMITS } from '#/config'
 import { getTimeSince } from '#/helper/date'
 import type {
   PilotProfile,
@@ -15,12 +16,11 @@ import { Input } from '#/components/ui/input'
 import { Label } from '#/components/ui/label'
 import { Textarea } from '#/components/ui/textarea'
 
-import SectionCard from '#/components/profile/SectionCard'
+import SectionCard from '#/components/layout/SectionCard'
 
 import { cn } from '#/lib/utils'
 
 import { savePilotProfileSchema } from '#/validators/profile'
-import { PROFILE_LIMITS } from '#/validators/shared'
 
 interface ProfileFormProps {
   profile: PilotProfile | null
@@ -60,6 +60,7 @@ export default function ProfileForm({
         { institution: '', degree: '', year: '' },
       ],
       certifications: profile?.certifications ?? [],
+      projects: profile?.projects ?? [],
       links: Array.isArray(profile?.links)
         ? profile.links
         : [{ name: '', url: '' }],
@@ -100,13 +101,14 @@ export default function ProfileForm({
 
   return (
     <form
-      className={cn('flex max-w-4xl flex-col gap-4', className)}
+      className={cn('flex w-full flex-col gap-4', className)}
       onSubmit={(e) => {
         e.preventDefault()
         form.handleSubmit()
       }}
     >
       <SectionCard
+        variant="profile"
         order={1}
         title="Identity"
         description="How Co-Pilot refers to you on every document."
@@ -321,6 +323,7 @@ export default function ProfileForm({
       </SectionCard>
 
       <SectionCard
+        variant="profile"
         order={2}
         title="Experience"
         description="The most recent appears first."
@@ -504,6 +507,7 @@ export default function ProfileForm({
       </SectionCard>
 
       <SectionCard
+        variant="profile"
         order={3}
         title="Skills"
         description="Type a skill and press Enter. Co-Pilot picks which to surface per job."
@@ -581,7 +585,12 @@ export default function ProfileForm({
         />
       </SectionCard>
 
-      <SectionCard order={4} title="Education" description="Education">
+      <SectionCard
+        variant="profile"
+        order={4}
+        title="Education"
+        description="Education"
+      >
         <form.Field
           name="education"
           children={(field) => (
@@ -692,6 +701,7 @@ export default function ProfileForm({
       </SectionCard>
 
       <SectionCard
+        variant="profile"
         order={5}
         title="Certifications & Trainings"
         description="Licenses and certifications to strengthen your profile."
@@ -849,7 +859,217 @@ export default function ProfileForm({
       </SectionCard>
 
       <SectionCard
+        variant="profile"
         order={6}
+        title="Projects"
+        description="Personal or professional projects that demonstrate your skills. Co-Pilot uses these to showcase relevant work."
+      >
+        <form.Field
+          name="projects"
+          children={(field) => (
+            <div className="flex flex-col gap-4">
+              {field.state.value.map((_, i) => (
+                <div
+                  key={i}
+                  className="relative flex flex-col gap-3 rounded-md border p-4"
+                >
+                  <button
+                    type="button"
+                    onClick={() => form.removeFieldValue('projects', i)}
+                    className="text-muted-foreground hover:text-destructive absolute top-3 right-3"
+                  >
+                    <XIcon className="size-4" />
+                  </button>
+                  <div className="flex flex-col gap-4 md:flex-row">
+                    <form.Field
+                      name={`projects[${i}].name`}
+                      children={(f) => (
+                        <div className="w-full space-y-1.5">
+                          <Label>Project Name</Label>
+                          <Input
+                            placeholder="My Awesome Project"
+                            value={f.state.value}
+                            onChange={(e) => f.handleChange(e.target.value)}
+                            onBlur={f.handleBlur}
+                          />
+                          {f.state.meta.errors.map((err, j) => (
+                            <p key={j} className="text-destructive text-xs">
+                              {err?.message as string}
+                            </p>
+                          ))}
+                        </div>
+                      )}
+                    />
+                    <form.Field
+                      name={`projects[${i}].role`}
+                      children={(f) => (
+                        <div className="w-full space-y-1.5">
+                          <Label>Your Role (optional)</Label>
+                          <Input
+                            placeholder="Lead Developer"
+                            value={f.state.value ?? ''}
+                            onChange={(e) => f.handleChange(e.target.value)}
+                            onBlur={f.handleBlur}
+                          />
+                        </div>
+                      )}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-4 md:flex-row">
+                    <form.Field
+                      name={`projects[${i}].dates`}
+                      children={(f) => (
+                        <div className="w-full space-y-1.5 md:w-1/2">
+                          <Label>Dates (optional)</Label>
+                          <Input
+                            placeholder="Jan 2023 – Mar 2023"
+                            value={f.state.value ?? ''}
+                            onChange={(e) => f.handleChange(e.target.value)}
+                            onBlur={f.handleBlur}
+                          />
+                        </div>
+                      )}
+                    />
+                    <form.Field
+                      name={`projects[${i}].url`}
+                      children={(f) => (
+                        <div className="w-full space-y-1.5 md:w-1/2">
+                          <Label>URL (optional)</Label>
+                          <Input
+                            placeholder="https://github.com/..."
+                            value={f.state.value ?? ''}
+                            onChange={(e) => f.handleChange(e.target.value)}
+                            onBlur={f.handleBlur}
+                          />
+                          {f.state.meta.errors.map((err, j) => (
+                            <p key={j} className="text-destructive text-xs">
+                              {err?.message as string}
+                            </p>
+                          ))}
+                        </div>
+                      )}
+                    />
+                  </div>
+                  <form.Field
+                    name={`projects[${i}].highlights`}
+                    children={(f) => (
+                      <div className="space-y-1.5">
+                        <Label>Highlights (optional)</Label>
+                        <Textarea
+                          rows={2}
+                          placeholder="Brief description of what the project does..."
+                          value={f.state.value ?? ''}
+                          onChange={(e) => f.handleChange(e.target.value)}
+                          onBlur={f.handleBlur}
+                        />
+                      </div>
+                    )}
+                  />
+                  <form.Field
+                    name={`projects[${i}].bullets`}
+                    children={(bulletsField) => (
+                      <div className="flex flex-col gap-2">
+                        <Label>Bullet Points</Label>
+                        {bulletsField.state.value.map((__, j) => (
+                          <div key={j} className="flex items-center gap-2">
+                            <form.Field
+                              name={`projects[${i}].bullets[${j}]`}
+                              children={(bf) => (
+                                <Input
+                                  placeholder="Built X using Y, achieving Z..."
+                                  value={bf.state.value}
+                                  onChange={(e) =>
+                                    bf.handleChange(e.target.value)
+                                  }
+                                  onBlur={bf.handleBlur}
+                                  className="flex-1"
+                                />
+                              )}
+                            />
+                            {j > 0 && (
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  form.removeFieldValue(
+                                    `projects[${i}].bullets`,
+                                    j,
+                                  )
+                                }
+                                className="text-muted-foreground hover:text-destructive shrink-0"
+                              >
+                                <XIcon className="size-4" />
+                              </button>
+                            )}
+                          </div>
+                        ))}
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="w-fit text-xs"
+                          disabled={
+                            bulletsField.state.value.length >=
+                            PROFILE_LIMITS.bullets
+                          }
+                          onClick={() =>
+                            form.pushFieldValue(`projects[${i}].bullets`, '')
+                          }
+                        >
+                          <PlusIcon className="size-3" /> Add bullet
+                        </Button>
+                        {bulletsField.state.value.length >=
+                          PROFILE_LIMITS.bullets && (
+                          <p className="text-muted-foreground text-xs">
+                            Maximum {PROFILE_LIMITS.bullets} bullet points per
+                            project.
+                          </p>
+                        )}
+                        {bulletsField.state.meta.errors.map((err, j) => (
+                          <p key={j} className="text-destructive text-xs">
+                            {err?.message as string}
+                          </p>
+                        ))}
+                      </div>
+                    )}
+                  />
+                </div>
+              ))}
+              <Button
+                type="button"
+                variant="outline"
+                className="w-fit text-sm"
+                disabled={field.state.value.length >= PROFILE_LIMITS.projects}
+                onClick={() =>
+                  form.pushFieldValue('projects', {
+                    name: '',
+                    url: '',
+                    role: '',
+                    dates: '',
+                    highlights: '',
+                    bullets: [''],
+                  })
+                }
+              >
+                <PlusIcon className="size-4" /> Add Project
+              </Button>
+              {field.state.value.length >= PROFILE_LIMITS.projects && (
+                <p className="text-muted-foreground text-xs">
+                  Maximum {PROFILE_LIMITS.projects} projects reached.
+                </p>
+              )}
+              {field.state.meta.errors.map((err, i) => (
+                <p key={i} className="text-destructive text-xs">
+                  {err?.message as string}
+                </p>
+              ))}
+            </div>
+          )}
+        />
+      </SectionCard>
+
+      <SectionCard
+        variant="profile"
+        order={7}
         title="Preferences"
         description="Target roles, writing voice, and words Co-Pilot avoids when tailoring your documents."
       >

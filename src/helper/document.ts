@@ -13,7 +13,7 @@ const esc = (value: unknown): string =>
       })[c] as string,
   )
 
-export const cvToHtml = (cv: CvContent): string => {
+export function cvToHtml(cv: CvContent): string {
   return `
     <h1>${esc(cv.headline)}</h1>
     <p>${esc(cv.summary)}</p>

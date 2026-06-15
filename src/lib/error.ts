@@ -28,7 +28,7 @@ export function parseError(error: unknown): ParsedError {
     ) {
       return { code: 'GENERATION_LIMIT_REACHED', message }
     }
-    if (/30 minutes|rate limit/i.test(message)) {
+    if (/minutes.*wait|rate limit/i.test(message)) {
       return { code: 'RATE_LIMIT_EXCEEDED', message }
     }
     if (/unauthor|logged in/i.test(message)) {

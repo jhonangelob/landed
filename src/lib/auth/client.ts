@@ -1,4 +1,7 @@
-import { createAuthClient } from 'better-auth/client'
+import { inferAdditionalFields } from 'better-auth/client/plugins'
+import { createAuthClient } from 'better-auth/react'
+
+import type { auth } from '#/lib/auth'
 
 import { AppError } from '../utils'
 
@@ -13,6 +16,7 @@ if (!baseURL) {
 
 export const authClient = createAuthClient({
   baseURL,
+  plugins: [inferAdditionalFields<typeof auth>()],
 })
 
 export const {

@@ -1,16 +1,27 @@
+import { PROFILE_LIMITS } from '#/config'
+import {
+  buildParseFileSystemPrompt,
+  buildParseFileUserPrompt,
+  parseAiResponse,
+} from '#/helper/prompt'
+import { anthropic } from '@ai-sdk/anthropic'
+import { generateText } from 'ai'
 import { eq } from 'drizzle-orm'
 import z from 'zod'
 
 import { createServerFn } from '@tanstack/react-start'
 
+import { recordAiUsage } from '#/server/aiUsage'
 import { ensureSession } from '#/server/session'
 
 import { db } from '#/lib/db/index.server'
 import { pilotProfiles } from '#/lib/db/schema'
 import { AppError } from '#/lib/utils'
 
-import { savePilotProfileSchema } from '#/validators/profile'
-import { PROFILE_LIMITS } from '#/validators/shared'
+import {
+  pilotProfileSchema,
+  savePilotProfileSchema,
+} from '#/validators/profile'
 
 export const getProfile = createServerFn({ method: 'GET' }).handler(
   async () => {
@@ -69,6 +80,7 @@ export const saveProfile = createServerFn({ method: 'POST' })
         links: data.links,
         preferences: data.preferences,
         certifications: data.certifications,
+        projects: data.projects,
         phone: data.phone,
         updatedAt: new Date(),
       })
@@ -85,6 +97,7 @@ export const saveProfile = createServerFn({ method: 'POST' })
           education: data.education,
           links: data.links,
           preferences: data.preferences,
+          projects: data.projects,
           certifications: data.certifications,
           phone: data.phone,
           updatedAt: new Date(),
@@ -104,91 +117,34 @@ export const parseCvFile = createServerFn({ method: 'POST' })
       .parse(data),
   )
   .handler(async ({ data }) => {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY!,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: process.env.ANTHROPIC_HAIKU_MODEL!,
-        max_tokens: 4000,
-        system: `You are a CV parser. Extract structured data from the CV provided.
-          Return ONLY valid JSON — no explanation, no markdown, no backticks.
-          Use this exact structure:
-          {
-            "headline": "",
-            "summary": "",
-            "location": "",
-            "phone": "",
-            "skills": [],
-            "experience": [{
-              "company": "",
-              "role": "",
-              "dates": "",
-              "location": "",
-              "bullets": []
-            }],
-            "education": [{
-              "institution": "",
-              "degree": "",
-              "year": "",
-              "location": "",
-              "detail": ""
-            }],
-            "certifications": [{
-              "name": "",
-              "issuer": "",
-              "issueDate": "",
-              "expiryDate": "",
-              "url": ""
-            }],
-            "projects": [{
-              "name": "",
-              "url": "",
-              "role": "",
-              "dates": "",
-              "highlights": "",
-              "bullets": []
-            }],
-            "links": [{ "name": "", "url": "" }]
-          }
-          STRICT RULES:
-          - Only use data explicitly present in the CV
-          - Do NOT invent, infer, or assume anything
-          - If a field has no match use empty string "" or empty array []
-          - Never return null
-          - Never add fields not in the structure above
-        `,
-        messages: [
-          {
-            role: 'user',
-            content: [
-              {
-                type: 'document',
-                source: {
-                  type: 'base64',
-                  media_type: data.fileType,
-                  data: data.fileContent,
-                },
-              },
-              {
-                type: 'text',
-                text: 'Parse this CV and return the structured JSON.',
-              },
-            ],
-          },
-        ],
-      }),
+    const session = await ensureSession()
+
+    if (!process.env.ANTHROPIC_HAIKU_MODEL)
+      throw new AppError(
+        'MISSING_ENV',
+        'API Key is not defined in the environment variables',
+      )
+
+    const model = process.env.ANTHROPIC_HAIKU_MODEL
+
+    const { text, usage } = await generateText({
+      model: anthropic(model),
+      messages: buildParseFileUserPrompt(
+        data.fileType as 'pdf' | 'docx',
+        data.fileContent,
+      ),
+      system: buildParseFileSystemPrompt(),
+      maxOutputTokens: 4000,
     })
 
-    if (!response.ok) throw new AppError('AI_PARSE_ERROR', 'Failed to parse CV')
+    await recordAiUsage({
+      userId: session.user.id,
+      model,
+      kind: 'profile_parse',
+      usage,
+    })
 
-    const result = await response.json()
-    const text = result.content[0].text
-    const clean = text.replace(/```json|```/g, '').trim()
-    const parsed: any = JSON.parse(clean)
+    const parsed = parseAiResponse(text, pilotProfileSchema)
 
     const tryUrl = (u: string): string => {
       if (!u) return ''
@@ -200,42 +156,82 @@ export const parseCvFile = createServerFn({ method: 'POST' })
       summary: parsed.summary || undefined,
       location: parsed.location || undefined,
       phone: parsed.phone || undefined,
+
       skills: Array.isArray(parsed.skills)
-        ? parsed.skills.filter(Boolean).slice(0, PROFILE_LIMITS.skills)
+        ? parsed.skills
+            .filter(
+              (s: unknown): s is string =>
+                typeof s === 'string' && s.trim().length > 0,
+            )
+            .slice(0, PROFILE_LIMITS.skills)
         : undefined,
+
       experience: Array.isArray(parsed.experience)
         ? parsed.experience
             .slice(0, PROFILE_LIMITS.experience)
-            .map((e: any) => ({
+            .map((e: Record<string, unknown>) => ({
               company: e.company ?? '',
               role: e.role ?? '',
               dates: e.dates ?? '',
               bullets: Array.isArray(e.bullets)
-                ? e.bullets.filter(Boolean).slice(0, PROFILE_LIMITS.bullets)
+                ? (e.bullets as unknown[])
+                    .filter(
+                      (b): b is string =>
+                        typeof b === 'string' && b.trim().length > 0,
+                    )
+                    .slice(0, PROFILE_LIMITS.bullets)
                 : [''],
             }))
         : undefined,
+
       education: Array.isArray(parsed.education)
-        ? parsed.education.slice(0, PROFILE_LIMITS.education).map((e: any) => ({
-            institution: e.institution ?? '',
-            degree: e.degree ?? '',
-            year: e.year ?? '',
-          }))
+        ? parsed.education
+            .slice(0, PROFILE_LIMITS.education)
+            .map((e: Record<string, unknown>) => ({
+              institution: e.institution ?? '',
+              degree: e.degree ?? '',
+              year: e.year ?? '',
+            }))
         : undefined,
+
       certifications: Array.isArray(parsed.certifications)
         ? parsed.certifications
             .slice(0, PROFILE_LIMITS.certifications)
-            .map((c: any) => ({
+            .map((c: Record<string, unknown>) => ({
               name: c.name ?? '',
               issuer: c.issuer ?? '',
               issueDate: c.issueDate ?? '',
               expiryDate: c.expiryDate ?? '',
-              url: tryUrl(c.url ?? ''),
+              url: tryUrl(c.url as string),
             }))
         : undefined,
+
+      projects: Array.isArray(parsed.projects)
+        ? parsed.projects
+            .slice(0, PROFILE_LIMITS.projects)
+            .map((p: Record<string, unknown>) => ({
+              name: p.name ?? '',
+              url: tryUrl(p.url as string),
+              role: p.role ?? '',
+              dates: p.dates ?? '',
+              highlights: p.highlights ?? '',
+              bullets: Array.isArray(p.bullets)
+                ? (p.bullets as unknown[])
+                    .filter(
+                      (b): b is string =>
+                        typeof b === 'string' && b.trim().length > 0,
+                    )
+                    .slice(0, PROFILE_LIMITS.bullets)
+                : [''],
+            }))
+        : undefined,
+
       links: Array.isArray(parsed.links)
         ? parsed.links
-            .map((l: any) => ({ name: l.name ?? '', url: tryUrl(l.url ?? '') }))
+            .map((l: Record<string, unknown>) => ({
+              name: l.name ?? '',
+              url: tryUrl(l.url as string),
+            }))
             .slice(0, PROFILE_LIMITS.links)
         : undefined,
     }

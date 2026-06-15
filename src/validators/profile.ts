@@ -1,7 +1,7 @@
+import { PROFILE_LIMITS } from '#/config'
 import { z } from 'zod'
 
 import {
-  PROFILE_LIMITS,
   certificationSchema,
   educationSchema,
   experienceSchema,
@@ -54,8 +54,10 @@ export const pilotProfileSchema = z.object({
     ),
   projects: z
     .array(projectSchema)
-    .max(PROFILE_LIMITS.projects, `Maximum ${PROFILE_LIMITS.projects} projects`)
-    .optional(),
+    .max(
+      PROFILE_LIMITS.projects,
+      `Maximum ${PROFILE_LIMITS.projects} projects`,
+    ),
   education: z
     .array(educationSchema)
     .min(1, 'Add at least one education entry')

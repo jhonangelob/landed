@@ -51,7 +51,7 @@ export const getApplicationById = createServerFn({ method: 'GET' })
         ),
       )
       .limit(1)
-      .then((r) => r.at(0) ?? undefined)
+      .then((r) => r.at(0) ?? null)
   })
 
 export const createApplication = createServerFn({

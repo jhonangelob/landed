@@ -9,6 +9,8 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 
 import { Toaster } from '#/components/ui/sonner'
 
+import Footer from '#/components/layout/Footer'
+import Header from '#/components/layout/Header'
 import { NavigationProgress } from '#/components/layout/NavigationProgress'
 import NotFound from '#/components/layout/NotFound'
 
@@ -52,7 +54,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <NavigationProgress />
-        {children}
+        <Header />
+        <main className="mx-4 mt-14 flex min-h-[calc(100vh-56px)]">
+          {children}
+        </main>
+        <Footer />
         <Toaster
           position="bottom-right"
           closeButton

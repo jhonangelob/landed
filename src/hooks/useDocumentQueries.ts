@@ -1,3 +1,4 @@
+import { LOW_GENERATION_THRESHOLD } from '#/config'
 import type { ExportDocumentInput, GenerateDocumentInput } from '#/types'
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -13,9 +14,6 @@ import { openUsageLimitModal } from '#/lib/store/usage-limit'
 import { notify } from '#/lib/toast'
 
 import { subscriptionQueryKey } from './useSubscriptionQueries'
-
-/** Below this many remaining generations we nudge the user with a heads-up. */
-const LOW_GENERATION_THRESHOLD = 2
 
 export const documentsQueryKey = (applicationId: string | undefined) =>
   ['generated_docs', applicationId] as const
@@ -85,12 +83,11 @@ export function useGenerateDocumentsMutation(applicationId?: string) {
 
 export function useExportDocumentsMutation() {
   return useMutation({
-    mutationFn: (value: ExportDocumentInput) => exportCvPdf({ data: value }),
-    onSuccess: () => {
-      notify.success('Export ready', 'Your PDF download has started.')
-    },
-    onError: (error) => {
-      notify.fromError(error, 'Could not export document')
-    },
+    mutationFn: (value: ExportDocumentInput) =>
+      notify.promise(exportCvPdf({ data: value }), {
+        loading: 'Exporting document...',
+        success: 'Export ready, Your PDF download has started.',
+        error: 'Could not export document',
+      }),
   })
 }

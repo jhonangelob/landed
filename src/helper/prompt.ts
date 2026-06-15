@@ -1,4 +1,35 @@
 import type { PilotProfile } from '#/types'
+import type { ZodType } from 'zod'
+
+import { AppError } from '#/lib/utils'
+
+export function parseAiResponse<T>(text: string, schema: ZodType<T>): T {
+  const cleaned = text
+    .replace(/```json\n?/g, '')
+    .replace(/```\n?/g, '')
+    .trim()
+
+  let raw: unknown
+  try {
+    raw = JSON.parse(cleaned)
+  } catch {
+    throw new AppError(
+      'AI_PARSE_ERROR',
+      'AI returned malformed JSON — please try again',
+    )
+  }
+
+  const result = schema.safeParse(raw)
+  if (!result.success) {
+    console.error('AI response validation failed:', result.error.issues)
+    throw new AppError(
+      'AI_VALIDATION_ERROR',
+      'AI response has unexpected structure — please try again',
+    )
+  }
+
+  return result.data
+}
 
 export function buildCvSystemPrompt(): string {
   return `
@@ -193,10 +224,92 @@ export function buildUserPrompt(opts: {
     Experience: ${JSON.stringify(profile.experience, null, 2)}
     Education: ${JSON.stringify(profile.education, null, 2)}
     Certifications: ${JSON.stringify(profile.certifications, null, 2)}
+    Projects: ${profile.projects?.length ? JSON.stringify(profile.projects, null, 2) : 'None'}
     Links: ${JSON.stringify([profile.email, profile.phone, profile.links], null, 2)}
 
     Writing Preferences:
     Preferred Voice: ${profile.preferences?.preferredVoice || 'no preference'}
     Words to Avoid: ${profile.preferences?.wordsToAvoid.length ? profile.preferences.wordsToAvoid.join(', ') : 'none'}
   `.trim()
+}
+
+export function buildParseFileSystemPrompt(): string {
+  return `You are a CV parser. Extract structured data from the CV provided.
+          Return ONLY valid JSON — no explanation, no markdown, no backticks.
+          Use this exact structure:
+          {
+            "headline": "",
+            "summary": "",
+            "location": "",
+            "phone": "",
+            "skills": [],
+            "experience": [{
+              "company": "",
+              "role": "",
+              "dates": "",
+              "location": "",
+              "bullets": []
+            }],
+            "education": [{
+              "institution": "",
+              "degree": "",
+              "year": "",
+              "location": "",
+              "detail": ""
+            }],
+            "certifications": [{
+              "name": "",
+              "issuer": "",
+              "issueDate": "",
+              "expiryDate": "",
+              "url": ""
+            }],
+            "projects": [{
+              "name": "",
+              "url": "",
+              "role": "",
+              "dates": "",
+              "highlights": "",
+              "bullets": []
+            }],
+            "links": [{ "name": "", "url": "" }]
+          }
+          STRICT RULES:
+          - Only use data explicitly present in the CV
+          - Do NOT invent, infer, or assume anything
+          - If a field has no match use empty string "" or empty array []
+          - Never return null
+          - Never add fields not in the structure above
+        `
+}
+
+export function buildParseFileUserPrompt(
+  fileType: 'pdf' | 'docx',
+  fileContent: string,
+) {
+  return [
+    {
+      role: 'user' as const,
+      content: [
+        ...(fileType === 'pdf'
+          ? [
+              {
+                type: 'file' as const,
+                data: fileContent,
+                mediaType: 'application/pdf' as const,
+              },
+            ]
+          : [
+              {
+                type: 'text' as const,
+                text: `Resume content (DOCX extracted text):\n\n${fileContent}`,
+              },
+            ]),
+        {
+          type: 'text' as const,
+          text: 'Extract the resume data from this document and return it as JSON.',
+        },
+      ],
+    },
+  ]
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 import { useApplicationsQuery } from '#/hooks/useApplicationQueries'
 import { SearchIcon } from 'lucide-react'
@@ -40,13 +40,8 @@ function RouteComponent() {
   const { data: applications } = useApplicationsQuery()
   const [query, setQuery] = useState('')
 
-  useEffect(() => {
-    document.body.classList.add('overflow-hidden')
-    return () => document.body.classList.remove('overflow-hidden')
-  }, [])
-
   return (
-    <div className="section gap-6!">
+    <div className="section gap-6! overflow-hidden">
       <SectionHeader
         subTitle="Dashboard"
         title1="Flight "

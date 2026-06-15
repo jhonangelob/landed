@@ -99,7 +99,7 @@ export function useUpdateApplicationStageMutation(applicationId: string) {
         values.stage.charAt(0).toUpperCase() +
         values.stage.slice(1).replace('_', ' ')
       return notify.promise(updateApplicationStage({ data: values }), {
-        loading: 'Updating stage…',
+        loading: 'Updating application stage…',
         success: `Moved to ${label}`,
         error: (err) => parseError(err).message || 'Could not update stage',
       })

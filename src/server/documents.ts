@@ -4,16 +4,17 @@ import {
   buildCoverLetterSystemPrompt,
   buildCvSystemPrompt,
   buildUserPrompt,
+  parseAiResponse,
 } from '#/helper/prompt'
 import type { CvContent } from '#/types'
 import { anthropic } from '@ai-sdk/anthropic'
 import { renderToBuffer } from '@react-pdf/renderer'
 import { generateText } from 'ai'
 import { and, count, desc, eq, gte } from 'drizzle-orm'
-import type { ZodType } from 'zod'
 
 import { createServerFn } from '@tanstack/react-start'
 
+import { recordAiUsage } from '#/server/aiUsage'
 import { ensureSession } from '#/server/session'
 
 import { getUserPlan } from '#/lib/auth/subscription'
@@ -24,9 +25,6 @@ import {
   pilotProfiles,
   users,
 } from '#/lib/db/schema'
-import { TemplateA } from '#/lib/pdf/templates/TemplateA'
-import { TemplateB } from '#/lib/pdf/templates/TemplateB'
-import { TemplateC } from '#/lib/pdf/templates/TemplateC'
 import { AppError } from '#/lib/utils'
 
 import {
@@ -37,43 +35,9 @@ import {
   getDocumentSchema,
 } from '#/validators/documents'
 
-import { isTemplateLocked } from '#/constants/templates'
+import { TEMPLATE_MAP, isTemplateLocked } from '#/constants/templates'
 
 import { checkGenerationLimit, increaseGenerationUsed } from './subscription'
-
-const TEMPLATES = {
-  classic: TemplateA,
-  modern: TemplateC,
-  minimal: TemplateB,
-} as const
-
-function parseAiResponse<T>(text: string, schema: ZodType<T>): T {
-  const cleaned = text
-    .replace(/```json\n?/g, '')
-    .replace(/```\n?/g, '')
-    .trim()
-
-  let raw: unknown
-  try {
-    raw = JSON.parse(cleaned)
-  } catch {
-    throw new AppError(
-      'AI_PARSE_ERROR',
-      'AI returned malformed JSON — please try again',
-    )
-  }
-
-  const result = schema.safeParse(raw)
-  if (!result.success) {
-    console.error('AI response validation failed:', result.error.issues)
-    throw new AppError(
-      'AI_VALIDATION_ERROR',
-      'AI response has unexpected structure — please try again',
-    )
-  }
-
-  return result.data
-}
 
 export const getDocuments = createServerFn({ method: 'GET' })
   .inputValidator((data: unknown) => getDocumentSchema.parse(data))
@@ -208,13 +172,27 @@ export const generateDocuments = createServerFn({ method: 'POST' })
 
     const [cv, coverLetter] = await Promise.all([
       wantsCv
-        ? callModel(buildCvSystemPrompt()).then(({ text }) =>
-            parseAiResponse(text, cvSchema),
-          )
+        ? callModel(buildCvSystemPrompt()).then(async ({ text, usage }) => {
+            await recordAiUsage({
+              userId: session.user.id,
+              model,
+              kind: 'cv',
+              usage,
+            })
+            return parseAiResponse(text, cvSchema)
+          })
         : Promise.resolve(undefined),
       wantsCoverLetter
-        ? callModel(buildCoverLetterSystemPrompt()).then(({ text }) =>
-            parseAiResponse(text, coverLetterSchema),
+        ? callModel(buildCoverLetterSystemPrompt()).then(
+            async ({ text, usage }) => {
+              await recordAiUsage({
+                userId: session.user.id,
+                model,
+                kind: 'cover_letter',
+                usage,
+              })
+              return parseAiResponse(text, coverLetterSchema)
+            },
           )
         : Promise.resolve(undefined),
     ])
@@ -291,7 +269,7 @@ export const exportCvPdf = createServerFn({ method: 'POST' })
 
     if (!doc) throw new AppError('DOCUMENT_NOT_FOUND', 'Document not found')
 
-    const Template = TEMPLATES[data.template]
+    const Template = TEMPLATE_MAP[data.template]
     const pdfBuffer = await renderToBuffer(
       Template({
         content: doc.contentJson as CvContent,

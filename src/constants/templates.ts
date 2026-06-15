@@ -60,11 +60,8 @@ export const isTemplateLocked = (
   return planId === 'economy'
 }
 
-export const TEMPLATE_MAP: Record<
-  CvTemplateId,
-  React.ComponentType<{ content: CvContent; email?: string }>
-> = {
+export const TEMPLATE_MAP = {
   classic: TemplateA,
   minimal: TemplateB,
   modern: TemplateC,
-}
+} satisfies Record<CvTemplateId, React.ComponentType<{ content: CvContent }>>

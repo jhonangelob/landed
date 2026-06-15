@@ -42,7 +42,7 @@ import { applicationStageSchema } from '#/validators/shared'
 
 import ApplicationSummary from './ApplicationSummary'
 import FilePreview from './FilePreview'
-import SectionCard from './SectionCard'
+import SectionCard from '#/components/layout/SectionCard'
 import StageBar from './StageBar'
 
 interface UpdateApplicationProps {
@@ -134,7 +134,11 @@ export default function UpdateApplication({
             }}
             className="w-full space-y-4"
           >
-            <SectionCard title="Application details" subTitle="details">
+            <SectionCard
+              variant="copilot"
+              title="Application details"
+              order="details"
+            >
               <div className="space-y-4">
                 <div className="flex flex-col gap-4 md:flex-row">
                   <form.Field
@@ -279,7 +283,7 @@ export default function UpdateApplication({
               </div>
             </SectionCard>
 
-            <SectionCard title="Status update" subTitle="status">
+            <SectionCard variant="copilot" title="Status update" order="status">
               <div className="flex gap-4">
                 <form.Field
                   name="status"
@@ -344,7 +348,7 @@ export default function UpdateApplication({
               </div>
             </SectionCard>
 
-            <SectionCard title="Notes" subTitle="notes">
+            <SectionCard variant="copilot" title="Notes" order="notes">
               <form.Field
                 name="notes"
                 children={(field) => (
@@ -398,14 +402,19 @@ export default function UpdateApplication({
             </div>
           </form>
 
-          <SectionCard title="Application Summary" subTitle="summary">
+          <SectionCard
+            variant="copilot"
+            title="Application Summary"
+            order="summary"
+          >
             <ApplicationSummary data={application} />
           </SectionCard>
 
           <SectionCard
+            variant="copilot"
             title="Delete Application"
-            subTitle="danger"
-            variant="destructive"
+            order="danger"
+            className=""
           >
             <div className="flex flex-col space-y-2">
               <p className="text-muted font-sans text-[14px] leading-[1.4]">

@@ -29,9 +29,9 @@ export function getUsageInfo(
     expiresAt: Date | string | null
   },
 ): UsageInfo {
-  const unlimited = sub.generationsLimit == 0
-  const limit = sub.generationsLimit
   const used = sub.generationsUsed
+  const unlimited = sub.generationsLimit === null || sub.generationsLimit === 0
+  const limit = sub.generationsLimit ?? 0
   const remaining = unlimited ? Infinity : Math.max(0, limit - used)
 
   return {

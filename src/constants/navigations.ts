@@ -25,3 +25,25 @@ export const MARKETING_NAVIGATION = [
 ]
 
 export const ADMIN_NAVIGATION = [{ label: 'Mission Control', url: '/admin' }]
+
+export const FOOTER_NAVIGATION = [
+  {
+    title: 'Product',
+    links: MARKETING_NAVIGATION,
+  },
+  {
+    title: 'Company',
+    links: [
+      { label: 'Sign in', href: '/login' },
+      { label: 'Create account', href: '/signup' },
+    ],
+  },
+  {
+    title: 'Legal',
+    links: [
+      { label: 'Privacy Policy', href: '#' },
+      { label: 'Terms of Service', href: '#' },
+      { label: 'Cookie Policy', href: '#' },
+    ],
+  },
+]

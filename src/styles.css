@@ -392,7 +392,7 @@ header {
   }
 
   .section {
-    @apply flex min-h-[calc(100vh-160px)] flex-col gap-8;
+    @apply flex h-full w-full flex-col gap-4 overflow-hidden;
   }
 
   button {

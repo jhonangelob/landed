@@ -202,6 +202,36 @@ export const subscriptions = pgTable('subscriptions', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 })
 
+// ─── Subscription Codes ───────────────────────────────────────────────────────
+
+export const subscriptionCodes = pgTable('subscription_codes', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  code: text('code').notNull().unique(),
+  planId: planTypeEnum('plan_id').notNull(),
+  durationDays: integer('duration_days').notNull(),
+  createdBy: text('created_by').references(() => users.id, {
+    onDelete: 'set null',
+  }),
+  redeemedBy: text('redeemed_by').references(() => users.id, {
+    onDelete: 'set null',
+  }),
+  redeemedAt: timestamp('redeemed_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+// ─── AI Usage ─────────────────────────────────────────────────────────────────
+
+export const aiUsage = pgTable('ai_usage', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: text('user_id').references(() => users.id, { onDelete: 'set null' }),
+  model: text('model').notNull(),
+  kind: text('kind').notNull(),
+  inputTokens: integer('input_tokens').notNull().default(0),
+  outputTokens: integer('output_tokens').notNull().default(0),
+  totalTokens: integer('total_tokens').notNull().default(0),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
 // ─── Relations ────────────────────────────────────────────────────────────────
 
 export const usersRelations = relations(users, ({ one, many }) => ({

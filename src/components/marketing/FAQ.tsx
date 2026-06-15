@@ -26,7 +26,7 @@ export default function FAQ() {
         className="mt-8 w-205 border-t"
       >
         {FAQS.map((item, index) => (
-          <AccordionItem value={String(index)}>
+          <AccordionItem value={String(index)} key={index}>
             <AccordionTrigger className="font-display text-primary-text py-5.5 text-[18px] leading-[1.4] font-semibold">
               {item.question}
             </AccordionTrigger>

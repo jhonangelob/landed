@@ -11,6 +11,8 @@ export const FREE_APPLICATION_LIMIT = 9999
 /** Rolling window used for per-user generation rate limiting, in minutes. */
 export const RATE_LIMIT_WINDOW_MINUTES = 30
 
+export const LOW_GENERATION_THRESHOLD = 2
+
 /** Maximum document generations allowed within the rate-limit window. */
 export const RATE_LIMIT_MAX_GENERATIONS = 10
 
@@ -23,3 +25,21 @@ export const BUSINESS_PRICE_PHP = 899
 
 export const PREMIUM_DURATION_DAYS = 30
 export const BUSINESS_DURATION_DAYS = 90
+
+// ── Claude API pricing (USD per million tokens) ───────────────────────────────
+// Estimates for the Haiku model used by Co-Pilot; powers admin cost analytics.
+
+export const HAIKU_INPUT_USD_PER_MTOK = 1
+export const HAIKU_OUTPUT_USD_PER_MTOK = 5
+
+export const PROFILE_LIMITS = {
+  skills: 30,
+  experience: 8,
+  bullets: 6,
+  education: 4,
+  certifications: 10,
+  roles: 5,
+  links: 5,
+  wordsToAvoid: 10,
+  projects: 4,
+}

@@ -1,16 +1,10 @@
 import { useState } from 'react'
 
-import { applicationsQueryKey } from '#/hooks/useApplicationQueries'
+import { useUpdateApplicationStageMutation } from '#/hooks/useApplicationQueries'
 import type { Application, ApplicationStage } from '#/types'
 
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 
-import { updateApplicationStage } from '#/server/applications'
-
-import { parseError } from '#/lib/error'
-import { maybeCelebrateLanded } from '#/lib/store/landed'
-import { notify } from '#/lib/toast'
 import { cn } from '#/lib/utils'
 
 import { KANBAN_COLUMNS } from '#/constants/stage'
@@ -34,22 +28,14 @@ export default function KanbanBoard({
   query = '',
 }: KanbanBoardProps) {
   const navigate = useNavigate()
-  const queryClient = useQueryClient()
-  const isFiltering = query.trim() !== ''
-  const [dragOverStage, setDragOverStage] = useState<string | null>(null)
 
-  const { mutate: updateStage } = useMutation({
-    mutationFn: (vars: { id: string; stage: ApplicationStage }) =>
-      notify.promise(updateApplicationStage({ data: vars }), {
-        loading: 'Updating application stage...',
-        success: 'Application stage updated',
-        error: (err) => parseError(err).message || '',
-      }),
-    onSuccess: async (_, vars) => {
-      await maybeCelebrateLanded(queryClient, vars.id, vars.stage)
-      queryClient.invalidateQueries({ queryKey: applicationsQueryKey })
-    },
-  })
+  const isFiltering = query.trim() !== ''
+
+  const [dragOverStage, setDragOverStage] = useState<string | null>(null)
+  const [applicationId, setApplicationId] = useState('')
+
+  const { mutate: updateStage } =
+    useUpdateApplicationStageMutation(applicationId)
 
   const handleNewApplication = (stage: ApplicationStage) => {
     navigate({ to: '/app/co-pilot', search: { stage } })
@@ -70,11 +56,12 @@ export default function KanbanBoard({
   const handleDrop = (e: React.DragEvent, stage: ApplicationStage) => {
     e.preventDefault()
     setDragOverStage(null)
-    const applicationId = e.dataTransfer.getData('applicationId')
-    if (!applicationId) return
-    const app = applications.find((a) => a.id === applicationId)
+    const id = e.dataTransfer.getData('applicationId')
+    setApplicationId(id)
+    if (!id) return
+    const app = applications.find((a) => a.id === id)
     if (!app || app.stage === stage) return
-    updateStage({ id: applicationId, stage })
+    updateStage({ id: id, stage })
   }
 
   return (

@@ -18,11 +18,11 @@ import { Progress } from '#/components/ui/progress'
 
 import SectionHeader from '#/components/layout/SectionHeader'
 import ProfileForm from '#/components/profile/ProfileForm'
-import SecondarySectionCard from '#/components/profile/SecondarySectionCard'
 
 import { getProfile } from '#/server/profile'
 
 import { cn } from '#/lib/utils'
+import SectionCard from '#/components/layout/SectionCard'
 
 export const Route = createFileRoute('/app/profile')({
   head: () => ({
@@ -107,9 +107,10 @@ function RouteComponent() {
           className="w-2/3"
         />
         <div className="sticky top-20 flex w-1/3 flex-col gap-4 self-start">
-          <SecondarySectionCard
+          <SectionCard
+            variant="profile_secondary"
             title="Import File"
-            subTitle="Auto-fill"
+            label="Auto-fill"
             icon={
               <UploadIcon className="bg-primary/20 border-primary/10 text-primary size-6 rounded-md border p-1" />
             }
@@ -119,9 +120,10 @@ function RouteComponent() {
               disabled={isParsing}
               onFileAccepted={parse}
             />
-          </SecondarySectionCard>
+          </SectionCard>
 
-          <SecondarySectionCard
+          <SectionCard
+            variant="profile_secondary"
             title="Profile Strength"
             icon={
               <BatteryMediumIcon className="bg-primary/20 border-primary/10 text-primary size-6 rounded-md border p-1" />
@@ -159,7 +161,7 @@ function RouteComponent() {
                 ))}
               </div>
             </div>
-          </SecondarySectionCard>
+          </SectionCard>
         </div>
       </div>
     </div>

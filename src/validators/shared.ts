@@ -1,16 +1,5 @@
+import { PROFILE_LIMITS } from '#/config'
 import { z } from 'zod'
-
-export const PROFILE_LIMITS = {
-  skills: 30,
-  experience: 8,
-  bullets: 6,
-  education: 4,
-  certifications: 10,
-  roles: 5,
-  links: 5,
-  wordsToAvoid: 10,
-  projects: 4,
-}
 
 export const applicationStageSchema = z.enum([
   'spotted',
