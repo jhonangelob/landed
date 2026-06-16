@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-router'
 
 import { Toaster } from '#/components/ui/sonner'
+import { TooltipProvider } from '#/components/ui/tooltip'
 
 import Footer from '#/components/layout/Footer'
 import Header from '#/components/layout/Header'
@@ -66,17 +67,19 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <NavigationProgress />
-        {isAuthRoute ? (
-          children
-        ) : (
-          <>
-            <Header />
-            <main className="mt-14 flex min-h-[calc(100vh-56px)]">
-              {children}
-            </main>
-            <Footer />
-          </>
-        )}
+        <TooltipProvider>
+          {isAuthRoute ? (
+            children
+          ) : (
+            <>
+              <Header />
+              <main className="mt-14 flex min-h-[calc(100vh-56px)]">
+                {children}
+              </main>
+              <Footer />
+            </>
+          )}
+        </TooltipProvider>
         <Toaster
           position="bottom-right"
           closeButton

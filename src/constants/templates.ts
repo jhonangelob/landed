@@ -45,7 +45,6 @@ export const CV_TEMPLATES: CvTemplate[] = [
 export type CvTemplateId = (typeof CV_TEMPLATES)[number]['id']
 
 export const FREE_TEMPLATES = CV_TEMPLATES.filter((t) => t.plan === 'economy')
-export const PAID_TEMPLATES = CV_TEMPLATES.filter((t) => t.plan !== 'economy')
 
 export const getTemplateById = (id: string): CvTemplate | undefined =>
   CV_TEMPLATES.find((t) => t.id === id)

@@ -1,11 +1,11 @@
+import { FAQS } from '#/constants/landing'
+
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from '@/components/ui/accordion'
-
-import { FAQS } from '#/constants/landing'
+} from '../ui/accordion'
 
 export default function FAQ() {
   return (

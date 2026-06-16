@@ -26,7 +26,6 @@ import { Route as authResetPasswordRouteImport } from './routes/(auth)/reset-pas
 import { Route as authLoginRouteImport } from './routes/(auth)/login'
 import { Route as authForgotPasswordRouteImport } from './routes/(auth)/forgot-password'
 import { Route as authEmailVerifiedRouteImport } from './routes/(auth)/email-verified'
-import { Route as ApiPaymongoWebhookRouteImport } from './routes/api/paymongo/webhook'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const AppRouteRoute = AppRouteRouteImport.update({
@@ -113,11 +112,6 @@ const authEmailVerifiedRoute = authEmailVerifiedRouteImport.update({
   path: '/email-verified',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPaymongoWebhookRoute = ApiPaymongoWebhookRouteImport.update({
-  id: '/api/paymongo/webhook',
-  path: '/api/paymongo/webhook',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -142,7 +136,6 @@ export interface FileRoutesByFullPath {
   '/': typeof marketingIndexRoute
   '/app/': typeof AppIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/api/paymongo/webhook': typeof ApiPaymongoWebhookRoute
 }
 export interface FileRoutesByTo {
   '/email-verified': typeof authEmailVerifiedRoute
@@ -161,7 +154,6 @@ export interface FileRoutesByTo {
   '/': typeof marketingIndexRoute
   '/app': typeof AppIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/api/paymongo/webhook': typeof ApiPaymongoWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -183,7 +175,6 @@ export interface FileRoutesById {
   '/(marketing)/': typeof marketingIndexRoute
   '/app/': typeof AppIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/api/paymongo/webhook': typeof ApiPaymongoWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -205,7 +196,6 @@ export interface FileRouteTypes {
     | '/'
     | '/app/'
     | '/api/auth/$'
-    | '/api/paymongo/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/email-verified'
@@ -224,7 +214,6 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/api/auth/$'
-    | '/api/paymongo/webhook'
   id:
     | '__root__'
     | '/(marketing)'
@@ -245,7 +234,6 @@ export interface FileRouteTypes {
     | '/(marketing)/'
     | '/app/'
     | '/api/auth/$'
-    | '/api/paymongo/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -262,7 +250,6 @@ export interface RootRouteChildren {
   PaymentSuccessRoute: typeof PaymentSuccessRoute
   ShareShareTokenRoute: typeof ShareShareTokenRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
-  ApiPaymongoWebhookRoute: typeof ApiPaymongoWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -386,13 +373,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authEmailVerifiedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/paymongo/webhook': {
-      id: '/api/paymongo/webhook'
-      path: '/api/paymongo/webhook'
-      fullPath: '/api/paymongo/webhook'
-      preLoaderRoute: typeof ApiPaymongoWebhookRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -447,7 +427,6 @@ const rootRouteChildren: RootRouteChildren = {
   PaymentSuccessRoute: PaymentSuccessRoute,
   ShareShareTokenRoute: ShareShareTokenRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
-  ApiPaymongoWebhookRoute: ApiPaymongoWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

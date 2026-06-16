@@ -12,8 +12,14 @@ export interface UsageInfo {
 export function getUsageResetDate(sub: {
   startedAt: Date | string
   expiresAt: Date | string | null
+  generationsResetAt?: Date | string | null
 }): Date | null {
   if (sub.expiresAt) return new Date(sub.expiresAt)
+
+  // Free plans refill monthly; the authoritative next-reset boundary lives on
+  // the subscription (see applyMonthlyReset). Fall back to rolling forward from
+  // startedAt only for legacy rows created before the column existed.
+  if (sub.generationsResetAt) return new Date(sub.generationsResetAt)
 
   const reset = new Date(sub.startedAt)
   const now = new Date()
@@ -27,6 +33,7 @@ export function getUsageInfo(
   sub: Pick<Subscription, 'planId' | 'generationsUsed' | 'generationsLimit'> & {
     startedAt: Date | string
     expiresAt: Date | string | null
+    generationsResetAt?: Date | string | null
   },
 ): UsageInfo {
   const used = sub.generationsUsed

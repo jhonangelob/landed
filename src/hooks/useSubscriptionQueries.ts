@@ -17,6 +17,7 @@ export function useSubscriptionQuery() {
   return useSuspenseQuery({
     queryKey: subscriptionQueryKey,
     queryFn: () => getSubscription(),
+    retry: false,
   })
 }
 

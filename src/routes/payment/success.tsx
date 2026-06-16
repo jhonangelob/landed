@@ -1,9 +1,9 @@
-import { useEffect } from 'react'
-
-import { subscriptionQueryKey } from '#/hooks/useSubscriptionQueries'
+import {
+  subscriptionQueryKey,
+  useSubscriptionQuery,
+} from '#/hooks/useSubscriptionQueries'
 import { CheckCircleIcon, MoveRightIcon } from 'lucide-react'
 
-import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, createFileRoute } from '@tanstack/react-router'
 
 import { Button } from '#/components/ui/button'
@@ -16,6 +16,12 @@ export const Route = createFileRoute('/payment/success')({
   head: () => ({
     meta: [{ title: 'Landed | Payment Successful' }],
   }),
+  loader: ({ context: { queryClient } }) =>
+    queryClient.ensureQueryData({
+      queryKey: subscriptionQueryKey,
+      queryFn: () => getSubscription(),
+    }),
+
   component: PaymentSuccess,
 })
 
@@ -31,25 +37,15 @@ function formatDate(date: Date | string | null | undefined): string {
 }
 
 function PaymentSuccess() {
-  const queryClient = useQueryClient()
+  const { data: subscription } = useSubscriptionQuery()
 
-  useEffect(() => {
-    queryClient.invalidateQueries({ queryKey: subscriptionQueryKey })
-  }, [queryClient])
-
-  const { data: subscription } = useQuery({
-    queryKey: subscriptionQueryKey,
-    queryFn: () => getSubscription(),
-    retry: false,
-  })
-
-  const plan = subscription ? getPlanById(subscription.planId) : undefined
-  const planName = plan?.name ?? 'your plan'
-  const amount = plan ? `₱${plan.price}.00` : '—'
-  const accessThrough = subscription?.expiresAt
+  const plan = getPlanById(subscription.planId)
+  const planName = plan.name
+  const amount = `₱${plan.price}.00`
+  const accessThrough = subscription.expiresAt
     ? formatDate(subscription.expiresAt)
     : 'No expiry'
-  const confirmation = subscription?.paymentRef
+  const confirmation = subscription.paymentRef
     ? subscription.paymentRef.slice(-12).toUpperCase()
     : '—'
 
@@ -68,7 +64,7 @@ function PaymentSuccess() {
           <p className="text-ink-muted font-sans text-[14px] leading-[1.55]">
             Your cabin is live — unlimited Co-Pilot generations and the rest are
             unlocked
-            {subscription?.expiresAt ? ` through ${accessThrough}` : ''}. A
+            {subscription.expiresAt ? ` through ${accessThrough}` : ''}. A
             receipt is on its way to your inbox.
           </p>
         </div>

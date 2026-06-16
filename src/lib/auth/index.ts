@@ -15,6 +15,9 @@ if (!process.env.BETTER_AUTH_SECRET || !process.env.BETTER_AUTH_URL)
   )
 
 export const auth = betterAuth({
+  enabled: true,
+  window: 60,
+  max: 100,
   database: drizzleAdapter(db, {
     provider: 'pg',
     schema: {

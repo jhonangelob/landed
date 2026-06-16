@@ -58,7 +58,7 @@ function SharePage() {
   const { shareToken } = Route.useParams()
   const snap = share?.statsSnapshot as StatsSnapshot
 
-  const apiUrl = import.meta.env.VITE_API_URL
+  const apiUrl = window.location.origin
   const shareUrl = `${apiUrl}/share/${shareToken}`
 
   const [isCelebrating, setIsCelebrating] = useState(true)

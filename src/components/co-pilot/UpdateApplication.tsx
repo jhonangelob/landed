@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 import { formatNumber, parseNumber } from '#/helper/number'
 import {
+  useShareApplicationQuery,
   useUpdateApplicationMutation,
   useUpdateApplicationStageMutation,
 } from '#/hooks/useApplicationQueries'
@@ -18,7 +19,6 @@ import type {
 import { CheckIcon, CopyIcon, SaveIcon } from 'lucide-react'
 
 import { useForm } from '@tanstack/react-form'
-import { useQuery } from '@tanstack/react-query'
 
 import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
@@ -35,9 +35,8 @@ import { Textarea } from '#/components/ui/textarea'
 import SectionCard from '#/components/layout/SectionCard'
 import SectionHeader from '#/components/layout/SectionHeader'
 
-import { getShareTokenForApplication } from '#/server/touchdown'
-
 import { useModal } from '#/lib/store/modal'
+import { notify } from '#/lib/toast'
 
 import { updateApplicationSchema } from '#/validators/application'
 import { applicationStageSchema } from '#/validators/shared'
@@ -59,11 +58,7 @@ export default function UpdateApplication({
   const isLanded = application?.stage === 'landed'
   const [copied, setCopied] = useState(false)
 
-  const { data: shareToken } = useQuery({
-    queryKey: ['touchdown-share', applicationId],
-    queryFn: () => getShareTokenForApplication({ data: { applicationId } }),
-    enabled: isLanded,
-  })
+  const { data: shareToken } = useShareApplicationQuery(applicationId, isLanded)
 
   const shareUrl = shareToken
     ? `${window.location.origin}/share/${shareToken}`
@@ -72,6 +67,7 @@ export default function UpdateApplication({
   const handleCopyLink = async () => {
     if (!shareUrl) return
     await navigator.clipboard.writeText(shareUrl)
+    notify.success('Saved!', 'Link copied to clipboard')
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }

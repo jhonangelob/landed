@@ -4,6 +4,10 @@ import { formatDayTime } from '#/helper/date'
 import { downloadBase64Pdf } from '#/helper/download'
 import { useExportCoverLetterMutation } from '#/hooks/useDocumentQueries'
 import type { GeneratedDoc } from '#/types'
+import { DownloadIcon, HistoryIcon, PlusIcon, SparklesIcon } from 'lucide-react'
+
+import { useModal } from '#/lib/store/modal'
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,13 +15,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { DownloadIcon, HistoryIcon, PlusIcon, SparklesIcon } from 'lucide-react'
-
-import { useModal } from '#/lib/store/modal'
-
-import { Button } from '../ui/button'
+} from '../ui/dropdown-menu'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
 
 interface FilePreviewProps {
   showRetailorButton?: boolean
@@ -139,35 +139,48 @@ export default function FilePreview({
       </div>
       <div className="sticky top-16 w-12 space-y-2 self-start">
         {showRetailorButton && (
-          <Button
-            className="flex h-11! w-full flex-row gap-1.5 rounded-lg border bg-white px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase"
-            variant="outline"
-            onClick={handleRetailor}
-          >
-            <SparklesIcon className="text-ink-strong size-3.5" />
-          </Button>
+          <Tooltip>
+            <TooltipTrigger
+              className="flex h-11! w-full flex-row items-center justify-center gap-1.5 rounded-lg border bg-white px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase"
+              onClick={handleRetailor}
+            >
+              <SparklesIcon className="text-primary size-4" />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Re-Tailor</p>
+            </TooltipContent>
+          </Tooltip>
         )}
         {documents?.[fileType] && applicationId && (
-          <Button
-            className="flex h-11! w-full flex-row gap-1.5 rounded-lg border bg-white px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase"
-            variant="outline"
-            onClick={handleDownload}
-            disabled={isExportingCl}
-          >
-            <DownloadIcon className="text-ink-strong size-3.5" />
-          </Button>
+          <Tooltip>
+            <TooltipTrigger
+              className="flex h-11! w-full flex-row items-center justify-center gap-1.5 rounded-lg border bg-white px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase"
+              onClick={handleDownload}
+              disabled={isExportingCl}
+            >
+              <DownloadIcon className="text-primary size-4" />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Download File</p>
+            </TooltipContent>
+          </Tooltip>
         )}
         {documents?.[fileType] && applicationId && (
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                className="flex h-11! w-full flex-row gap-1.5 rounded-lg border bg-white px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase"
-                variant="outline"
-              >
-                <HistoryIcon className="text-ink-strong size-3.5" />
-              </Button>
+            <DropdownMenuTrigger className="flex h-11! w-full flex-row items-center justify-center gap-1.5 rounded-lg border bg-white px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase">
+              <Tooltip>
+                <TooltipTrigger>
+                  <HistoryIcon className="text-primary size-4" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>View History</p>
+                </TooltipContent>
+              </Tooltip>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-70 shadow-none" align="end">
+            <DropdownMenuContent
+              className="w-70 rounded-lg shadow-none"
+              align="end"
+            >
               <DropdownMenuLabel className="font-mono text-[11px] tracking-[1.1px] uppercase">
                 Version history
               </DropdownMenuLabel>

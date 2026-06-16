@@ -63,6 +63,7 @@ function RouteComponent() {
         setErrorMessage(res.error.message || '')
       }
 
+      navigate({ to: '/app' })
       setIsLoading(false)
     },
   })

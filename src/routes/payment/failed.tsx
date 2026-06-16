@@ -6,7 +6,7 @@ import { Button } from '#/components/ui/button'
 
 export const Route = createFileRoute('/payment/failed')({
   head: () => ({
-    meta: [{ title: 'Landed | Payment Failed' }],
+    meta: [{ title: 'Landed | Activation Issue' }],
   }),
   validateSearch: (search: Record<string, unknown>): { reason?: string } => {
     return typeof search.reason === 'string' ? { reason: search.reason } : {}
@@ -21,15 +21,16 @@ function PaymentFailed() {
         <div className="flex flex-col items-center gap-2 text-center">
           <CircleOffIcon className="text-danger-strong size-14" />
           <p className="text-danger-strong font-mono text-[11px] leading-[1.4] tracking-[1.7px] uppercase">
-            Payment Declined
+            Activation Snag
           </p>
           <p className="font-display text-primary-text text-[32px] leading-[1.06] font-bold tracking-[-0.8px]">
-            The didn't <span className="text-primary italic">clear</span>.
+            Your cabin didn't{' '}
+            <span className="text-primary italic">unlock</span>.
           </p>
           <p className="text-ink-muted font-sans text-[14px] leading-[1.55]">
-            We couldn't charge your card for the{' '}
-            <span className="font-bold">First Class</span> cabin, so nothing was
-            billed and your plan is unchanged. Let's try again.
+            Your QR Ph payment may have already gone through, but we couldn't
+            activate your plan on our end. You won't be charged twice — reach
+            out and we'll get your cabin open.
           </p>
         </div>
 
@@ -37,11 +38,14 @@ function PaymentFailed() {
           <TriangleAlertIcon className="text-destructive size-10" />
           <div className="flex flex-col gap-1">
             <p className="text-ink-strong font-sans text-[13px] leading-normal font-bold">
-              Your bank declined the charge.
+              Your payment went through — activation didn't.
             </p>
             <p className="text-ink-muted font-sans text-[13px] leading-normal font-normal">
-              The card issuer didn't approve this payment. No funds were taken.{' '}
-              <span className="text-danger-strong">code: card_declined</span>
+              The QR Ph charge cleared, but updating your subscription failed on
+              our side.{' '}
+              <span className="text-danger-strong">
+                code: subscription_update_failed
+              </span>
             </p>
           </div>
         </div>
@@ -52,7 +56,7 @@ function PaymentFailed() {
               1
             </p>
             <p className="text-ink-muted text-[13px] leading-[1.45]">
-              Double-check the card number, expiry and CVC.
+              Don't pay again — your QR Ph payment already cleared.
             </p>
           </div>
           <div className="flex flex-row items-center gap-2">
@@ -60,7 +64,7 @@ function PaymentFailed() {
               2
             </p>
             <p className="text-ink-muted text-[13px] leading-[1.45]">
-              Confirm the card allows online payments, or try another card.
+              Have your payment reference from your bank or e-wallet app ready.
             </p>
           </div>
           <div className="flex flex-row items-center gap-2">
@@ -68,7 +72,8 @@ function PaymentFailed() {
               3
             </p>
             <p className="text-ink-muted text-[13px] leading-[1.45]">
-              Still stuck? Your bank can clear the block in a moment.
+              Contact support and we'll unlock your cabin, usually within
+              minutes.
             </p>
           </div>
         </div>
@@ -79,16 +84,7 @@ function PaymentFailed() {
               to="/app/hangar"
               className="h-12 font-mono text-[12px] leading-[1.4] font-bold! tracking-[0.7px] text-white! uppercase"
             >
-              Try again <MoveRightIcon />
-            </Link>
-          </Button>
-
-          <Button asChild variant="outline" className="! shadow-none!">
-            <Link
-              to="/app/hangar"
-              className="text-primary-text! h-12 font-mono text-[12px] leading-[1.4] font-bold! tracking-[0.7px] uppercase"
-            >
-              Use a different card
+              Back to the Hangar <MoveRightIcon />
             </Link>
           </Button>
           <p className="text-muted mt-3 text-center font-mono text-[11px] leading-[1.4] tracking-[0.4px]">

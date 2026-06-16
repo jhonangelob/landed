@@ -23,6 +23,7 @@ import {
   updateApplication,
   updateApplicationStage,
 } from '#/server/applications'
+import { getShareTokenForApplication } from '#/server/touchdown'
 
 import { parseError } from '#/lib/error'
 import { maybeCelebrateLanded } from '#/lib/store/landed'
@@ -44,6 +45,17 @@ export function useApplicationQuery(id: string | undefined) {
     queryKey: applicationQueryKey(id ?? ''),
     queryFn: () => getApplicationById({ data: { id: id! } }),
     enabled: !!id,
+  })
+}
+
+export function useShareApplicationQuery(
+  applicationId: string,
+  isLanded: boolean,
+) {
+  return useQuery({
+    queryKey: ['touchdown-share', applicationId],
+    queryFn: () => getShareTokenForApplication({ data: { applicationId } }),
+    enabled: !!isLanded,
   })
 }
 

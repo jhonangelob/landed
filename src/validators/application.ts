@@ -14,7 +14,7 @@ export const applicationSchema = z.object({
   status: z.string().or(z.literal('')),
   description: z
     .string()
-    .max(50_000, 'Reached maximum description character limit')
+    .max(8000, 'Reached maximum description character limit')
     .or(z.literal('')),
   appliedAt: z.date().nullable(),
   updatedAt: z.date(),

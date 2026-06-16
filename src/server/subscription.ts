@@ -7,6 +7,7 @@ import { ensureSession } from '#/server/session'
 
 import { db } from '#/lib/db/index.server'
 import { subscriptions } from '#/lib/db/schema'
+import { addMonths, applyMonthlyReset } from '#/lib/subscription/reset'
 import { AppError } from '#/lib/utils'
 
 import {
@@ -28,7 +29,7 @@ export const getSubscription = createServerFn({ method: 'GET' }).handler(
 
     if (!result) throw new AppError('NOT_FOUND', 'Subscription not found')
 
-    return result
+    return await applyMonthlyReset(result)
   },
 )
 
@@ -42,6 +43,7 @@ export const createSubscription = createServerFn({ method: 'POST' })
         planId: FREE_PLAN.id,
         generationsUsed: 0,
         generationsLimit: FREE_PLAN.generations,
+        generationsResetAt: addMonths(new Date(), 1),
       })
       .onConflictDoNothing({ target: subscriptions.userId })
   })
@@ -63,7 +65,7 @@ export const checkGenerationLimit = createServerFn({ method: 'GET' }).handler(
         'No active subscription found — please refresh and try again',
       )
 
-    const usage = getUsageInfo(sub)
+    const usage = getUsageInfo(await applyMonthlyReset(sub))
 
     if (!usage.unlimited && usage.remaining <= 0)
       throw new AppError(
