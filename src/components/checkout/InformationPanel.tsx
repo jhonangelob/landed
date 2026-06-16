@@ -19,7 +19,7 @@ export default function InformationPanel({
     : null
 
   return (
-    <div className="bg-surface-subtle w-1/2 border-r p-9">
+    <div className="bg-surface-subtle w-full border-b p-9 md:w-1/2 md:border-r md:border-b-0">
       <p className="text-primary flex flex-row items-center pb-3.5 font-mono text-[11px] leading-[1.4] font-semibold tracking-[1.5px] uppercase">
         <ArrowUpIcon className="size-4" /> Cabin Upgrade ·{' '}
         <span className="text-muted font-mono font-normal">Subscription</span>

@@ -18,10 +18,10 @@ const steps = [
   {
     number: '03',
     title: 'Landed',
-    subtitle: 'Walk in prepared. Sign.',
+    subtitle: 'Track it home. Share the win.',
     description:
-      'Prep briefings for each round and negotiation scripts for the offer — so you land the role on the terms you want.',
-    tag: 'Interview → Offer',
+      'Move each role through interview and offer on your deck, then turn the win into a shareable boarding pass the moment you land.',
+    tag: 'Offer → Landed',
   },
 ]
 
@@ -29,13 +29,13 @@ export default function HowItWorks() {
   return (
     <div
       id="how-it-works"
-      className="bg-surface-muted px-4 py-12 md:px-16 md:py-29"
+      className="bg-surface-muted scroll-mt-10 px-4 py-12 md:px-16 md:py-29"
     >
       <div className="mx-auto flex max-w-295 flex-col gap-4">
         <p className="text-muted font-mono text-[11px] leading-[1.3] font-medium tracking-[1.3px] uppercase">
           How it Works
         </p>
-        <p className="font-display text-ink-strong text-[44px] leading-[1.08] font-bold tracking-[-1.1px]">
+        <p className="font-display text-ink-strong text-[32px] leading-[1.1] font-bold tracking-[-0.8px] md:text-[44px] md:leading-[1.08] md:tracking-[-1.1px]">
           Three steps from
           <br />
           <span className="text-primary italic">spotted</span> to signed.

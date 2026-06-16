@@ -34,8 +34,8 @@ function CheckoutPage() {
   const selectedPlan = getPlanById(planId)
 
   return (
-    <div className="mx-auto flex min-h-screen items-center justify-center">
-      <div className="flex w-250 flex-row overflow-hidden rounded-lg border">
+    <div className="mx-auto flex min-h-screen items-center justify-center px-4 py-8">
+      <div className="flex w-full max-w-250 flex-col overflow-hidden rounded-lg border md:flex-row">
         <InformationPanel selectedPlan={selectedPlan} />
         <PaymentForm
           intentId={intentId}

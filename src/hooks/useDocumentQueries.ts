@@ -1,9 +1,14 @@
 import { LOW_GENERATION_THRESHOLD } from '#/config'
-import type { ExportDocumentInput, GenerateDocumentInput } from '#/types'
+import type {
+  ExportCoverLetterInput,
+  ExportDocumentInput,
+  GenerateDocumentInput,
+} from '#/types'
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import {
+  exportCoverLetterPdf,
   exportCvPdf,
   generateDocuments,
   getDocumentHistory,
@@ -100,6 +105,17 @@ export function useExportDocumentsMutation() {
         loading: 'Exporting document...',
         success: 'Export ready, Your PDF download has started.',
         error: 'Could not export document',
+      }),
+  })
+}
+
+export function useExportCoverLetterMutation() {
+  return useMutation({
+    mutationFn: (value: ExportCoverLetterInput) =>
+      notify.promise(exportCoverLetterPdf({ data: value }), {
+        loading: 'Exporting cover letter...',
+        success: 'Export ready, your PDF download has started.',
+        error: 'Could not export cover letter',
       }),
   })
 }

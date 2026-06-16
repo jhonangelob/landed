@@ -1,6 +1,8 @@
 import { useState } from 'react'
 
 import { formatDayTime } from '#/helper/date'
+import { downloadBase64Pdf } from '#/helper/download'
+import { useExportCoverLetterMutation } from '#/hooks/useDocumentQueries'
 import type { GeneratedDoc } from '#/types'
 import {
   DropdownMenu,
@@ -19,8 +21,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
 
 interface FilePreviewProps {
   showRetailorButton?: boolean
-  documents?: GeneratedDoc[]
-  history?: GeneratedDoc[]
+  documents?: {
+    cv: GeneratedDoc[]
+    cover_letter: GeneratedDoc[]
+  }
+  history?: {
+    cv: GeneratedDoc[]
+    cover_letter: GeneratedDoc[]
+  }
   onRetailor?: (type: 'cv' | 'cover_letter') => void
   applicationId?: string
 }
@@ -57,139 +65,136 @@ export default function FilePreview({
 }: FilePreviewProps) {
   const { open } = useModal()
 
+  const { mutateAsync: exportCoverLetter, isPending: isExportingCl } =
+    useExportCoverLetterMutation()
+
   const [fileType, setFileType] = useState<'cv' | 'cover_letter'>('cv')
-
-  const historyList = history?.filter((doc) => doc.type === fileType)
-
-  const cvDoc = documents?.find((d) => d.type === 'cv')
-  const clDoc = documents?.find((d) => d.type === 'cover_letter')
-
-  const documentExist = {
-    cv: !!cvDoc,
-    cover_letter: !!clDoc,
-  }
 
   const handleRetailor = () => {
     onRetailor && onRetailor(fileType)
   }
 
+  const handleDownload = async () => {
+    if (!applicationId) return
+
+    if (fileType === 'cv') {
+      open('exportFile', { applicationId })
+      return
+    }
+
+    const result = await exportCoverLetter({ applicationId })
+    downloadBase64Pdf(result.base64, result.filename)
+  }
+
   return (
-    <div className="bg-surface-subtle w-full rounded-lg border p-5.5">
-      <Tabs defaultValue="cv">
-        <TabsList variant="line" className="flex w-full flex-row items-center">
-          <TabsTrigger
-            value="cv"
-            className="text-primary-text max-w-fit font-mono text-[11px] leading-[1.4] font-normal tracking-[1.3px] uppercase"
-            onClick={() => setFileType('cv')}
+    <div className="flex flex-row gap-2">
+      <div className="flex-1 rounded-lg border bg-white p-5.5">
+        <Tabs defaultValue="cv">
+          <TabsList
+            variant="line"
+            className="flex w-full flex-row justify-start"
           >
-            Tailored CV
-          </TabsTrigger>
-          <TabsTrigger
-            value="cl"
-            className="text-primary-text max-w-fit font-mono text-[11px] leading-[1.4] font-normal tracking-[1.3px] uppercase"
-            onClick={() => setFileType('cover_letter')}
-          >
-            Cover Letter
-          </TabsTrigger>
+            <TabsTrigger
+              value="cv"
+              className="text-primary-text max-w-fit font-mono text-[11px] leading-[1.4] font-normal tracking-[1.3px] uppercase"
+              onClick={() => setFileType('cv')}
+            >
+              Tailored CV
+            </TabsTrigger>
+            <TabsTrigger
+              value="cl"
+              className="text-primary-text max-w-fit font-mono text-[11px] leading-[1.4] font-normal tracking-[1.3px] uppercase"
+              onClick={() => setFileType('cover_letter')}
+            >
+              Cover Letter
+            </TabsTrigger>
+          </TabsList>
 
-          <div className="ml-auto flex flex-row gap-2">
-            {showRetailorButton ? (
-              <Button
-                className="text-primary-text flex h-fit flex-row gap-1.5 px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase"
-                variant="outline"
-                onClick={handleRetailor}
-              >
-                <SparklesIcon className="size-2.75" />
-                <p className="hidden md:block">
-                  {documentExist[fileType] ? 'Retailor' : 'Generate'}{' '}
-                  {fileType === 'cover_letter' ? 'Cover Letter' : 'CV'}
-                </p>
-              </Button>
+          <TabsContent value="cv">
+            {documents?.cv[0].contentHtml ? (
+              <div
+                className="prose prose-sm max-w-none p-8"
+                dangerouslySetInnerHTML={{
+                  __html: documents.cv[0].contentHtml,
+                }}
+              />
             ) : (
-              <span className="text-muted text-right font-sans text-[11px] leading-[1.4]">
-                AI generation is unavailable for applications
-                <br /> past the 'Applied' stage.
-              </span>
+              <EmptyFilePreview />
             )}
+          </TabsContent>
 
-            {documentExist[fileType] && applicationId && (
+          <TabsContent value="cl">
+            {documents?.cover_letter[0].contentHtml ? (
+              <div
+                className="prose prose-sm max-w-none p-8"
+                dangerouslySetInnerHTML={{
+                  __html: documents.cover_letter[0].contentHtml,
+                }}
+              />
+            ) : (
+              <EmptyFilePreview />
+            )}
+          </TabsContent>
+        </Tabs>
+      </div>
+      <div className="sticky top-16 w-12 space-y-2 self-start">
+        {showRetailorButton && (
+          <Button
+            className="flex h-11! w-full flex-row gap-1.5 rounded-lg border bg-white px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase"
+            variant="outline"
+            onClick={handleRetailor}
+          >
+            <SparklesIcon className="text-ink-strong size-3.5" />
+          </Button>
+        )}
+        {documents?.[fileType] && applicationId && (
+          <Button
+            className="flex h-11! w-full flex-row gap-1.5 rounded-lg border bg-white px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase"
+            variant="outline"
+            onClick={handleDownload}
+            disabled={isExportingCl}
+          >
+            <DownloadIcon className="text-ink-strong size-3.5" />
+          </Button>
+        )}
+        {documents?.[fileType] && applicationId && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
               <Button
-                className="text-primary-text flex h-fit flex-row gap-1.5 px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase"
+                className="flex h-11! w-full flex-row gap-1.5 rounded-lg border bg-white px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase"
                 variant="outline"
-                onClick={() =>
-                  open('exportFile', {
-                    applicationId,
-                  })
-                }
               >
-                <DownloadIcon className="size-2.75" />
-                <p className="hidden md:block">Download</p>
+                <HistoryIcon className="text-ink-strong size-3.5" />
               </Button>
-            )}
-
-            {documentExist[fileType] && applicationId && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    className="text-primary-text flex h-fit flex-row gap-1.5 px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase"
-                    variant="outline"
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-70 shadow-none" align="end">
+              <DropdownMenuLabel className="font-mono text-[11px] tracking-[1.1px] uppercase">
+                Version history
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {history && history[fileType].length > 0 ? (
+                history[fileType].map((doc) => (
+                  <DropdownMenuItem
+                    key={doc.id}
+                    className="flex flex-row items-center justify-between gap-4"
                   >
-                    <HistoryIcon className="size-2.75" />
-                    <p className="hidden md:block">History</p>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-70 shadow-none" align="end">
-                  <DropdownMenuLabel className="font-mono text-[11px] tracking-[1.1px] uppercase">
-                    Version history
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  {historyList && historyList.length > 0 ? (
-                    historyList.map((doc) => (
-                      <DropdownMenuItem
-                        key={doc.id}
-                        className="flex flex-row items-center justify-between gap-4"
-                      >
-                        <span className="text-ink-strong font-mono text-[12px] leading-[1.4] font-medium tracking-[0.1px]">
-                          Version {doc.version}
-                        </span>
-                        <span className="text-muted font-mono text-[11px] leading-[1.4]">
-                          {formatDayTime(doc.createdAt)}
-                        </span>
-                      </DropdownMenuItem>
-                    ))
-                  ) : (
-                    <DropdownMenuItem disabled>
-                      No previous versions
-                    </DropdownMenuItem>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
-          </div>
-        </TabsList>
-
-        <TabsContent value="cv">
-          {cvDoc?.contentHtml ? (
-            <div
-              className="prose prose-sm max-w-none p-8"
-              dangerouslySetInnerHTML={{ __html: cvDoc.contentHtml }}
-            />
-          ) : (
-            <EmptyFilePreview />
-          )}
-        </TabsContent>
-
-        <TabsContent value="cl">
-          {clDoc?.contentHtml ? (
-            <div
-              className="prose prose-sm max-w-none p-8"
-              dangerouslySetInnerHTML={{ __html: clDoc.contentHtml }}
-            />
-          ) : (
-            <EmptyFilePreview />
-          )}
-        </TabsContent>
-      </Tabs>
+                    <span className="text-ink-strong font-mono text-[12px] leading-[1.4] font-medium tracking-[0.1px]">
+                      {doc.version}
+                    </span>
+                    <span className="text-muted font-mono text-[11px] leading-[1.4]">
+                      {formatDayTime(doc.createdAt)}
+                    </span>
+                  </DropdownMenuItem>
+                ))
+              ) : (
+                <DropdownMenuItem disabled>
+                  No previous versions
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+      </div>
     </div>
   )
 }

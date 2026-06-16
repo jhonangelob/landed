@@ -23,11 +23,11 @@ export const FAQS = [
   {
     question: 'Is my data private?',
     answer:
-      'Your profile and applications are yours. We don’t sell your data, and you can export or permanently delete everything from the Hangar at any time.',
+      'Your profile and applications are yours. We don’t sell your data, and you can permanently delete everything from the Hangar at any time.',
   },
   {
     question: 'Can I track applications I found elsewhere?',
     answer:
-      'Absolutely. Add any role manually as Spotted, or let the job-board radar pull listings onto your deck. However a role reaches you, it lives in one place.',
+      'Absolutely. Add any role manually as Spotted in seconds — wherever you found it, it lives on your Flight Deck alongside everything else, in one place.',
   },
 ]

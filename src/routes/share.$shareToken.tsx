@@ -146,7 +146,7 @@ function SharePage() {
   return (
     <div className="flex min-h-screen w-screen flex-col items-center justify-center bg-white px-4 pt-4 pb-12">
       <div className="mx-auto w-full max-w-4xl space-y-6">
-        <h1 className="font-display text-primary-text text-[56px] leading-[0.95] font-bold tracking-[-2px]">
+        <h1 className="font-display text-primary-text text-[36px] leading-none font-bold tracking-[-1.2px] md:text-[56px] md:leading-[0.95] md:tracking-[-2px]">
           They <span className="text-primary italic">landed!</span>
         </h1>
 
@@ -159,11 +159,11 @@ function SharePage() {
         {/* Boarding Pass */}
         <div
           className={cn(
-            'z-10 flex flex-row overflow-hidden rounded-xl border',
+            'z-10 flex flex-col overflow-hidden rounded-xl border md:flex-row',
             isCelebrating && 'wiggle',
           )}
         >
-          <div className="border-divider bg-surface-muted flex-1 border-r border-dashed px-6 py-6">
+          <div className="border-divider bg-surface-muted flex-1 border-b border-dashed px-6 py-6 md:border-r md:border-b-0">
             <div className="flex flex-row justify-between pb-4">
               <div>
                 <p className="text-muted font-mono text-[11px] leading-[1.4] font-normal tracking-[1.7px] uppercase">
@@ -209,7 +209,7 @@ function SharePage() {
                 </p>
               </div>
             </div>
-            <div className="flex flex-row gap-12 pt-4">
+            <div className="flex flex-row flex-wrap gap-x-8 gap-y-3 pt-4 md:gap-12">
               <div className="space-y-1">
                 <p className="text-muted font-mono text-[10px] leading-[1.4] tracking-[1.3px] uppercase">
                   departed
@@ -248,7 +248,7 @@ function SharePage() {
               )}
             </div>
           </div>
-          <div className="bg-surface-info relative w-48 space-y-4 px-5 py-6">
+          <div className="bg-surface-info relative w-full space-y-4 px-5 py-6 md:w-48">
             <div className="absolute -top-3 -left-3 h-6 w-6 rounded-full border bg-white" />
             <div className="absolute -bottom-7 -left-3 h-6 w-6 rounded-full border bg-white" />
             <div className="flex flex-row justify-between">
@@ -297,7 +297,7 @@ function SharePage() {
         </div>
 
         {/* CTA */}
-        <div className="flex flex-row items-center justify-between gap-4 rounded-lg border bg-white px-5 py-4">
+        <div className="flex flex-col items-start gap-4 rounded-lg border bg-white px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-primary-text font-display text-[18px] leading-[1.4] font-bold tracking-[-0.5px]">
               Track your own job search.
@@ -307,8 +307,8 @@ function SharePage() {
               land faster.
             </p>
           </div>
-          <Button asChild className="shrink-0">
-            <Link to="/" className="text-white!">
+          <Button asChild className="w-full shrink-0 sm:w-auto">
+            <Link to="/" className="justify-center text-white!">
               Try Landed for free
               <ArrowRightIcon />
             </Link>

@@ -409,22 +409,13 @@ header {
   }
 
   .section {
-    @apply flex h-full w-full flex-col gap-4 overflow-hidden;
+    @apply flex h-full w-full flex-col gap-4 overflow-hidden px-4;
   }
 
   button {
     @apply cursor-pointer shadow-none!;
   }
 
-  /* Input / Textarea / Label field styling lives in their components
-     (components/ui/{input,textarea,label}.tsx) so consumers can override
-     via className without fighting an !important cascade. */
-
-  /* ── Sonner toast ──────────────────────────────────────────
-     The toast itself is a custom card rendered in
-     components/ui/sonner.tsx (ToastCard). These rules only drive
-     the in-card progress bar and pause it while the stack is
-     hovered — matching sonner's own timer pause. */
   .toast-progress-bar {
     animation-name: toast-progress;
     animation-timing-function: linear;

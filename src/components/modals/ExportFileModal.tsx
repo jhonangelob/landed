@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import { downloadBase64Pdf } from '#/helper/download'
 import { useExportDocumentsMutation } from '#/hooks/useDocumentQueries'
 import { DownloadIcon } from 'lucide-react'
 
@@ -38,14 +39,7 @@ export default function ExportFileModal({
 
   const handleExport = async () => {
     const result = await exportDocuments({ applicationId, template })
-    const bytes = Uint8Array.from(atob(result.base64), (c) => c.charCodeAt(0))
-    const blob = new Blob([bytes], { type: 'application/pdf' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = result.filename
-    a.click()
-    URL.revokeObjectURL(url)
+    downloadBase64Pdf(result.base64, result.filename)
     onOpenChange(false)
   }
 

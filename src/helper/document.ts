@@ -173,11 +173,56 @@ export function cvToHtml(cv: CvContent): string {
   return `<div style="${S.page}">${header}${summary}${education}${experience}${certifications}${skills}</div>`.trim()
 }
 
-export const clToHtml = (cl: CoverLetterContent): string =>
-  `
-    <p>${esc(cl.opening)}</p>
-    <br />
-    <p>${esc(cl.body)}</p>
-    <br />
-    <p>${esc(cl.closing)}</p>
-  `.trim()
+/** Business-letter styles for the cover letter — reuse the serif page from S. */
+const CL = {
+  block: 'margin:0 0 14pt;',
+  line: 'font-size:11pt;line-height:1.35;margin:0;',
+  nameLine: 'font-size:11pt;line-height:1.35;font-weight:bold;margin:0;',
+  date: 'font-size:11pt;line-height:1.35;margin:0 0 14pt;',
+  para: 'font-size:11pt;line-height:1.5;text-align:justify;margin:0 0 10pt;',
+  signoff: 'margin:14pt 0 0;',
+}
+
+export const clToHtml = (cl: CoverLetterContent): string => {
+  const line = (value: string | undefined, style: string = CL.line): string =>
+    value ? `<p style="${style}">${esc(value)}</p>` : ''
+
+  // Sender block: name, city & ZIP, phone, email.
+  const senderBlock = [
+    line(cl.sender.name, CL.nameLine),
+    line(cl.sender.location),
+    line(cl.sender.phone),
+    line(cl.sender.email),
+  ].join('')
+
+  // Recipient block: contact name, title, company, address. Any unknown line
+  // is omitted rather than shown as a placeholder.
+  const recipientBlock = [
+    line(cl.recipient.name),
+    line(cl.recipient.title),
+    line(cl.recipient.company),
+    line(cl.recipient.address),
+  ].join('')
+
+  const paragraphs = (text: string): string =>
+    text
+      .split(/\n{2,}/)
+      .map((p) => p.trim())
+      .filter(Boolean)
+      .map((p) => `<p style="${CL.para}">${esc(p)}</p>`)
+      .join('')
+
+  return `<div style="${S.page}">
+      <div style="${CL.block}">${senderBlock}</div>
+      ${line(cl.date, CL.date)}
+      <div style="${CL.block}">${recipientBlock}</div>
+      ${line(cl.greeting, CL.para)}
+      ${paragraphs(cl.opening)}
+      ${paragraphs(cl.body)}
+      ${paragraphs(cl.closing)}
+      <div style="${CL.signoff}">
+        <p style="${CL.line}">Sincerely,</p>
+        ${line(cl.sender.name)}
+      </div>
+    </div>`.trim()
+}

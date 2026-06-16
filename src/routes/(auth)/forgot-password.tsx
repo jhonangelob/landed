@@ -68,14 +68,14 @@ function RouteComponent() {
   })
 
   return (
-    <div className="bg-background flex h-screen flex-col items-center justify-start gap-4 p-12 md:justify-center">
+    <div className="bg-background flex h-screen flex-col items-center justify-start gap-4 p-6 md:justify-center md:p-12">
       <img
         src={logo}
         alt="Landed Logo"
         className="mb-4 h-10 min-w-fit md:h-14"
       />
 
-      <div className="flex w-100 flex-col gap-6 rounded-xl border bg-white px-7 py-5">
+      <div className="flex w-full max-w-100 flex-col gap-6 rounded-xl border bg-white px-7 py-5">
         <div className="flex flex-col gap-2">
           <p className="font-display text-primary-text text-center text-[24px] font-bold">
             Forgot Password

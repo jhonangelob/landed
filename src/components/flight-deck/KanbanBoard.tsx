@@ -89,7 +89,7 @@ export default function KanbanBoard({
 
   return (
     <div className="flex h-full max-h-[calc(100vh-250px)] flex-1 flex-col gap-6">
-      <div className="flex max-h-[calc(100vh-300px)] min-h-0 flex-1 flex-row gap-4 overflow-auto pr-12 pb-6">
+      <div className="flex max-h-[calc(100vh-300px)] min-h-0 flex-1 flex-row gap-2.5 overflow-auto pr-12 pb-6">
         {KANBAN_COLUMNS.map((col, index) => {
           const colApps = applications.filter((a) => a.stage === col.stage)
           const visibleCount = isFiltering

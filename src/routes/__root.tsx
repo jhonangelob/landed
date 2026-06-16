@@ -1,4 +1,3 @@
-import { TanStackDevtools } from '@tanstack/react-devtools'
 import type { QueryClient } from '@tanstack/react-query'
 import {
   HeadContent,
@@ -6,7 +5,6 @@ import {
   createRootRouteWithContext,
   useLocation,
 } from '@tanstack/react-router'
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 
 import { Toaster } from '#/components/ui/sonner'
 
@@ -15,7 +13,6 @@ import Header from '#/components/layout/Header'
 import { NavigationProgress } from '#/components/layout/NavigationProgress'
 import NotFound from '#/components/layout/NotFound'
 
-import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 import appCss from '../styles.css?url'
 
 interface MyRouterContext {
@@ -58,6 +55,7 @@ const AUTH_ROUTES = new Set([
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   const { pathname } = useLocation()
+
   const isAuthRoute =
     AUTH_ROUTES.has(pathname) || pathname.startsWith('/share/')
 
@@ -73,7 +71,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         ) : (
           <>
             <Header />
-            <main className="mx-4 mt-14 flex min-h-[calc(100vh-56px)]">
+            <main className="mt-14 flex min-h-[calc(100vh-56px)]">
               {children}
             </main>
             <Footer />
@@ -85,18 +83,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           expand={true}
           visibleToasts={5}
         />
-        <TanStackDevtools
-          config={{
-            position: 'bottom-right',
-          }}
-          plugins={[
-            {
-              name: 'Tanstack Router',
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-            TanStackQueryDevtools,
-          ]}
-        />
+
         <Scripts />
       </body>
     </html>

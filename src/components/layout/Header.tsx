@@ -79,7 +79,7 @@ export default function Header() {
         <div className="flex flex-row items-center gap-0.5 lg:mr-14">
           <img src={logo} alt="FlightDeck Logo" className="h-8 min-w-fit" />
 
-          <p className="text-muted hidden font-mono text-[10px] font-medium tracking-[1.4px] text-nowrap uppercase md:block">
+          <p className="text-muted hidden font-mono text-[10px] font-medium tracking-[1.4px] text-nowrap uppercase lg:block">
             Your job search, navigated by AI.
           </p>
         </div>
@@ -225,11 +225,6 @@ export default function Header() {
                 </Button>
               ) : (
                 <div className="flex w-full gap-2">
-                  <Button asChild variant="outline" className="flex-1">
-                    <Link to="/login" className="text-white!">
-                      Log in
-                    </Link>
-                  </Button>
                   <Button asChild className="bg-primary flex-1 rounded-md">
                     <Link to="/signup" className="text-white!">
                       Get started

@@ -5,7 +5,7 @@ export function getContext() {
     defaultOptions: {
       queries: {
         staleTime: 60_000,
-        gcTime: 10 * 60_000,
+        gcTime: 100 * 60_000,
         refetchOnWindowFocus: false,
         refetchOnReconnect: true,
         retry: 1,

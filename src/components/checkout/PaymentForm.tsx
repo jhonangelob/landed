@@ -63,7 +63,7 @@ export default function PaymentForm({
   const showQr = Boolean(qrCodeImageUrl) && !expired
 
   return (
-    <div className="w-1/2 space-y-6 bg-white p-9">
+    <div className="w-full space-y-6 bg-white p-9 md:w-1/2">
       <div className="space-y-1">
         <p className="font-display text-primary-text text-[17px] leading-[1.4] font-bold">
           Pay with QR Ph

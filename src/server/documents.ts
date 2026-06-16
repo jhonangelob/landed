@@ -6,7 +6,7 @@ import {
   buildUserPrompt,
   parseAiResponse,
 } from '#/helper/prompt'
-import type { CvContent } from '#/types'
+import type { CoverLetterContent, CvContent } from '#/types'
 import { anthropic } from '@ai-sdk/anthropic'
 import { renderToBuffer } from '@react-pdf/renderer'
 import { generateText } from 'ai'
@@ -25,11 +25,13 @@ import {
   pilotProfiles,
   users,
 } from '#/lib/db/schema'
+import { CoverLetter } from '#/lib/pdf/templates/CoverLetter'
 import { AppError } from '#/lib/utils'
 
 import {
-  coverLetterSchema,
+  coverLetterAiSchema,
   cvSchema,
+  exportCoverLetterSchema,
   exportDocumentSchema,
   generateDocumentSchema,
   getDocumentSchema,
@@ -44,19 +46,36 @@ export const getDocuments = createServerFn({ method: 'GET' })
   .handler(async ({ data }) => {
     const session = await ensureSession()
 
-    const result = await db
+    const cv = await db
       .select()
       .from(generatedDocs)
       .where(
         and(
           eq(generatedDocs.applicationId, data.id),
           eq(generatedDocs.userId, session.user.id),
+          eq(generatedDocs.type, 'cv'),
         ),
       )
       .orderBy(desc(generatedDocs.createdAt))
-      .limit(2)
+      .limit(1)
 
-    return result
+    const cover_letter = await db
+      .select()
+      .from(generatedDocs)
+      .where(
+        and(
+          eq(generatedDocs.applicationId, data.id),
+          eq(generatedDocs.userId, session.user.id),
+          eq(generatedDocs.type, 'cover_letter'),
+        ),
+      )
+      .orderBy(desc(generatedDocs.createdAt))
+      .limit(1)
+
+    return {
+      cv,
+      cover_letter,
+    }
   })
 
 export const getDocumentHistory = createServerFn({ method: 'GET' })
@@ -64,18 +83,34 @@ export const getDocumentHistory = createServerFn({ method: 'GET' })
   .handler(async ({ data }) => {
     const session = await ensureSession()
 
-    const result = await db
+    const cv = await db
       .select()
       .from(generatedDocs)
       .where(
         and(
           eq(generatedDocs.applicationId, data.id),
           eq(generatedDocs.userId, session.user.id),
+          eq(generatedDocs.type, 'cv'),
         ),
       )
       .orderBy(desc(generatedDocs.createdAt))
 
-    return result
+    const cover_letter = await db
+      .select()
+      .from(generatedDocs)
+      .where(
+        and(
+          eq(generatedDocs.applicationId, data.id),
+          eq(generatedDocs.userId, session.user.id),
+          eq(generatedDocs.type, 'cover_letter'),
+        ),
+      )
+      .orderBy(desc(generatedDocs.createdAt))
+
+    return {
+      cv,
+      cover_letter,
+    }
   })
 
 export const generateDocuments = createServerFn({ method: 'POST' })
@@ -210,7 +245,30 @@ export const generateDocuments = createServerFn({ method: 'POST' })
                 kind: 'cover_letter',
                 usage,
               })
-              return parseAiResponse(text, coverLetterSchema)
+              const ai = parseAiResponse(text, coverLetterAiSchema)
+              return {
+                sender: {
+                  name: user.name,
+                  location: profile.location ?? '',
+                  phone: profile.phone ?? '',
+                  email: user.email,
+                },
+                date: new Date().toLocaleDateString('en-US', {
+                  month: 'long',
+                  day: 'numeric',
+                  year: 'numeric',
+                }),
+                recipient: {
+                  name: ai.recipient?.name,
+                  title: ai.recipient?.title,
+                  company: application.company,
+                  address: ai.recipient?.address,
+                },
+                greeting: ai.greeting,
+                opening: ai.opening,
+                body: ai.body,
+                closing: ai.closing,
+              } satisfies CoverLetterContent
             },
           )
         : Promise.resolve(undefined),
@@ -298,6 +356,47 @@ export const exportCvPdf = createServerFn({ method: 'POST' })
     return {
       base64: Buffer.from(pdfBuffer).toString('base64'),
       filename: `${fileName}-CV.pdf`,
+    }
+  })
+
+export const exportCoverLetterPdf = createServerFn({ method: 'POST' })
+  .inputValidator((data: unknown) => exportCoverLetterSchema.parse(data))
+  .handler(async ({ data }) => {
+    const session = await ensureSession()
+
+    const doc = await db
+      .select({ contentJson: generatedDocs.contentJson })
+      .from(generatedDocs)
+      .where(
+        and(
+          eq(generatedDocs.applicationId, data.applicationId),
+          eq(generatedDocs.userId, session.user.id),
+          eq(generatedDocs.type, 'cover_letter'),
+        ),
+      )
+      .orderBy(desc(generatedDocs.createdAt))
+      .limit(1)
+      .then((r) => r.at(0))
+
+    if (!doc) throw new AppError('DOCUMENT_NOT_FOUND', 'Document not found')
+
+    const date = new Date()
+
+    const fileName = [
+      date.getFullYear(),
+      String(date.getMonth() + 1).padStart(2, '0'),
+      String(date.getDate()).padStart(2, '0'),
+    ].join('')
+
+    const pdfBuffer = await renderToBuffer(
+      CoverLetter({
+        content: doc.contentJson as CoverLetterContent,
+      }),
+    )
+
+    return {
+      base64: Buffer.from(pdfBuffer).toString('base64'),
+      filename: `${fileName}-Cover-Letter.pdf`,
     }
   })
 

@@ -133,6 +133,7 @@ export const createQrPhPayment = createServerFn({ method: 'POST' })
         }),
       },
     )
+
     const intent = await intentRes.json()
 
     if (!intentRes.ok) {
@@ -158,6 +159,7 @@ export const createQrPhPayment = createServerFn({ method: 'POST' })
         },
       }),
     })
+
     const pm = await pmRes.json()
 
     if (!pmRes.ok) {
@@ -186,10 +188,8 @@ export const createQrPhPayment = createServerFn({ method: 'POST' })
         }),
       },
     )
-    const attached = await attachRes.json()
 
-    // remove on prod
-    console.log(attached)
+    const attached = await attachRes.json()
 
     if (!attachRes.ok) {
       throw new AppError(

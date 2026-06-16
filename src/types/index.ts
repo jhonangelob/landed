@@ -28,6 +28,7 @@ import type {
 import type {
   coverLetterSchema,
   cvSchema,
+  exportCoverLetterSchema,
   exportDocumentSchema,
   generateDocumentSchema,
   getDocumentSchema,
@@ -110,3 +111,5 @@ export type Template = z.infer<typeof templateSchema>
 export type GenerateDocumentInput = z.input<typeof generateDocumentSchema>
 export type GetDocumentsInput = z.input<typeof getDocumentSchema>
 export type ExportDocumentInput = z.input<typeof exportDocumentSchema>
+
+export type ExportCoverLetterInput = z.input<typeof exportCoverLetterSchema>

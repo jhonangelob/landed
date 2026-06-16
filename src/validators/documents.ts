@@ -21,6 +21,10 @@ export const exportDocumentSchema = z.object({
   template: templateSchema,
 })
 
+export const exportCoverLetterSchema = z.object({
+  applicationId: z.string().uuid(),
+})
+
 export const cvSchema = z.object({
   name: z.string().min(1),
   contact: z.object({
@@ -89,7 +93,42 @@ export const cvSchema = z.object({
     .optional(),
 })
 
+/**
+ * What the model returns for a cover letter. The recipient block is extracted
+ * from the job posting (and may be entirely absent); the sender, date and
+ * company are filled in server-side from authoritative data, never the model.
+ */
+export const coverLetterAiSchema = z.object({
+  recipient: z
+    .object({
+      name: optionalString,
+      title: optionalString,
+      address: optionalString,
+    })
+    .nullish()
+    .transform((v) => v ?? undefined),
+  greeting: z.string().min(1),
+  opening: z.string().min(1),
+  body: z.string().min(1),
+  closing: z.string().min(1),
+})
+
+/** Full stored cover letter, including the business-letter header block. */
 export const coverLetterSchema = z.object({
+  sender: z.object({
+    name: z.string(),
+    location: optionalString,
+    phone: optionalString,
+    email: optionalString,
+  }),
+  date: z.string(),
+  recipient: z.object({
+    name: optionalString,
+    title: optionalString,
+    company: z.string(),
+    address: optionalString,
+  }),
+  greeting: z.string().min(1),
   opening: z.string().min(1),
   body: z.string().min(1),
   closing: z.string().min(1),

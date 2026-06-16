@@ -86,8 +86,6 @@ export default function UpdateApplication({
   const { data: documents } = useDocumentsQuery(applicationId)
   const { data: history } = useDocumentsHistoryQuery(applicationId)
 
-  console.log({ history })
-
   const form = useForm({
     defaultValues: {
       id: applicationId,
@@ -130,7 +128,7 @@ export default function UpdateApplication({
       />
       <StageBar stage={application.stage} onUpdateStage={handleUpdateStage} />
       <div className="flex flex-col gap-4 lg:flex-row">
-        <div className="w-full space-y-4 md:w-1/2">
+        <div className="flex flex-1 flex-col gap-4">
           <form
             onSubmit={(e) => {
               e.preventDefault()
@@ -288,7 +286,7 @@ export default function UpdateApplication({
             </SectionCard>
 
             <SectionCard variant="copilot" title="Status update" order="status">
-              <div className="flex gap-4">
+              <div className="flex flex-col gap-4 sm:flex-row">
                 <form.Field
                   name="status"
                   children={(field) => (
@@ -377,7 +375,7 @@ export default function UpdateApplication({
               />
             </SectionCard>
 
-            <div className="sticky bottom-4 flex justify-end rounded-lg border bg-white p-4 pt-3.5">
+            <div className="border-primary/20 sticky bottom-4 flex justify-end rounded-lg border bg-white p-4 pt-3.5">
               {isLanded ? (
                 <Button
                   type="button"
@@ -418,7 +416,7 @@ export default function UpdateApplication({
             variant="copilot"
             title="Delete Application"
             order="danger"
-            className=""
+            className="border-destructive border"
           >
             <div className="flex flex-col space-y-2">
               <p className="text-muted font-sans text-[14px] leading-[1.4]">
@@ -444,7 +442,7 @@ export default function UpdateApplication({
             </div>
           </SectionCard>
         </div>
-        <div className="w-full md:w-1/2">
+        <div className="flex-1">
           <FilePreview
             documents={documents}
             history={history}
