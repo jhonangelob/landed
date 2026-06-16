@@ -22,12 +22,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
 interface FilePreviewProps {
   showRetailorButton?: boolean
   documents?: {
-    cv: GeneratedDoc[]
-    cover_letter: GeneratedDoc[]
+    cv?: GeneratedDoc[]
+    cover_letter?: GeneratedDoc[]
   }
   history?: {
-    cv: GeneratedDoc[]
-    cover_letter: GeneratedDoc[]
+    cv?: GeneratedDoc[]
+    cover_letter?: GeneratedDoc[]
   }
   onRetailor?: (type: 'cv' | 'cover_letter') => void
   applicationId?: string
@@ -111,7 +111,7 @@ export default function FilePreview({
           </TabsList>
 
           <TabsContent value="cv">
-            {documents?.cv[0].contentHtml ? (
+            {documents?.cv?.length ? (
               <div
                 className="prose prose-sm max-w-none p-8"
                 dangerouslySetInnerHTML={{
@@ -124,7 +124,7 @@ export default function FilePreview({
           </TabsContent>
 
           <TabsContent value="cl">
-            {documents?.cover_letter[0].contentHtml ? (
+            {documents?.cover_letter?.length ? (
               <div
                 className="prose prose-sm max-w-none p-8"
                 dangerouslySetInnerHTML={{
@@ -172,7 +172,7 @@ export default function FilePreview({
                 Version history
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              {history && history[fileType].length > 0 ? (
+              {history?.[fileType]?.length ? (
                 history[fileType].map((doc) => (
                   <DropdownMenuItem
                     key={doc.id}
