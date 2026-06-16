@@ -35,7 +35,7 @@ export default function DeleteApplicationModal({
   const { mutateAsync: deleteApplication } = useDeleteApplicationMutation()
 
   const handleDelete = async () => {
-    await deleteApplication(id)
+    await deleteApplication({ id })
     onOpenChange(false)
   }
 

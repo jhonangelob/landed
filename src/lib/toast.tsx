@@ -2,7 +2,7 @@ import { formatResetDate } from '#/helper/usage'
 import { toast as sonner } from 'sonner'
 
 import { ToastCard } from '#/components/ui/sonner'
-import type { ToastType } from '#/components/ui/sonner'
+import type { ToastAction, ToastType } from '#/components/ui/sonner'
 
 import { parseError } from './error'
 
@@ -11,6 +11,7 @@ const DEFAULT_DURATION = 4000
 interface ShowOptions {
   id?: string | number
   duration?: number
+  action?: ToastAction
 }
 
 function show(
@@ -29,6 +30,7 @@ function show(
         type={type}
         header={header}
         message={message}
+        action={options?.action}
         duration={duration === Infinity ? DEFAULT_DURATION : duration}
       />
     ),
@@ -101,6 +103,7 @@ export const notify = {
       loading: string
       success: string | ((data: T) => string)
       error: string | ((error: unknown) => string)
+      successAction?: (data: T) => ToastAction
     },
   ) {
     const id = show('loading', opts.loading)
@@ -112,7 +115,7 @@ export const notify = {
             ? opts.success(data)
             : opts.success,
           undefined,
-          { id },
+          { id, action: opts.successAction?.(data) },
         ),
       (error) =>
         show(

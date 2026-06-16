@@ -120,7 +120,7 @@ function RouteComponent() {
                 : 'text-muted-foreground',
             )}
           >
-            {errorMessage || 'Start tracking your job search today'}
+            {errorMessage || 'Tailor your first CV in seconds.'}
           </p>
         </div>
 

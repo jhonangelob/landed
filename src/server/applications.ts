@@ -13,6 +13,7 @@ import {
   deleteApplicationSchema,
   getApplicationSchema,
   newApplicationSchema,
+  quickApplicationSchema,
   updateApplicationSchema,
   updateApplicationStageSchema,
 } from '#/validators/application'
@@ -54,6 +55,47 @@ export const getApplicationById = createServerFn({ method: 'GET' })
       .then((r) => r.at(0) ?? null)
   })
 
+export const quickApplication = createServerFn({
+  method: 'POST',
+})
+  .inputValidator((data: unknown) => quickApplicationSchema.parse(data))
+  .handler(async ({ data }) => {
+    const session = await ensureSession()
+
+    const plan = getPlanById(await getUserPlan(session.user.id))
+
+    if (plan.applications != null) {
+      const [{ total }] = await db
+        .select({ total: count() })
+        .from(applications)
+        .where(
+          and(
+            eq(applications.userId, session.user.id),
+            isNull(applications.deletedAt),
+          ),
+        )
+
+      if (total >= plan.applications)
+        throw new AppError(
+          'APPLICATION_LIMIT_REACHED',
+          `You've reached the ${plan.applications}-application limit on your plan — upgrade to add more.`,
+        )
+    }
+
+    const [application] = await db
+      .insert(applications)
+      .values({
+        userId: session.user.id,
+        company: data.company,
+        role: data.role,
+        description: '',
+        stage: 'spotted',
+      })
+      .returning()
+
+    return application
+  })
+
 export const createApplication = createServerFn({
   method: 'POST',
 })
@@ -62,6 +104,7 @@ export const createApplication = createServerFn({
     const session = await ensureSession()
 
     const plan = getPlanById(await getUserPlan(session.user.id))
+
     if (plan.applications != null) {
       const [{ total }] = await db
         .select({ total: count() })

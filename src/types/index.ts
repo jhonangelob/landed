@@ -21,6 +21,7 @@ import type {
 import type {
   deleteApplicationSchema,
   newApplicationSchema,
+  quickApplicationSchema,
   updateApplicationSchema,
   updateApplicationStageSchema,
 } from '#/validators/application'
@@ -69,6 +70,7 @@ export type Project = z.infer<typeof projectSchema>
 
 // ── Application ───────────────────────────────────────────────────────────────
 export type ApplicationInput = z.input<typeof newApplicationSchema>
+export type QuickApplicationInput = z.input<typeof quickApplicationSchema>
 export type UpdateApplicationInput = z.input<typeof updateApplicationSchema>
 export type DeleteApplicationInput = z.input<typeof deleteApplicationSchema>
 export type UpdateApplicationStageInput = z.input<

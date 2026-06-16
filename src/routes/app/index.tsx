@@ -38,7 +38,7 @@ function RouteComponent() {
         subTitle="Dashboard"
         title1="Flight "
         title2="Deck"
-        description="Real-time telemetry for your professional trajectory."
+        description="Every application â and the CV and cover letter Co-Pilot tailored for it â tracked from spotted to landed."
       />
       <div className="flex h-12 flex-row items-center justify-between rounded-lg border bg-white px-3.5 py-3">
         <div className="flex flex-row items-center gap-2">

@@ -29,6 +29,11 @@ export const newApplicationSchema = applicationSchema.pick({
   stage: true,
 })
 
+export const quickApplicationSchema = applicationSchema.pick({
+  company: true,
+  role: true,
+})
+
 export const updateApplicationSchema = applicationSchema.omit({
   appliedAt: true,
   updatedAt: true,

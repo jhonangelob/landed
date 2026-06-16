@@ -6,6 +6,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   exportCvPdf,
   generateDocuments,
+  getDocumentHistory,
   getDocuments,
 } from '#/server/documents'
 
@@ -18,10 +19,21 @@ import { subscriptionQueryKey } from './useSubscriptionQueries'
 export const documentsQueryKey = (applicationId: string | undefined) =>
   ['generated_docs', applicationId] as const
 
+export const documentHistoryQueryKey = (applicationId: string | undefined) =>
+  ['generated_docs', applicationId, 'history'] as const
+
 export function useDocumentsQuery(applicationId: string | undefined) {
   return useQuery({
     queryKey: documentsQueryKey(applicationId),
     queryFn: () => getDocuments({ data: { id: applicationId } }),
+    enabled: !!applicationId,
+  })
+}
+
+export function useDocumentsHistoryQuery(applicationId: string | undefined) {
+  return useQuery({
+    queryKey: documentHistoryQueryKey(applicationId),
+    queryFn: () => getDocumentHistory({ data: { id: applicationId } }),
     enabled: !!applicationId,
   })
 }

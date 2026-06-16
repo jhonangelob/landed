@@ -1,6 +1,7 @@
 import type {
   ApplicationInput,
   DeleteApplicationInput,
+  QuickApplicationInput,
   UpdateApplicationInput,
   UpdateApplicationStageInput,
 } from '#/types'
@@ -18,6 +19,7 @@ import {
   deleteApplication,
   getApplicationById,
   getApplications,
+  quickApplication,
   updateApplication,
   updateApplicationStage,
 } from '#/server/applications'
@@ -54,6 +56,36 @@ export function useCreateApplicationMutation() {
         loading: 'Creating application...',
         success: 'Application created',
         error: (err) => parseError(err).message || 'Failed to add application',
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: applicationsQueryKey })
+    },
+    onError: (error) => {
+      if (parseError(error).code === 'GENERATION_LIMIT_REACHED') {
+        openUsageLimitModal(queryClient, 'application')
+      }
+    },
+  })
+}
+
+export function useQuickApplicationMutation() {
+  const queryClient = useQueryClient()
+  const navigate = useNavigate()
+
+  return useMutation({
+    mutationFn: (value: QuickApplicationInput) =>
+      notify.promise(quickApplication({ data: value }), {
+        loading: 'Creating application...',
+        success: 'Application created',
+        error: (err) => parseError(err).message || 'Failed to add application',
+        successAction: (application) => ({
+          label: 'Tailor Documents',
+          onClick: () =>
+            navigate({
+              to: '/app/co-pilot',
+              search: { applicationId: application.id },
+            }),
+        }),
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: applicationsQueryKey })

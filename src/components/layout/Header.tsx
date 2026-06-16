@@ -80,7 +80,7 @@ export default function Header() {
           <img src={logo} alt="FlightDeck Logo" className="h-8 min-w-fit" />
 
           <p className="text-muted hidden font-mono text-[10px] font-medium tracking-[1.4px] text-nowrap uppercase md:block">
-            Your job search, Navigated
+            Your job search, navigated by AI.
           </p>
         </div>
 
@@ -140,7 +140,9 @@ export default function Header() {
             </>
           ) : session ? (
             <Button asChild className="bg-primary rounded-md">
-              <Link to="/app">Go to Flight Deck</Link>
+              <Link to="/app" className="text-white!">
+                Go to Flight Deck
+              </Link>
             </Button>
           ) : (
             <>

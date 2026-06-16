@@ -15,6 +15,12 @@ import { cn } from '#/lib/utils'
 
 export type ToastType = 'success' | 'info' | 'warning' | 'error' | 'loading'
 
+/** Optional call-to-action rendered as a button inside the toast. */
+export interface ToastAction {
+  label: string
+  onClick: () => void
+}
+
 const TYPE_CONFIG: Record<
   ToastType,
   { label: string; accent: string; Icon: LucideIcon }
@@ -39,6 +45,8 @@ export interface ToastCardProps {
   message?: string
   /** Auto-dismiss lifetime in ms (used to time the progress bar). */
   duration: number
+  /** Optional action button shown in the body row. */
+  action?: ToastAction
 }
 
 export function ToastCard({
@@ -47,6 +55,7 @@ export function ToastCard({
   header,
   message,
   duration,
+  action,
 }: ToastCardProps) {
   const { accent, Icon, label } = TYPE_CONFIG[type]
   const isLoading = type === 'loading'
@@ -100,6 +109,19 @@ export function ToastCard({
             </p>
           ) : null}
         </div>
+
+        {action ? (
+          <button
+            type="button"
+            onClick={() => {
+              action.onClick()
+              sonnerToast.dismiss(id)
+            }}
+            className="border-border bg-secondary text-popover-foreground hover:bg-secondary/80 ml-auto shrink-0 rounded-md border px-2.5 py-1 text-[12px] font-medium"
+          >
+            {action.label}
+          </button>
+        ) : null}
       </div>
 
       {/* Progress bar pinned to the bottom edge */}

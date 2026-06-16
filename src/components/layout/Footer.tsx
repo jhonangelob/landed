@@ -34,7 +34,7 @@ export default function Footer() {
           ))}
         </div>
         <div className="text-muted flex flex-col items-center justify-between pt-4 font-mono text-[11px] leading-[1.4] tracking-[0.7px] md:flex-row md:pt-6">
-          <p>© 2026 Landed, Inc. · Your job search, navigated</p>
+          <p>© 2026 Landed, Inc. · Your job search, navigated with AI</p>
           <p className="uppercase">KLND · 27L · MADE AT THE GATE</p>
         </div>
       </div>

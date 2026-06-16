@@ -59,6 +59,25 @@ export const getDocuments = createServerFn({ method: 'GET' })
     return result
   })
 
+export const getDocumentHistory = createServerFn({ method: 'GET' })
+  .inputValidator((data: unknown) => getDocumentSchema.parse(data))
+  .handler(async ({ data }) => {
+    const session = await ensureSession()
+
+    const result = await db
+      .select()
+      .from(generatedDocs)
+      .where(
+        and(
+          eq(generatedDocs.applicationId, data.id),
+          eq(generatedDocs.userId, session.user.id),
+        ),
+      )
+      .orderBy(desc(generatedDocs.createdAt))
+
+    return result
+  })
+
 export const generateDocuments = createServerFn({ method: 'POST' })
   .inputValidator((data: unknown) => generateDocumentSchema.parse(data))
   .handler(async ({ data }) => {

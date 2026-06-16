@@ -1,7 +1,16 @@
 import { useState } from 'react'
 
+import { formatDayTime } from '#/helper/date'
 import type { GeneratedDoc } from '#/types'
-import { DownloadIcon, PlusIcon, SparklesIcon } from 'lucide-react'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { DownloadIcon, HistoryIcon, PlusIcon, SparklesIcon } from 'lucide-react'
 
 import { useModal } from '#/lib/store/modal'
 
@@ -11,6 +20,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
 interface FilePreviewProps {
   showRetailorButton?: boolean
   documents?: GeneratedDoc[]
+  history?: GeneratedDoc[]
   onRetailor?: (type: 'cv' | 'cover_letter') => void
   applicationId?: string
 }
@@ -41,12 +51,15 @@ function EmptyFilePreview() {
 export default function FilePreview({
   showRetailorButton = false,
   documents,
+  history,
   onRetailor,
   applicationId,
 }: FilePreviewProps) {
   const { open } = useModal()
 
   const [fileType, setFileType] = useState<'cv' | 'cover_letter'>('cv')
+
+  const historyList = history?.filter((doc) => doc.type === fileType)
 
   const cvDoc = documents?.find((d) => d.type === 'cv')
   const clDoc = documents?.find((d) => d.type === 'cover_letter')
@@ -87,8 +100,10 @@ export default function FilePreview({
                 onClick={handleRetailor}
               >
                 <SparklesIcon className="size-2.75" />
-                {documentExist[fileType] ? 'Retailor' : 'Generate'}{' '}
-                {fileType === 'cover_letter' ? 'Cover Letter' : 'CV'}
+                <p className="hidden md:block">
+                  {documentExist[fileType] ? 'Retailor' : 'Generate'}{' '}
+                  {fileType === 'cover_letter' ? 'Cover Letter' : 'CV'}
+                </p>
               </Button>
             ) : (
               <span className="text-muted text-right font-sans text-[11px] leading-[1.4]">
@@ -110,6 +125,45 @@ export default function FilePreview({
                 <DownloadIcon className="size-2.75" />
                 <p className="hidden md:block">Download</p>
               </Button>
+            )}
+
+            {documentExist[fileType] && applicationId && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    className="text-primary-text flex h-fit flex-row gap-1.5 px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase"
+                    variant="outline"
+                  >
+                    <HistoryIcon className="size-2.75" />
+                    <p className="hidden md:block">History</p>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-70 shadow-none" align="end">
+                  <DropdownMenuLabel className="font-mono text-[11px] tracking-[1.1px] uppercase">
+                    Version history
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  {historyList && historyList.length > 0 ? (
+                    historyList.map((doc) => (
+                      <DropdownMenuItem
+                        key={doc.id}
+                        className="flex flex-row items-center justify-between gap-4"
+                      >
+                        <span className="text-ink-strong font-mono text-[12px] leading-[1.4] font-medium tracking-[0.1px]">
+                          Version {doc.version}
+                        </span>
+                        <span className="text-muted font-mono text-[11px] leading-[1.4]">
+                          {formatDayTime(doc.createdAt)}
+                        </span>
+                      </DropdownMenuItem>
+                    ))
+                  ) : (
+                    <DropdownMenuItem disabled>
+                      No previous versions
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
             )}
           </div>
         </TabsList>

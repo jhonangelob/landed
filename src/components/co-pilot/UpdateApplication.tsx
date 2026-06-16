@@ -6,6 +6,7 @@ import {
   useUpdateApplicationStageMutation,
 } from '#/hooks/useApplicationQueries'
 import {
+  useDocumentsHistoryQuery,
   useDocumentsQuery,
   useGenerateDocumentsMutation,
 } from '#/hooks/useDocumentQueries'
@@ -83,6 +84,9 @@ export default function UpdateApplication({
     useGenerateDocumentsMutation(applicationId)
 
   const { data: documents } = useDocumentsQuery(applicationId)
+  const { data: history } = useDocumentsHistoryQuery(applicationId)
+
+  console.log({ history })
 
   const form = useForm({
     defaultValues: {
@@ -443,6 +447,7 @@ export default function UpdateApplication({
         <div className="w-full md:w-1/2">
           <FilePreview
             documents={documents}
+            history={history}
             showRetailorButton={application.stage === 'spotted'}
             onRetailor={handleRetailorDocument}
             applicationId={applicationId}

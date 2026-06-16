@@ -8,7 +8,7 @@ export default function Hero() {
       <div className="mx-auto grid max-w-295 grid-cols-2 gap-4">
         <div className="flex flex-col gap-4">
           <p className="text-muted font-mono text-[11px] leading-[1.4] tracking-[1.8px] uppercase">
-            Your job search, navigated
+            Your job search, navigated with AI.
           </p>
           <p className="font-display text-ink-strong text-[68px] leading-[1.02] font-bold tracking-[-1.7px]">
             Land the job

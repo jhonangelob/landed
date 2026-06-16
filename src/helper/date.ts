@@ -52,3 +52,30 @@ export function formatDate(date: Date | string | null): string {
     year: 'numeric',
   })
 }
+
+/** Formats a timestamp as "Today · 08:50 AM" (or "Yesterday"/"Jun 14"). */
+export function formatDayTime(date: Date | string): string {
+  const d = new Date(date)
+  const now = new Date()
+
+  const isSameDay = (a: Date, b: Date) =>
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+
+  const yesterday = new Date(now)
+  yesterday.setDate(now.getDate() - 1)
+
+  const day = isSameDay(d, now)
+    ? 'Today'
+    : isSameDay(d, yesterday)
+      ? 'Yesterday'
+      : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+
+  const time = d.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+
+  return `${day} · ${time}`
+}

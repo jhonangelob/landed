@@ -13,7 +13,7 @@ import {
   subscriptionQueryKey,
   useSubscriptionQuery,
 } from '#/hooks/useSubscriptionQueries'
-import { MoveRightIcon } from 'lucide-react'
+import { MoveRightIcon, ReceiptTextIcon } from 'lucide-react'
 
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 
@@ -78,11 +78,16 @@ function RouteComponent() {
     { day: 'numeric', month: 'long' },
   )
 
+  const handleShowReceipts = () => {
+    console.log('unimplemented: show receipts')
+  }
+
   const handlePlanUpgrade = () => {
     navigate({
       to: '/payment/checkout',
     })
   }
+
   return (
     <div className="section">
       <SectionHeader
@@ -140,9 +145,16 @@ function RouteComponent() {
             />
           ))}
         </div>
-        <div className="flex">
+        <div className="flex items-center justify-end gap-2">
           <Button
-            className="ml-auto font-mono text-[12px] leading-[1.4] font-semibold tracking-[0.7px] uppercase"
+            className="font-mono text-[12px] leading-[1.4] font-medium tracking-[0.7px] uppercase"
+            onClick={handleShowReceipts}
+            variant="ghost"
+          >
+            Receipts <ReceiptTextIcon />
+          </Button>
+          <Button
+            className="font-mono text-[12px] leading-[1.4] font-semibold tracking-[0.7px] uppercase"
             onClick={handlePlanUpgrade}
           >
             Upgrade Plan <MoveRightIcon />

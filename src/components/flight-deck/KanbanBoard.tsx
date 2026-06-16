@@ -1,7 +1,14 @@
 import { useState } from 'react'
 
-import { useUpdateApplicationStageMutation } from '#/hooks/useApplicationQueries'
-import type { Application, ApplicationStage } from '#/types'
+import {
+  useQuickApplicationMutation,
+  useUpdateApplicationStageMutation,
+} from '#/hooks/useApplicationQueries'
+import type {
+  Application,
+  ApplicationStage,
+  QuickApplicationInput,
+} from '#/types'
 
 import { useNavigate } from '@tanstack/react-router'
 
@@ -10,6 +17,7 @@ import { cn } from '#/lib/utils'
 import { KANBAN_COLUMNS } from '#/constants/stage'
 
 import KanbanItem from './KanbanItem'
+import QuickAddField from './QuickAddField'
 
 interface KanbanBoardProps {
   applications: Application[]
@@ -33,6 +41,13 @@ export default function KanbanBoard({
 
   const [dragOverStage, setDragOverStage] = useState<string | null>(null)
   const [applicationId, setApplicationId] = useState('')
+
+  const [quickAddFields, setQuickAddFields] = useState<QuickApplicationInput>({
+    company: '',
+    role: '',
+  })
+
+  const { mutateAsync: createApplication } = useQuickApplicationMutation()
 
   const { mutate: updateStage } =
     useUpdateApplicationStageMutation(applicationId)
@@ -64,9 +79,17 @@ export default function KanbanBoard({
     updateStage({ id: id, stage })
   }
 
+  const handleQuickAdd = () => {
+    createApplication(quickAddFields)
+    setQuickAddFields({
+      company: '',
+      role: '',
+    })
+  }
+
   return (
     <div className="flex h-full max-h-[calc(100vh-250px)] flex-1 flex-col gap-6">
-      <div className="flex min-h-0 flex-1 flex-row gap-4 overflow-x-auto pr-12">
+      <div className="flex max-h-[calc(100vh-300px)] min-h-0 flex-1 flex-row gap-4 overflow-auto pr-12 pb-6">
         {KANBAN_COLUMNS.map((col, index) => {
           const colApps = applications.filter((a) => a.stage === col.stage)
           const visibleCount = isFiltering
@@ -77,7 +100,7 @@ export default function KanbanBoard({
           return (
             <div
               key={index}
-              className="flex min-h-0 flex-col gap-4.5"
+              className="flex flex-col gap-4.5"
               onDragOver={(e) => handleDragOver(e, col.stage)}
               onDragLeave={handleDragLeave}
               onDrop={(e) => handleDrop(e, col.stage)}
@@ -96,10 +119,18 @@ export default function KanbanBoard({
               </div>
               <div
                 className={cn(
-                  'flex min-h-0 w-60 flex-1 flex-col overflow-y-auto rounded-lg pb-2 transition-colors',
+                  'flex w-60 flex-1 flex-col rounded-lg pb-2 transition-colors',
                   isOver && 'bg-accent/60 ring-primary ring-1',
                 )}
               >
+                {index === 0 && (
+                  <QuickAddField
+                    onSubmit={handleQuickAdd}
+                    value={quickAddFields}
+                    onChange={setQuickAddFields}
+                  />
+                )}
+
                 {colApps.map((application) => {
                   const visible =
                     !isFiltering || matchesQuery(application, query)

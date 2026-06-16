@@ -34,8 +34,7 @@ function RouteComponent() {
             You're cleared for takeoff.
           </p>
           <p className="text-muted-foreground font-sans text-[14px] leading-relaxed">
-            Your email has been verified. Sign in to start tracking your job
-            search with Landed.
+            Your email has been verified. Sign in and tailor your first CV.
           </p>
         </div>
 
