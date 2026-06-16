@@ -63,14 +63,13 @@ export default function ApplicationLandedModal({
     ? `${typeof window !== 'undefined' ? window.location.origin : ''}/share/${shareToken}`
     : null
 
-  // Celebratory confetti burst each time the modal opens.
   useEffect(() => {
     if (!open) return
 
     const CONFETTI_DURATION = 5 * 1000
     const end = Date.now() + CONFETTI_DURATION
     const colors = ['#a786ff', '#fd8bbc', '#eca184', '#f8deb1']
-    // Above the dialog (shadcn content sits at z-50).
+
     const zIndex = 9999
 
     const randomInRange = (min: number, max: number) =>
@@ -78,7 +77,6 @@ export default function ApplicationLandedModal({
 
     let rafId: number
 
-    // Side cannons
     const frame = () => {
       if (Date.now() > end) return
       confetti({
@@ -103,7 +101,6 @@ export default function ApplicationLandedModal({
     }
     frame()
 
-    // Fireworks
     const fireworkDefaults = {
       startVelocity: 30,
       spread: 360,
@@ -135,35 +132,12 @@ export default function ApplicationLandedModal({
     }
   }, [open])
 
-  // const shareText = `Just landed the ${role} role at ${company}! 🛬 It took ${daysCount} days and ${appliedCount} applications. Tracked with Landed.`
-
   const handleCopyLink = async () => {
     if (!shareUrl) return
     await navigator.clipboard.writeText(shareUrl)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
-
-  // const handlePostToX = () => {
-  //   if (!shareUrl) return
-  //   const params = new URLSearchParams({ text: shareText, url: shareUrl })
-  //   window.open(`https://x.com/intent/tweet?${params}`, '_blank', 'noopener')
-  // }
-
-  // const handlePostToLinkedIn = () => {
-  //   if (!shareUrl) return
-  //   const params = new URLSearchParams({ url: shareUrl })
-  //   window.open(
-  //     `https://www.linkedin.com/sharing/share-offsite/?${params}`,
-  //     '_blank',
-  //     'noopener',
-  //   )
-  // }
-
-  // const handleViewFlightDeck = () => {
-  //   onOpenChange(false)
-  //   navigate({ to: '/app' })
-  // }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

@@ -13,9 +13,9 @@ import {
   subscriptionQueryKey,
   useSubscriptionQuery,
 } from '#/hooks/useSubscriptionQueries'
-import { MoveRightIcon, ReceiptTextIcon } from 'lucide-react'
+import { ReceiptTextIcon } from 'lucide-react'
 
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 
 import { Button } from '#/components/ui/button'
 
@@ -61,8 +61,6 @@ export const Route = createFileRoute('/app/hangar')({
 })
 
 function RouteComponent() {
-  const navigate = useNavigate()
-
   const { data: activities } = useActivitiesQuery()
   const { data: account } = useAccountDetailsQuery()
   const { data: subscription } = useSubscriptionQuery()
@@ -80,12 +78,6 @@ function RouteComponent() {
 
   const handleShowReceipts = () => {
     console.log('unimplemented: show receipts')
-  }
-
-  const handlePlanUpgrade = () => {
-    navigate({
-      to: '/payment/checkout',
-    })
   }
 
   return (
@@ -152,12 +144,6 @@ function RouteComponent() {
             variant="ghost"
           >
             Receipts <ReceiptTextIcon />
-          </Button>
-          <Button
-            className="font-mono text-[12px] leading-[1.4] font-semibold tracking-[0.7px] uppercase"
-            onClick={handlePlanUpgrade}
-          >
-            Upgrade Plan <MoveRightIcon />
           </Button>
         </div>
       </SectionCard>

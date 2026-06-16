@@ -1,7 +1,3 @@
-// Thin wrapper around the PayMongo Payment Intents API.
-// Use a PayMongo *test* secret key (sk_test_…) for dev testing — the calls hit
-// the real API but no money moves. See https://developers.paymongo.com.
-
 const PAYMONGO_API = 'https://api.paymongo.com/v1'
 
 function secretKey() {
@@ -28,62 +24,6 @@ async function paymongoFetch(path: string, init: RequestInit = {}) {
     },
   })
   return res.json()
-}
-
-// ── Public API ───────────────────────────────────────────────
-
-export async function createPaymentIntent(
-  amount: number,
-  currency = 'PHP',
-  metadata?: Record<string, string>,
-) {
-  return paymongoFetch('/payment_intents', {
-    method: 'POST',
-    body: JSON.stringify({
-      data: {
-        attributes: {
-          amount: Math.round(amount * 100),
-          currency,
-          payment_method_allowed: [
-            'card',
-            'gcash',
-            'paymaya',
-            'grab_pay',
-            'qrph',
-          ],
-          capture_type: 'automatic',
-          ...(metadata ? { metadata } : {}),
-        },
-      },
-    }),
-  })
-}
-
-export async function createPaymentMethod(type: string, details: object = {}) {
-  return paymongoFetch('/payment_methods', {
-    method: 'POST',
-    body: JSON.stringify({ data: { attributes: { type, details } } }),
-  })
-}
-
-export async function attachPaymentMethod(
-  paymentIntentId: string,
-  paymentMethodId: string,
-  clientKey: string,
-  returnUrl: string,
-) {
-  return paymongoFetch(`/payment_intents/${paymentIntentId}/attach`, {
-    method: 'POST',
-    body: JSON.stringify({
-      data: {
-        attributes: {
-          payment_method: paymentMethodId,
-          client_key: clientKey,
-          return_url: returnUrl,
-        },
-      },
-    }),
-  })
 }
 
 export async function retrievePaymentIntent(intentId: string) {

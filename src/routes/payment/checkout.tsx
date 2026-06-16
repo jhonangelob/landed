@@ -1,36 +1,47 @@
-import { useState } from 'react'
-
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 
 import InformationPanel from '#/components/checkout/InformationPanel'
 import PaymentForm from '#/components/checkout/PaymentForm'
 
-import { planIdSchema } from '#/validators/subscription'
+import { getQrPaymentFn } from '#/server/paymongo'
 
-import { PAID_PLAN, getPlanById } from '#/constants/plan'
+import { getPlanById } from '#/constants/plan'
 
 export const Route = createFileRoute('/payment/checkout')({
-  validateSearch: (search: Record<string, unknown>): { planId?: string } => {
-    const parsed = planIdSchema.safeParse(search.planId)
-    return parsed.success ? { planId: parsed.data } : {}
+  validateSearch: (search: Record<string, unknown>): { intentId?: string } =>
+    typeof search.intentId === 'string' ? { intentId: search.intentId } : {},
+  loaderDeps: ({ search }) => ({ intentId: search.intentId }),
+  loader: async ({ deps }) => {
+    if (!deps.intentId) throw redirect({ to: '/app/hangar' })
+
+    const payment = await getQrPaymentFn({ data: { intentId: deps.intentId } })
+
+    // Already paid (e.g. the page was reloaded after scanning) — skip straight
+    // to the server-authoritative fulfillment route.
+    if (payment.status === 'succeeded')
+      throw redirect({
+        to: '/payment/return',
+        search: { payment_intent_id: deps.intentId },
+      })
+
+    return { intentId: deps.intentId, ...payment }
   },
   component: CheckoutPage,
 })
 
 function CheckoutPage() {
-  const { planId } = Route.useSearch()
-  const [selectedPlan, setSelectedPlan] = useState(
-    planId ? getPlanById(planId) : PAID_PLAN,
-  )
+  const { intentId, qrCodeImageUrl, planId } = Route.useLoaderData()
+  const selectedPlan = getPlanById(planId)
 
   return (
     <div className="mx-auto flex min-h-screen items-center justify-center">
       <div className="flex w-250 flex-row overflow-hidden rounded-lg border">
-        <InformationPanel
+        <InformationPanel selectedPlan={selectedPlan} />
+        <PaymentForm
+          intentId={intentId}
+          qrCodeImageUrl={qrCodeImageUrl}
           selectedPlan={selectedPlan}
-          onSelectPlan={setSelectedPlan}
         />
-        <PaymentForm selectedPlan={selectedPlan} />
       </div>
     </div>
   )

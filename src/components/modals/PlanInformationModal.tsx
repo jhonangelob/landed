@@ -1,7 +1,6 @@
+import { useCreatePaymentMutation } from '#/hooks/useSubscriptionQueries'
 import type { Plan } from '#/types'
 import { MoveRightIcon, MoveUpIcon, PlusIcon } from 'lucide-react'
-
-import { useNavigate } from '@tanstack/react-router'
 
 import { Button } from '../ui/button'
 import {
@@ -30,6 +29,7 @@ interface PlanInformationModalProps {
   currentPlan: Plan
   newPlan: Plan
   currentExpiresAt?: Date | string | null
+  onConfirm?: () => void
 }
 
 export default function PlanInformationModal({
@@ -38,8 +38,9 @@ export default function PlanInformationModal({
   currentPlan,
   newPlan,
   currentExpiresAt,
+  onConfirm,
 }: PlanInformationModalProps) {
-  const navigate = useNavigate()
+  const { mutateAsync: startPayment } = useCreatePaymentMutation()
 
   const accessThrough = newPlan.duration
     ? new Date(Date.now() + newPlan.duration * DAY_MS)
@@ -53,7 +54,9 @@ export default function PlanInformationModal({
 
   const handleUpgradeSeat = () => {
     onOpenChange(false)
-    navigate({ to: '/payment/checkout', search: { planId: newPlan.id } })
+
+    if (onConfirm) onConfirm()
+    else startPayment({ planId: newPlan.id })
   }
 
   return (
@@ -156,13 +159,16 @@ export default function PlanInformationModal({
                 : '—'}
             </p>
           </div>
+
           <div className="bg-neutral-tint/10 flex h-12 flex-row items-center justify-end p-3">
-            <Button
-              onClick={handleUpgradeSeat}
-              className="font-mono text-[12px] leading-[1.4] font-semibold tracking-[0.7px] uppercase"
-            >
-              Confirm Upgrade <MoveRightIcon />
-            </Button>
+            {currentPlan.id === 'economy' && (
+              <Button
+                onClick={handleUpgradeSeat}
+                className="font-mono text-[12px] leading-[1.4] font-semibold tracking-[0.7px] uppercase"
+              >
+                Confirm Upgrade <MoveRightIcon />
+              </Button>
+            )}
           </div>
         </div>
       </DialogContent>

@@ -2,91 +2,13 @@ import { createServerFn } from '@tanstack/react-start'
 
 import { ensureSession } from '#/server/session'
 
-import {
-  attachPaymentMethod,
-  createPaymentIntent,
-  createPaymentMethod,
-  retrievePaymentIntent,
-} from '#/lib/paymongo'
+import { retrievePaymentIntent } from '#/lib/paymongo'
 import { applyPlan } from '#/lib/subscription/apply'
 import { AppError } from '#/lib/utils'
 
-import {
-  attachMethodSchema,
-  createIntentSchema,
-  createMethodSchema,
-  verifyIntentSchema,
-} from '#/validators/payment'
+import { verifyIntentSchema } from '#/validators/payment'
 
 import { getPlanById } from '#/constants/plan'
-
-export const createIntentFn = createServerFn({ method: 'POST' })
-  .inputValidator((data: unknown) => createIntentSchema.parse(data))
-  .handler(async ({ data }) => {
-    const session = await ensureSession()
-    const plan = getPlanById(data.planId)
-
-    if (plan.price <= 0)
-      throw new AppError(
-        'VALIDATION_ERROR',
-        'The selected plan does not require payment',
-      )
-
-    // Amount is derived from the plan and the buyer is bound via metadata so
-    // fulfillment can later verify both server-side.
-    const result = await createPaymentIntent(plan.price, plan.currency, {
-      userId: session.user.id,
-      planId: plan.id,
-    })
-    if (result.errors) throw new Error(result.errors[0].detail)
-
-    const { id, attributes } = result.data
-    return {
-      paymentIntentId: id as string,
-      clientKey: attributes.client_key as string,
-    }
-  })
-
-export const createMethodFn = createServerFn({ method: 'POST' })
-  .inputValidator((data: unknown) => createMethodSchema.parse(data))
-  .handler(async ({ data }) => {
-    await ensureSession()
-
-    const details =
-      data.type === 'card'
-        ? {
-            card_number: data.cardNumber,
-            exp_month: data.expMonth,
-            exp_year: data.expYear,
-            cvc: data.cvc,
-          }
-        : {}
-
-    const result = await createPaymentMethod(data.type, details)
-    if (result.errors) throw new Error(result.errors[0].detail)
-
-    return { paymentMethodId: result.data.id as string }
-  })
-
-export const attachMethodFn = createServerFn({ method: 'POST' })
-  .inputValidator((data: unknown) => attachMethodSchema.parse(data))
-  .handler(async ({ data }) => {
-    await ensureSession()
-
-    const result = await attachPaymentMethod(
-      data.paymentIntentId,
-      data.paymentMethodId,
-      data.clientKey,
-      data.returnUrl,
-    )
-    if (result.errors) throw new Error(result.errors[0].detail)
-
-    const { status, next_action } = result.data.attributes
-    return {
-      status: status as string,
-      nextAction: next_action as { redirect?: { url?: string } } | null,
-    }
-  })
 
 export const verifyIntentFn = createServerFn({ method: 'GET' })
   .inputValidator((data: unknown) => verifyIntentSchema.parse(data))
@@ -95,6 +17,40 @@ export const verifyIntentFn = createServerFn({ method: 'GET' })
 
     const result = await retrievePaymentIntent(data.intentId)
     return { status: (result.data?.attributes?.status ?? 'failed') as string }
+  })
+
+/**
+ * Loads a QR Ph payment for the checkout page: the QR image to scan, the plan
+ * being purchased, and the current status. The intent is verified to belong to
+ * the current user so one buyer can never view another's payment.
+ */
+export const getQrPaymentFn = createServerFn({ method: 'GET' })
+  .inputValidator((data: unknown) => verifyIntentSchema.parse(data))
+  .handler(async ({ data }) => {
+    const session = await ensureSession()
+
+    const result = await retrievePaymentIntent(data.intentId)
+    const attributes = result.data?.attributes
+    if (!attributes) throw new AppError('NOT_FOUND', 'Payment not found')
+
+    const metadata = (attributes.metadata ?? {}) as {
+      userId?: string
+      planId?: string
+    }
+
+    if (metadata.userId !== session.user.id)
+      throw new AppError(
+        'UNAUTHORIZED',
+        'This payment does not belong to your account',
+      )
+
+    return {
+      status: attributes.status as string,
+      qrCodeImageUrl: (attributes.next_action?.code?.image_url ?? null) as
+        | string
+        | null,
+      planId: metadata.planId ?? '',
+    }
   })
 
 /**

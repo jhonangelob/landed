@@ -107,8 +107,8 @@ export default function FilePreview({
               </Button>
             ) : (
               <span className="text-muted text-right font-sans text-[11px] leading-[1.4]">
-                AI generation is unavailable for applications at
-                <br /> or past the 'Applied' stage.
+                AI generation is unavailable for applications
+                <br /> past the 'Applied' stage.
               </span>
             )}
 

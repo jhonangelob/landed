@@ -4,23 +4,15 @@ import { ArrowUpIcon, CheckIcon } from 'lucide-react'
 
 import { Kicker } from '#/components/ui/kicker'
 
-import { cn } from '#/lib/utils'
-
-import { PLANS } from '#/constants/plan'
-
 const DAY_MS = 24 * 60 * 60 * 1000
 
 interface InformationPanelProps {
   selectedPlan: Plan
-  onSelectPlan: (plan: Plan) => void
 }
 
 export default function InformationPanel({
   selectedPlan,
-  onSelectPlan,
 }: InformationPanelProps) {
-  const paidPlans = [PLANS[1], PLANS[2]]
-
   const accessStart = new Date()
   const accessEnd = selectedPlan.duration
     ? new Date(Date.now() + selectedPlan.duration * DAY_MS)
@@ -40,50 +32,9 @@ export default function InformationPanel({
         .
       </p>
       <p className="text-muted font-sans text-[14px] leading-[1.55] font-normal">
-        You're on Economy today. Choose a paid cabin below — you will pay once
-        for {selectedPlan.duration} days of access. Nothing renews
-        automatically.
+        You'll pay once for {selectedPlan.duration} days of access. Nothing
+        renews automatically.
       </p>
-
-      <div className="mt-5 space-y-1">
-        <Kicker className="pb-2 tracking-[1.2px]">Choose your cabin</Kicker>
-        {paidPlans.map((item) => (
-          <div
-            key={item.id}
-            className={cn(
-              'mb-2 flex cursor-pointer flex-row items-center gap-3 rounded-lg border bg-white px-4 py-3.5',
-              selectedPlan.id === item.id && 'border-primary',
-            )}
-            onClick={() => onSelectPlan(item)}
-          >
-            <div className="rounded-full border p-1">
-              <div
-                className={cn(
-                  'size-2.5 rounded-full',
-                  selectedPlan.id === item.id && 'bg-primary',
-                )}
-              />
-            </div>
-
-            <div className="flex flex-1 flex-col">
-              <p className="text-primary-text font-display text-[14px] leading-[1.4] font-bold">
-                {item.name}
-              </p>
-              <p className="text-muted font-sans text-[12px] leading-[1.4] font-normal">
-                {item.duration}-day access · renew manually
-              </p>
-            </div>
-            <div className="text-end">
-              <p className="font-display text-[20px] leading-[1.4] font-bold tracking-[-0.7px]">
-                ₱{item.price}
-              </p>
-              <p className="text-muted font-mono text-[9px] tracking-[0.5px] uppercase">
-                / {item.duration}-day access
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
 
       <div className="border-divider mt-6">
         <Kicker className="pb-2 tracking-[1.2px]">

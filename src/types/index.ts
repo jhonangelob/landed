@@ -45,6 +45,7 @@ import type {
   templateSchema,
 } from '#/validators/shared'
 import type {
+  createPaymentSchema,
   createSubscriptionSchema,
   planSchema,
   updateSubscriptionSchema,
@@ -97,6 +98,8 @@ export type Plan = z.infer<typeof planSchema>
 // ── Subscription ──────────────────────────────────────────────────────────────
 export type CreateSubscriptionInput = z.input<typeof createSubscriptionSchema>
 export type UpdateSubscriptionInput = z.input<typeof updateSubscriptionSchema>
+
+export type CreatePaymentInput = z.input<typeof createPaymentSchema>
 
 // ── Documents ─────────────────────────────────────────────────────────────────
 export type CvContent = z.infer<typeof cvSchema>

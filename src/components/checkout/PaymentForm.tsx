@@ -1,303 +1,118 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import type { Plan } from '#/types'
-import { CreditCardIcon, MoveRightIcon } from 'lucide-react'
+import { Loader2Icon } from 'lucide-react'
 
-import { useForm } from '@tanstack/react-form'
-import { useNavigate } from '@tanstack/react-router'
+import { Link, useNavigate } from '@tanstack/react-router'
 
 import { Button } from '#/components/ui/button'
-import { Input } from '#/components/ui/input'
-import { Label } from '#/components/ui/label'
 
-import {
-  attachMethodFn,
-  createIntentFn,
-  createMethodFn,
-} from '#/server/paymongo'
+import { verifyIntentFn } from '#/server/paymongo'
 
-import { cn } from '#/lib/utils'
-
-import { cardPaymentSchema } from '#/validators/payment'
-
-const METHODS = [
-  { id: 'card', label: 'Card', icon: <CreditCardIcon /> },
-  {
-    id: 'qrph',
-    label: 'QR PH',
-    icon: <img src="/assets/icon_qrph.svg" alt="" className="h-5 w-auto" />,
-  },
-  {
-    id: 'gcash',
-    label: 'GCash',
-    icon: <img src="/assets/icon_gcash.svg" alt="" className="h-5 w-auto" />,
-  },
-  {
-    id: 'paymaya',
-    label: 'Maya',
-    icon: (
-      <img src="/assets/icon_maya.svg" alt="" className="h-5 w-auto pt-1" />
-    ),
-  },
-  {
-    id: 'grab_pay',
-    label: 'GrabPay',
-    icon: (
-      <img src="/assets/icon_grabpay.svg" alt="" className="h-4.5 w-auto" />
-    ),
-  },
-] as const
-
-type Method = (typeof METHODS)[number]['id']
-
-type MethodInput =
-  | {
-      type: 'card'
-      cardNumber: string
-      expMonth: number
-      expYear: number
-      cvc: string
-    }
-  | { type: Exclude<Method, 'card'> }
+const EXPIRY_MS = 1 * 60 * 1000
+const POLL_INTERVAL_MS = 5000
 
 interface PaymentFormProps {
+  intentId: string
+  qrCodeImageUrl: string | null
   selectedPlan: Plan
 }
 
-export default function PaymentForm({ selectedPlan }: PaymentFormProps) {
+export default function PaymentForm({
+  intentId,
+  qrCodeImageUrl,
+  selectedPlan,
+}: PaymentFormProps) {
   const navigate = useNavigate()
-  const [method, setMethod] = useState<Method>('card')
-  const [processing, setProcessing] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [expired, setExpired] = useState(false)
 
   const amount = selectedPlan.price
-  const planId = selectedPlan.id
-  const selectedLabel = METHODS.find((m) => m.id === method)!.label
 
-  async function pay(methodInput: MethodInput) {
-    setError(null)
-    setProcessing(true)
-    try {
-      const { paymentIntentId, clientKey } = await createIntentFn({
-        data: { planId },
-      })
+  useEffect(() => {
+    if (!intentId || expired) return
 
-      const { paymentMethodId } = await createMethodFn({ data: methodInput })
+    let active = true
+    const startedAt = Date.now()
 
-      // The return URL carries only the intent id — the plan is resolved
-      // server-side from the intent metadata during fulfillment.
-      const url = new URL('/payment/return', window.location.origin)
-      url.searchParams.set('payment_intent_id', paymentIntentId)
+    const id = setInterval(async () => {
+      try {
+        const { status } = await verifyIntentFn({ data: { intentId } })
+        if (!active) return
 
-      const { status, nextAction } = await attachMethodFn({
-        data: {
-          paymentIntentId,
-          paymentMethodId,
-          clientKey,
-          returnUrl: url.toString(),
-        },
-      })
-
-      if (status === 'succeeded') {
-        navigate({
-          to: '/payment/return',
-          search: { payment_intent_id: paymentIntentId },
-        })
-      } else if (
-        status === 'awaiting_next_action' &&
-        nextAction?.redirect?.url
-      ) {
-        // Card 3DS or e-wallet authorization — hand off to the redirect.
-        window.location.href = nextAction.redirect.url
-      } else {
-        setError('Payment could not be processed. Please try again.')
-        setProcessing(false)
+        if (status === 'succeeded') {
+          clearInterval(id)
+          navigate({
+            to: '/payment/return',
+            search: { payment_intent_id: intentId },
+          })
+        } else if (Date.now() - startedAt > EXPIRY_MS) {
+          clearInterval(id)
+          setExpired(true)
+        }
+      } catch (err) {
+        // Transient error — keep polling until the code expires.
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong')
-      setProcessing(false)
-    }
-  }
+    }, POLL_INTERVAL_MS)
 
-  const form = useForm({
-    defaultValues: {
-      cardNumber: '',
-      expMonth: '',
-      expYear: '',
-      cvc: '',
-    },
-    validators: {
-      onSubmit: cardPaymentSchema,
-    },
-    onSubmit: async ({ value }) => {
-      await pay({
-        type: 'card',
-        cardNumber: value.cardNumber,
-        expMonth: Number(value.expMonth),
-        expYear: Number(value.expYear),
-        cvc: value.cvc,
-      })
-    },
-  })
+    return () => {
+      active = false
+      clearInterval(id)
+    }
+  }, [intentId, expired, navigate])
+
+  const showQr = Boolean(qrCodeImageUrl) && !expired
 
   return (
     <div className="w-1/2 space-y-6 bg-white p-9">
       <div className="space-y-1">
         <p className="font-display text-primary-text text-[17px] leading-[1.4] font-bold">
-          Payment
+          Pay with QR Ph
         </p>
         <p className="text-muted font-sans text-[13px] leading-[1.4]">
-          Charged once. Choose how you'd like to pay.
+          Charged once. Scan the code with any QR Ph-enabled bank or e-wallet
+          app.
         </p>
-        <div className="mt-4 grid grid-cols-5 gap-2">
-          {METHODS.map((m) => (
-            <Button
-              key={m.id}
-              onClick={() => setMethod(m.id)}
-              className={cn(
-                'flex h-[58.6px] flex-col items-center gap-1 bg-white! p-3 font-mono text-[9px] leading-[1.4] tracking-[0.4px] uppercase',
-                m.id === method
-                  ? 'text-primary border-primary!'
-                  : 'hover:border-primary-text text-muted',
-              )}
-              variant="outline"
-            >
-              {m.icon}
-              {m.id === 'card' && m.label}
-            </Button>
-          ))}
-        </div>
       </div>
 
-      <form
-        className="flex flex-col gap-4"
-        onSubmit={(e) => {
-          e.preventDefault()
-          form.handleSubmit()
-        }}
-      >
-        {error && <p className="text-destructive text-sm">{error}</p>}
-
-        {method === 'card' ? (
+      <div className="mt-4 flex flex-col items-center gap-4">
+        {showQr ? (
           <>
-            <form.Field
-              name="cardNumber"
-              children={(field) => (
-                <div className="space-y-1.5">
-                  <Label htmlFor="cardNumber">Card number</Label>
-                  <Input
-                    id="cardNumber"
-                    inputMode="numeric"
-                    placeholder="1234 1234 1234 1234"
-                    value={field.state.value}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    onBlur={field.handleBlur}
-                  />
-                  {field.state.meta.errors.map((err, i) => (
-                    <p key={i} className="text-destructive text-xs">
-                      {err?.message as string}
-                    </p>
-                  ))}
-                </div>
-              )}
-            />
-
-            <div className="flex gap-4">
-              <form.Field
-                name="expMonth"
-                children={(field) => (
-                  <div className="w-full space-y-1.5">
-                    <Label htmlFor="expMonth">Exp month</Label>
-                    <Input
-                      id="expMonth"
-                      inputMode="numeric"
-                      placeholder="12"
-                      value={field.state.value}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      onBlur={field.handleBlur}
-                    />
-                    {field.state.meta.errors.map((err, i) => (
-                      <p key={i} className="text-destructive text-xs">
-                        {err?.message as string}
-                      </p>
-                    ))}
-                  </div>
-                )}
-              />
-              <form.Field
-                name="expYear"
-                children={(field) => (
-                  <div className="w-full space-y-1.5">
-                    <Label htmlFor="expYear">Exp year</Label>
-                    <Input
-                      id="expYear"
-                      inputMode="numeric"
-                      placeholder="2030"
-                      value={field.state.value}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      onBlur={field.handleBlur}
-                    />
-                    {field.state.meta.errors.map((err, i) => (
-                      <p key={i} className="text-destructive text-xs">
-                        {err?.message as string}
-                      </p>
-                    ))}
-                  </div>
-                )}
-              />
-              <form.Field
-                name="cvc"
-                children={(field) => (
-                  <div className="w-full space-y-1.5">
-                    <Label htmlFor="cvc">CVC</Label>
-                    <Input
-                      id="cvc"
-                      inputMode="numeric"
-                      placeholder="123"
-                      value={field.state.value}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      onBlur={field.handleBlur}
-                    />
-                    {field.state.meta.errors.map((err, i) => (
-                      <p key={i} className="text-destructive text-xs">
-                        {err?.message as string}
-                      </p>
-                    ))}
-                  </div>
-                )}
+            <div className="rounded-lg border bg-white p-4">
+              <img
+                src={qrCodeImageUrl!}
+                alt="QR Ph payment code"
+                className="size-56"
               />
             </div>
 
-            <Button
-              type="submit"
-              disabled={processing}
-              className="mt-12 h-12 font-mono leading-[1.4] font-semibold tracking-[0.8px] uppercase"
-            >
-              {processing ? (
-                'Processing…'
-              ) : (
-                <>
-                  Pay {amount}.00 · Confirm <MoveRightIcon />
-                </>
-              )}
-            </Button>
+            <div className="text-muted flex flex-row items-center gap-2 font-mono text-[11px] leading-[1.4] tracking-[0.4px] uppercase">
+              <Loader2Icon className="size-3.5 animate-spin" />
+              Waiting for your ₱{amount}.00 payment…
+            </div>
+
+            <p className="text-muted text-center font-sans text-[12px] leading-[1.45]">
+              Keep this page open — it updates automatically once your bank
+              confirms the payment.
+            </p>
           </>
         ) : (
-          <>
-            <p className="text-muted-foreground text-sm">
-              You&apos;ll be redirected to {selectedLabel} to authorize the ₱
-              {amount}.00 payment.
+          <div className="flex flex-col items-center gap-3">
+            <p className="text-destructive text-center font-sans text-[13px] leading-[1.45]">
+              {expired
+                ? 'This code expired before payment was received. Start the upgrade again to get a new code.'
+                : 'We could not load a QR code for this payment. Start the upgrade again.'}
             </p>
             <Button
-              type="button"
-              disabled={processing}
-              onClick={() => pay({ type: method })}
+              asChild
+              className="h-12 font-mono leading-[1.4] font-semibold tracking-[0.8px] uppercase"
             >
-              {processing ? 'Processing…' : `Continue with ${selectedLabel}`}
+              <Link to="/app/hangar" className="text-white!">
+                Back to the Hangar
+              </Link>
             </Button>
-          </>
+          </div>
         )}
-      </form>
+      </div>
     </div>
   )
 }

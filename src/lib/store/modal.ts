@@ -21,6 +21,7 @@ export type PlanInformationPayload = {
   currentPlan: Plan
   newPlan: Plan
   currentExpiresAt?: Date | string | null
+  onConfirm?: () => void
 }
 
 export type ApplicationLandedPayload = {

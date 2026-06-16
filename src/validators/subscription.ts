@@ -30,3 +30,7 @@ export const createSubscriptionSchema = subscriptionSchema.pick({
 export const updateSubscriptionSchema = z.object({
   planId: planIdSchema,
 })
+
+export const createPaymentSchema = z.object({
+  planId: planIdSchema,
+})

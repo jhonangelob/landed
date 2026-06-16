@@ -15,9 +15,6 @@ export const Route = createFileRoute('/payment/return')({
   loader: async ({ deps }) => {
     if (!deps.intentId) throw redirect({ to: '/payment/checkout' })
 
-    // Fulfillment is fully server-authoritative: the plan is derived from the
-    // verified intent's metadata and the amount is checked there, so nothing
-    // the client passes in the URL can change which plan gets granted.
     try {
       await fulfillIntentFn({ data: { intentId: deps.intentId } })
     } catch {

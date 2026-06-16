@@ -49,6 +49,7 @@ export function ModalRegistry({ userName }: ModalRegistryProps) {
           currentPlan={payload.planInformation.currentPlan}
           newPlan={payload.planInformation.newPlan}
           currentExpiresAt={payload.planInformation.currentExpiresAt}
+          onConfirm={payload.planInformation.onConfirm}
         />
       )}
       {payload.applicationLanded && (
