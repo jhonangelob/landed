@@ -5,12 +5,13 @@ import { createServerFn } from '@tanstack/react-start'
 import { db } from '#/lib/db/index.server'
 import { touchdownShares, users } from '#/lib/db/schema'
 
-import { ensureSession } from './session'
 import {
   getShareTokenSchema,
   getTouchdownShareSchema,
   statsSnapshotSchema,
 } from '#/validators/touchdown'
+
+import { ensureSession } from './session'
 
 export const createTouchdownShare = createServerFn({ method: 'POST' })
   .inputValidator((data: unknown) => statsSnapshotSchema.parse(data))

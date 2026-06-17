@@ -1,4 +1,5 @@
 import { Resend } from 'resend'
+
 import { AppError } from '../utils'
 
 if (!process.env.RESEND_API_KEY || !process.env.RESEND_FROM_EMAIL) {

@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 
 import { useModal } from '#/lib/store/modal'
+import { cn } from '#/lib/utils'
 
 import {
   DropdownMenu,
@@ -23,7 +24,6 @@ import {
 } from '../ui/dropdown-menu'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
-import { cn } from '#/lib/utils'
 
 interface FilePreviewProps {
   showRetailorButton?: boolean

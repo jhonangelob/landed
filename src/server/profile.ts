@@ -17,11 +17,11 @@ import { db } from '#/lib/db/index.server'
 import { pilotProfiles } from '#/lib/db/schema'
 import { AppError } from '#/lib/utils'
 
+import { parseFileSchema } from '#/validators/documents'
 import {
   pilotProfileSchema,
   savePilotProfileSchema,
 } from '#/validators/profile'
-import { parseFileSchema } from '#/validators/documents'
 
 export const getProfile = createServerFn({ method: 'GET' }).handler(
   async () => {
