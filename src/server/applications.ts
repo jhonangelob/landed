@@ -3,7 +3,7 @@ import { and, count, eq, isNull } from 'drizzle-orm'
 
 import { createServerFn } from '@tanstack/react-start'
 
-import { ensureSession } from '#/server/session'
+import { ensureSession } from '#/server/session.server'
 
 import { getUserPlan } from '#/lib/auth/subscription'
 import { db } from '#/lib/db/index.server'

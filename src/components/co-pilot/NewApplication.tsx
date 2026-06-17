@@ -59,7 +59,7 @@ export default function NewApplication({
         description="Paste a job posting and we'll tailor your CV and Cover Letter using your Pilot Profile."
       />
       <div className="flex flex-col gap-4 lg:flex-row">
-        <div className="flex min-w-1/2 flex-col gap-4 rounded-lg border bg-white p-6">
+        <div className="flex h-fit min-w-1/2 flex-col gap-4 rounded-lg border bg-white p-6">
           <div className="flex flex-row items-center justify-between border-b border-dashed pb-3.5">
             <p className="text-muted font-mono text-[11px] leading-[1.4] font-normal tracking-[1.5px] uppercase">
               Job Posting

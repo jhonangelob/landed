@@ -11,7 +11,7 @@ import { eq } from 'drizzle-orm'
 import { createServerFn } from '@tanstack/react-start'
 
 import { recordAiUsage } from '#/server/aiUsage'
-import { ensureSession } from '#/server/session'
+import { ensureSession } from '#/server/session.server'
 
 import { db } from '#/lib/db/index.server'
 import { pilotProfiles } from '#/lib/db/schema'
@@ -163,9 +163,9 @@ export const parseCvFile = createServerFn({ method: 'POST' })
         ? parsed.experience
             .slice(0, PROFILE_LIMITS.experience)
             .map((e: Record<string, unknown>) => ({
-              company: e.company ?? '',
-              role: e.role ?? '',
-              dates: e.dates ?? '',
+              company: String(e.company ?? ''),
+              role: String(e.role ?? ''),
+              dates: String(e.dates ?? ''),
               bullets: Array.isArray(e.bullets)
                 ? (e.bullets as unknown[])
                     .filter(
@@ -181,9 +181,9 @@ export const parseCvFile = createServerFn({ method: 'POST' })
         ? parsed.education
             .slice(0, PROFILE_LIMITS.education)
             .map((e: Record<string, unknown>) => ({
-              institution: e.institution ?? '',
-              degree: e.degree ?? '',
-              year: e.year ?? '',
+              institution: String(e.institution ?? ''),
+              degree: String(e.degree ?? ''),
+              year: String(e.year ?? ''),
             }))
         : undefined,
 
@@ -191,10 +191,10 @@ export const parseCvFile = createServerFn({ method: 'POST' })
         ? parsed.certifications
             .slice(0, PROFILE_LIMITS.certifications)
             .map((c: Record<string, unknown>) => ({
-              name: c.name ?? '',
-              issuer: c.issuer ?? '',
-              issueDate: c.issueDate ?? '',
-              expiryDate: c.expiryDate ?? '',
+              name: String(c.name ?? ''),
+              issuer: String(c.issuer ?? ''),
+              issueDate: String(c.issueDate ?? ''),
+              expiryDate: String(c.expiryDate ?? ''),
               url: tryUrl(c.url as string),
             }))
         : undefined,
@@ -203,11 +203,11 @@ export const parseCvFile = createServerFn({ method: 'POST' })
         ? parsed.projects
             .slice(0, PROFILE_LIMITS.projects)
             .map((p: Record<string, unknown>) => ({
-              name: p.name ?? '',
+              name: String(p.name ?? ''),
               url: tryUrl(p.url as string),
-              role: p.role ?? '',
-              dates: p.dates ?? '',
-              highlights: p.highlights ?? '',
+              role: String(p.role ?? ''),
+              dates: String(p.dates ?? ''),
+              highlights: String(p.highlights ?? ''),
               bullets: Array.isArray(p.bullets)
                 ? (p.bullets as unknown[])
                     .filter(
@@ -222,7 +222,7 @@ export const parseCvFile = createServerFn({ method: 'POST' })
       links: Array.isArray(parsed.links)
         ? parsed.links
             .map((l: Record<string, unknown>) => ({
-              name: l.name ?? '',
+              name: String(l.name ?? ''),
               url: tryUrl(l.url as string),
             }))
             .slice(0, PROFILE_LIMITS.links)

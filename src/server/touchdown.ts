@@ -5,16 +5,26 @@ import { createServerFn } from '@tanstack/react-start'
 import { db } from '#/lib/db/index.server'
 import { touchdownShares, users } from '#/lib/db/schema'
 
+import type { StatsSnapshot } from '#/validators/touchdown'
 import {
+  createTouchdownShareSchema,
   getShareTokenSchema,
   getTouchdownShareSchema,
-  statsSnapshotSchema,
 } from '#/validators/touchdown'
 
-import { ensureSession } from './session'
+import { ensureSession } from './session.server'
+
+export type { StatsSnapshot }
+
+export type TouchdownShare = {
+  shareToken: string
+  statsSnapshot: StatsSnapshot
+  createdAt: Date
+  userName: string
+}
 
 export const createTouchdownShare = createServerFn({ method: 'POST' })
-  .inputValidator((data: unknown) => statsSnapshotSchema.parse(data))
+  .inputValidator((data: unknown) => createTouchdownShareSchema.parse(data))
   .handler(async ({ data }) => {
     const session = await ensureSession()
 
@@ -45,7 +55,7 @@ export const createTouchdownShare = createServerFn({ method: 'POST' })
 
 export const getTouchdownShare = createServerFn({ method: 'GET' })
   .inputValidator((data: unknown) => getTouchdownShareSchema.parse(data))
-  .handler(async ({ data }) => {
+  .handler(async ({ data }): Promise<TouchdownShare | null> => {
     return await db
       .select({
         shareToken: touchdownShares.shareToken,

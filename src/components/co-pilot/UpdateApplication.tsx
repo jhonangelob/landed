@@ -420,7 +420,7 @@ export default function UpdateApplication({
             variant="copilot"
             title="Delete Application"
             order="danger"
-            className="border-destructive"
+            className="border-border-danger! bg-surface-danger!"
           >
             <div className="flex flex-col space-y-2">
               <p className="text-muted font-sans text-[14px] leading-[1.4]">

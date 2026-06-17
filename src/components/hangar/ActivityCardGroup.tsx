@@ -30,7 +30,7 @@ export default function ActivityCardGroup({ data }: { data: ActivityData }) {
           className="md:bg-surface-muted md: flex h-10 flex-row items-center justify-between gap-2 rounded-none border-b bg-white px-1 py-1 shadow-none md:h-23.5 md:flex-col md:items-start md:rounded-md md:border md:px-4 md:py-3.5"
         >
           <p
-            className={`font-display text-ink-strong leading-none font-bold tracking-[-0.8px] text-[${typeof value === 'string' ? '12px' : '14px'}] md:text-[${typeof value === 'string' ? '24px' : '30px'}]`}
+            className={`font-display text-ink-strong text-[12px] leading-none font-bold tracking-[-0.8px] md:text-[24px]`}
           >
             {value}
           </p>

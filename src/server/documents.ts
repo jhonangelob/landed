@@ -1,4 +1,3 @@
-import { RATE_LIMIT_MAX_GENERATIONS, RATE_LIMIT_WINDOW_MINUTES } from '#/config'
 import { clToHtml, cvToHtml } from '#/helper/document'
 import {
   buildCoverLetterSystemPrompt,
@@ -10,12 +9,12 @@ import type { CoverLetterContent, CvContent } from '#/types'
 import { anthropic } from '@ai-sdk/anthropic'
 import { renderToBuffer } from '@react-pdf/renderer'
 import { generateText } from 'ai'
-import { and, count, desc, eq, gte } from 'drizzle-orm'
+import { and, desc, eq } from 'drizzle-orm'
 
 import { createServerFn } from '@tanstack/react-start'
 
 import { recordAiUsage } from '#/server/aiUsage'
-import { ensureSession } from '#/server/session'
+import { ensureSession } from '#/server/session.server'
 
 import { getUserPlan } from '#/lib/auth/subscription'
 import { db } from '#/lib/db/index.server'
@@ -39,7 +38,11 @@ import {
 
 import { TEMPLATE_MAP, isTemplateLocked } from '#/constants/templates'
 
-import { checkGenerationLimit, increaseGenerationUsed } from './subscription'
+import {
+  checkGenerationLimit,
+  checkRateLimit,
+  increaseGenerationUsed,
+} from './generation.server'
 
 export const getDocuments = createServerFn({ method: 'GET' })
   .inputValidator((data: unknown) => getDocumentSchema.parse(data))
@@ -399,36 +402,3 @@ export const exportCoverLetterPdf = createServerFn({ method: 'POST' })
       filename: `${fileName}-Cover-Letter.pdf`,
     }
   })
-
-export async function checkRateLimit() {
-  const session = await ensureSession()
-
-  const windowStart = new Date(
-    Date.now() - RATE_LIMIT_WINDOW_MINUTES * 60 * 1000,
-  )
-
-  const result = await db
-    .select({ total: count() })
-    .from(generatedDocs)
-    .where(
-      and(
-        eq(generatedDocs.userId, session.user.id),
-        gte(generatedDocs.createdAt, windowStart),
-      ),
-    )
-    .then((r) => r.at(0) ?? null)
-
-  const generations = Math.floor((result?.total ?? 0) / 2)
-  const limit = RATE_LIMIT_MAX_GENERATIONS
-  const remaining = Math.max(0, limit - generations)
-  const exceeded = generations >= limit
-
-  if (exceeded) {
-    throw new AppError(
-      'RATE_LIMIT_EXCEEDED',
-      `You've generated ${limit} documents in the last ${RATE_LIMIT_WINDOW_MINUTES} minutes. Please wait before generating again.`,
-    )
-  }
-
-  return { generations, limit, remaining, exceeded }
-}

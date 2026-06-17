@@ -10,24 +10,27 @@ import { Link, createFileRoute, notFound } from '@tanstack/react-router'
 
 import { Button } from '#/components/ui/button'
 
-import type { StatsSnapshot } from '#/server/touchdown'
+import type { TouchdownShare } from '#/server/touchdown'
 import { getTouchdownShare } from '#/server/touchdown'
 
 import { cn } from '#/lib/utils'
 
 export const Route = createFileRoute('/share/$shareToken')({
   head: ({ loaderData }) => {
-    const snap = loaderData.statsSnapshot as StatsSnapshot
+    // head can run before loader data resolves, so it may be undefined here.
+    const data = loaderData as TouchdownShare | undefined
+    if (!data) return {}
+    const snap = data.statsSnapshot
     return {
       meta: [
-        { title: `${loaderData.userName} just landed at ${snap.company}!` },
+        { title: `${data.userName} just landed at ${snap.company}!` },
         {
           name: 'description',
-          content: `${loaderData.userName} applied to ${snap.appliedCount} roles and landed the ${snap.role} position at ${snap.company} in ${snap.daysCount} days.`,
+          content: `${data.userName} applied to ${snap.appliedCount} roles and landed the ${snap.role} position at ${snap.company} in ${snap.daysCount} days.`,
         },
         {
           property: 'og:title',
-          content: `${loaderData.userName} just landed at ${snap.company}!`,
+          content: `${data.userName} just landed at ${snap.company}!`,
         },
         {
           property: 'og:description',
@@ -38,7 +41,7 @@ export const Route = createFileRoute('/share/$shareToken')({
       ],
     }
   },
-  loader: async ({ params }) => {
+  loader: async ({ params }): Promise<TouchdownShare> => {
     const share = await getTouchdownShare({
       data: { shareToken: params.shareToken },
     })
@@ -54,9 +57,12 @@ function getCompanyCode(name: string) {
 }
 
 function SharePage() {
-  const share = Route.useLoaderData()
+  // Loader throws notFound() when the share is missing, so it is always defined
+  // here — but the notFound path widens the inferred type to include undefined.
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+  const share = Route.useLoaderData() as TouchdownShare
   const { shareToken } = Route.useParams()
-  const snap = share?.statsSnapshot as StatsSnapshot
+  const snap = share.statsSnapshot
 
   const apiUrl = window.location.origin
   const shareUrl = `${apiUrl}/share/${shareToken}`

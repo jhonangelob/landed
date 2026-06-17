@@ -1,6 +1,5 @@
 import { useState } from 'react'
 
-import { useCreateSubscriptionMutation } from '#/hooks/useSubscriptionQueries'
 import type { CreateAccountInput } from '#/types'
 import { EyeIcon, EyeOffIcon } from 'lucide-react'
 
@@ -47,8 +46,6 @@ function RouteComponent() {
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
 
-  const { mutateAsync: createSubscription } = useCreateSubscriptionMutation()
-
   const form = useForm({
     defaultValues: {
       name: '',
@@ -73,17 +70,8 @@ function RouteComponent() {
           'Account created',
           'Check your inbox to verify your email address.',
         )
-
-        try {
-          await createSubscription({ userId: res.data.user.id })
-          navigate({ to: '/app' })
-        } catch (er) {
-          setErrorMessage(
-            'Account created but setup failed. Please contact support.',
-          )
-        } finally {
-          setIsLoading(false)
-        }
+        navigate({ to: '/app' })
+        setIsLoading(false)
       }
 
       if (res.error) {

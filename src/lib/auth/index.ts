@@ -3,13 +3,22 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { tanstackStartCookies } from 'better-auth/tanstack-start'
 
 import { db } from '#/lib/db/index.server'
-import { accounts, sessions, users, verifications } from '#/lib/db/schema'
+import {
+  accounts,
+  sessions,
+  subscriptions,
+  users,
+  verifications,
+} from '#/lib/db/schema'
+import { addMonths } from '#/lib/subscription/reset'
+
+import { FREE_PLAN } from '#/constants/plan'
 
 import { FROM_EMAIL, resend } from '../email/index.server'
 import { AppError } from '../utils'
 
-const secret = import.meta.env.VITE_BETTER_AUTH_SECRET
-const baseURL = import.meta.env.VITE_BETTER_AUTH_URL
+const secret = process.env.BETTER_AUTH_SECRET
+const baseURL = process.env.BETTER_AUTH_URL
 
 if (!secret || !baseURL) {
   throw new AppError(
@@ -31,6 +40,27 @@ export const auth = betterAuth({
       verification: verifications,
     },
   }),
+
+  databaseHooks: {
+    user: {
+      create: {
+        // Provision the free subscription server-side at account creation so the
+        // client never supplies a userId to an unauthenticated endpoint.
+        after: async (user) => {
+          await db
+            .insert(subscriptions)
+            .values({
+              userId: user.id,
+              planId: FREE_PLAN.id,
+              generationsUsed: 0,
+              generationsLimit: FREE_PLAN.generations,
+              generationsResetAt: addMonths(new Date(), 1),
+            })
+            .onConflictDoNothing({ target: subscriptions.userId })
+        },
+      },
+    },
+  },
 
   emailAndPassword: {
     enabled: true,

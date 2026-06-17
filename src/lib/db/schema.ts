@@ -20,6 +20,8 @@ import {
   uuid,
 } from 'drizzle-orm/pg-core'
 
+import type { StatsSnapshot } from '#/validators/touchdown'
+
 // ─── Enums ────────────────────────────────────────────────────────────────────
 
 export const applicationStatusEnum = pgEnum('application_status', [
@@ -182,7 +184,7 @@ export const touchdownShares = pgTable('touchdown_shares', {
   applicationId: uuid('application_id')
     .notNull()
     .references(() => applications.id, { onDelete: 'cascade' }),
-  statsSnapshot: jsonb('stats_snapshot').notNull(),
+  statsSnapshot: jsonb('stats_snapshot').$type<StatsSnapshot>().notNull(),
   cardImageUrl: text('card_image_url'),
   shareToken: text('share_token').notNull().unique(),
   createdAt: timestamp('created_at').defaultNow().notNull(),

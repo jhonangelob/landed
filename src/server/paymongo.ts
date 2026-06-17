@@ -1,6 +1,6 @@
 import { createServerFn } from '@tanstack/react-start'
 
-import { ensureSession } from '#/server/session'
+import { ensureSession } from '#/server/session.server'
 
 import { retrievePaymentIntent } from '#/lib/paymongo'
 import { applyPlan } from '#/lib/subscription/apply'

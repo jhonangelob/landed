@@ -1,21 +1,17 @@
-import { getUsageInfo } from '#/helper/usage'
-import { and, eq, sql } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 
 import { createServerFn } from '@tanstack/react-start'
 
-import { ensureSession } from '#/server/session'
+import { ensureSession } from '#/server/session.server'
 
 import { db } from '#/lib/db/index.server'
 import { subscriptions } from '#/lib/db/schema'
-import { addMonths, applyMonthlyReset } from '#/lib/subscription/reset'
+import { applyMonthlyReset } from '#/lib/subscription/reset'
 import { AppError } from '#/lib/utils'
 
-import {
-  createPaymentSchema,
-  createSubscriptionSchema,
-} from '#/validators/subscription'
+import { createPaymentSchema } from '#/validators/subscription'
 
-import { FREE_PLAN, getPlanById } from '#/constants/plan'
+import { getPlanById } from '#/constants/plan'
 
 export const getSubscription = createServerFn({ method: 'GET' }).handler(
   async () => {
@@ -32,75 +28,6 @@ export const getSubscription = createServerFn({ method: 'GET' }).handler(
     return await applyMonthlyReset(result)
   },
 )
-
-export const createSubscription = createServerFn({ method: 'POST' })
-  .inputValidator((data: unknown) => createSubscriptionSchema.parse(data))
-  .handler(async ({ data }) => {
-    await db
-      .insert(subscriptions)
-      .values({
-        userId: data.userId,
-        planId: FREE_PLAN.id,
-        generationsUsed: 0,
-        generationsLimit: FREE_PLAN.generations,
-        generationsResetAt: addMonths(new Date(), 1),
-      })
-      .onConflictDoNothing({ target: subscriptions.userId })
-  })
-
-export async function checkGenerationLimit() {
-  const session = await ensureSession()
-
-  const sub = await db
-    .select()
-    .from(subscriptions)
-    .where(eq(subscriptions.userId, session.user.id))
-    .limit(1)
-    .then((r) => r.at(0) ?? null)
-
-  if (!sub)
-    throw new AppError(
-      'SUBSCRIPTION_NOT_FOUND',
-      'No active subscription found — please refresh and try again',
-    )
-
-  const usage = getUsageInfo(await applyMonthlyReset(sub))
-
-  if (!usage.unlimited && usage.remaining <= 0)
-    throw new AppError(
-      'GENERATION_LIMIT_REACHED',
-      'You have used all of your generations on the Economy plan',
-    )
-
-  return usage
-}
-
-export async function increaseGenerationUsed() {
-  const session = await ensureSession()
-
-  const updated = await db
-    .update(subscriptions)
-    .set({
-      generationsUsed: sql`${subscriptions.generationsUsed} + 1`,
-      updatedAt: new Date(),
-    })
-    .where(
-      and(
-        eq(subscriptions.userId, session.user.id),
-        sql`(${subscriptions.generationsLimit} IS NULL OR ${subscriptions.generationsUsed} < ${subscriptions.generationsLimit})`,
-      ),
-    )
-    .returning()
-
-  if (updated.length === 0) {
-    throw new AppError(
-      'GENERATION_LIMIT_REACHED',
-      'Generation limit reached — upgrade your plan to continue',
-    )
-  }
-
-  return getUsageInfo(updated[0])
-}
 
 export const createQrPhPayment = createServerFn({ method: 'POST' })
   .inputValidator((data: unknown) => createPaymentSchema.parse(data))

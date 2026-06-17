@@ -15,6 +15,13 @@ export const statsSnapshotSchema = z.object({
   daysCount: z.number(),
 })
 
+export type StatsSnapshot = z.infer<typeof statsSnapshotSchema>
+
+export const createTouchdownShareSchema = z.object({
+  applicationId: z.string().uuid(),
+  statsSnapshot: statsSnapshotSchema,
+})
+
 export const getTouchdownShareSchema = z.object({ shareToken: z.string() })
 
 export const getShareTokenSchema = z.object({

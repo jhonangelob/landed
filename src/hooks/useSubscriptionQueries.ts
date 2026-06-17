@@ -1,13 +1,9 @@
-import type { CreatePaymentInput, CreateSubscriptionInput } from '#/types'
+import type { CreatePaymentInput } from '#/types'
 
 import { useMutation, useSuspenseQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 
-import {
-  createQrPhPayment,
-  createSubscription,
-  getSubscription,
-} from '#/server/subscription'
+import { createQrPhPayment, getSubscription } from '#/server/subscription'
 
 import { notify } from '#/lib/toast'
 
@@ -18,13 +14,6 @@ export function useSubscriptionQuery() {
     queryKey: subscriptionQueryKey,
     queryFn: () => getSubscription(),
     retry: false,
-  })
-}
-
-export function useCreateSubscriptionMutation() {
-  return useMutation({
-    mutationFn: (value: CreateSubscriptionInput) =>
-      createSubscription({ data: value }),
   })
 }
 

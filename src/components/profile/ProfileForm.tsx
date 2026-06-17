@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 
 import { PROFILE_LIMITS } from '#/config'
-import { getTimeSince } from '#/helper/date'
 import type {
   PilotProfile,
   PilotProfileInput,
@@ -38,11 +37,6 @@ export default function ProfileForm({
   const [skillInput, setSkillInput] = useState('')
   const [roleInput, setRoleInput] = useState('')
   const [wordInput, setWordInput] = useState('')
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   const form = useForm({
     defaultValues: {
