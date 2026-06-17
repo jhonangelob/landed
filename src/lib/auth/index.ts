@@ -8,11 +8,15 @@ import { accounts, sessions, users, verifications } from '#/lib/db/schema'
 import { FROM_EMAIL, resend } from '../email/index.server'
 import { AppError } from '../utils'
 
-if (!process.env.BETTER_AUTH_SECRET || !process.env.BETTER_AUTH_URL)
+const secret = import.meta.env.VITE_BETTER_AUTH_SECRET
+const baseURL = import.meta.env.VITE_BETTER_AUTH_URL
+
+if (!secret || !baseURL) {
   throw new AppError(
     'MISSING_ENV',
     'API Key is not defined in the environment variables',
   )
+}
 
 export const auth = betterAuth({
   enabled: true,
@@ -120,8 +124,8 @@ export const auth = betterAuth({
     max: 5,
   },
 
-  secret: process.env.BETTER_AUTH_SECRET,
-  baseURL: process.env.BETTER_AUTH_URL,
+  secret,
+  baseURL,
 
   plugins: [tanstackStartCookies()],
 })

@@ -143,7 +143,7 @@ export default function ApplicationLandedModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={false}
-        className="min-w-260 space-y-2.25 bg-white px-10 pt-8.5 pb-6.5"
+        className="max-h-[90vh] space-y-2.25 overflow-y-auto bg-white px-4 py-6 sm:px-6 lg:max-w-5xl lg:px-10 lg:pt-8.5 lg:pb-6.5"
       >
         <DialogHeader className="flex flex-row items-center">
           <DialogTitle className="text-primary flex flex-row items-center gap-1 font-mono text-[11px] leading-[1.4] font-semibold tracking-[1.1px] uppercase">
@@ -152,7 +152,7 @@ export default function ApplicationLandedModal({
           </DialogTitle>
         </DialogHeader>
 
-        <DialogDescription className="font-display text-primary-text text-center text-[72px] leading-[0.95] font-bold tracking-[-2.5px]">
+        <DialogDescription className="font-display text-primary-text text-center text-[44px] leading-[0.95] font-bold tracking-[-1.5px] sm:text-[56px] md:text-[72px] md:tracking-[-2.5px]">
           You <span className="text-primary italic">landed</span>.
         </DialogDescription>
 
@@ -162,8 +162,8 @@ export default function ApplicationLandedModal({
           <span className="font-bold">{role}</span> role. Wheels down.
         </p>
 
-        <div className="flex flex-row rounded-lg border">
-          <div className="border-divider bg-surface-muted flex-1 border-r border-dashed px-6.5 py-6">
+        <div className="flex flex-col rounded-lg border lg:flex-row">
+          <div className="border-divider bg-surface-muted flex-1 border-b border-dashed px-5 py-6 lg:border-r lg:border-b-0 lg:px-6.5">
             <div className="flex flex-row justify-between pb-4">
               <div>
                 <p className="text-muted font-mono text-[11px] leading-[1.4] font-normal tracking-[1.7px] uppercase">
@@ -184,7 +184,7 @@ export default function ApplicationLandedModal({
             </div>
             <div className="flex flex-row justify-between border-y py-4">
               <div className="w-1/3 space-y-1">
-                <p className="text-primary-text font-mono text-[42px] leading-none font-medium tracking-[1.7px] uppercase">
+                <p className="text-primary-text font-mono text-[34px] leading-none font-medium tracking-[1.7px] uppercase sm:text-[42px]">
                   {previousCompany ? getCompanyCode(previousCompany) : '---'}
                 </p>
                 <p className="text-primary-text font-display truncate text-[16px] leading-[1.4] font-bold tracking-[-0.4px]">
@@ -196,7 +196,7 @@ export default function ApplicationLandedModal({
               </div>
               <img src="/assets/airplane-1.svg" className="my-auto h-14" />
               <div className="w-1/3 space-y-1 text-end">
-                <p className="text-primary font-mono text-[42px] leading-none font-medium tracking-[1.7px] uppercase">
+                <p className="text-primary font-mono text-[34px] leading-none font-medium tracking-[1.7px] uppercase sm:text-[42px]">
                   {getCompanyCode(company)}
                 </p>
                 <p className="text-primary-text font-display truncate text-[16px] leading-[1.4] font-bold tracking-[-0.4px]">
@@ -207,7 +207,7 @@ export default function ApplicationLandedModal({
                 </p>
               </div>
             </div>
-            <div className="flex flex-row gap-12 pt-4">
+            <div className="flex flex-row flex-wrap gap-x-8 gap-y-3 pt-4 lg:gap-12">
               <div className="space-y-1">
                 <p className="text-muted font-mono text-[10px] leading-[1.4] tracking-[1.3px] uppercase">
                   departed
@@ -246,7 +246,7 @@ export default function ApplicationLandedModal({
               )}
             </div>
           </div>
-          <div className="bg-surface-info w-55 space-y-6 px-5.5 py-6">
+          <div className="bg-surface-info w-full space-y-6 px-5.5 py-6 lg:w-55">
             <div className="flex flex-row justify-between">
               <p className="text-muted font-mono text-[11px] leading-[1.4] tracking-[1.7px] uppercase">
                 Stub
@@ -292,8 +292,8 @@ export default function ApplicationLandedModal({
           </div>
         </div>
 
-        <div className="bg-surface-subtle flex flex-row justify-between gap-2 rounded-lg border px-5 py-4">
-          <div className="w-1/2 space-y-1.5">
+        <div className="bg-surface-subtle flex flex-col gap-4 rounded-lg border px-5 py-4 sm:flex-row sm:justify-between sm:gap-2">
+          <div className="space-y-1.5 sm:w-1/2">
             <p className="text-primary-text font-display text-[18px] leading-[1.4] font-bold tracking-[-0.5px]">
               Tell the tower.
             </p>
@@ -302,7 +302,7 @@ export default function ApplicationLandedModal({
               a week. Karma.
             </p>
           </div>
-          <div className="flex flex-row items-end gap-2">
+          <div className="flex w-full flex-row items-end gap-2 sm:w-auto">
             {/* <Button
               className="text-primary-text font-mono text-[11px] leading-[1.4] tracking-[0.9px] uppercase"
               variant="outline"
@@ -322,7 +322,7 @@ export default function ApplicationLandedModal({
               Post to LinkedIn
             </Button> */}
             <Button
-              className="text-primary-text font-mono text-[11px] leading-[1.4] tracking-[0.9px] uppercase"
+              className="text-primary-text w-full font-mono text-[11px] leading-[1.4] tracking-[0.9px] uppercase sm:w-auto"
               variant="outline"
               disabled={!shareUrl}
               onClick={handleCopyLink}

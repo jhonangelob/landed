@@ -32,6 +32,7 @@ import type {
   exportDocumentSchema,
   generateDocumentSchema,
   getDocumentSchema,
+  parseFileSchema,
 } from '#/validators/documents'
 import type { savePilotProfileSchema } from '#/validators/profile'
 import type {
@@ -51,6 +52,7 @@ import type {
   planSchema,
   updateSubscriptionSchema,
 } from '#/validators/subscription'
+import type { statsSnapshotSchema } from '#/validators/touchdown'
 
 // ── Drizzle inferred types ────────────────────────────────────────────────────
 export type User = InferSelectModel<typeof users>
@@ -113,3 +115,7 @@ export type GetDocumentsInput = z.input<typeof getDocumentSchema>
 export type ExportDocumentInput = z.input<typeof exportDocumentSchema>
 
 export type ExportCoverLetterInput = z.input<typeof exportCoverLetterSchema>
+export type ParseFileInput = z.input<typeof parseFileSchema>
+
+// ── Touchdown ─────────────────────────────────────────────────────────────────
+export type StatsSnapshot = z.infer<typeof statsSnapshotSchema>

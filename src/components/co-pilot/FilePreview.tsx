@@ -4,7 +4,12 @@ import { formatDayTime } from '#/helper/date'
 import { downloadBase64Pdf } from '#/helper/download'
 import { useExportCoverLetterMutation } from '#/hooks/useDocumentQueries'
 import type { GeneratedDoc } from '#/types'
-import { DownloadIcon, HistoryIcon, PlusIcon, SparklesIcon } from 'lucide-react'
+import {
+  DownloadIcon,
+  HistoryIcon,
+  SparkleIcon,
+  SparklesIcon,
+} from 'lucide-react'
 
 import { useModal } from '#/lib/store/modal'
 
@@ -18,6 +23,7 @@ import {
 } from '../ui/dropdown-menu'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
+import { cn } from '#/lib/utils'
 
 interface FilePreviewProps {
   showRetailorButton?: boolean
@@ -33,23 +39,52 @@ interface FilePreviewProps {
   applicationId?: string
 }
 
-function EmptyFilePreview() {
+interface EmptyFilePreviewProps {
+  variant: 'cv' | 'cover_letter'
+}
+
+function EmptyFilePreview({ variant }: EmptyFilePreviewProps) {
   return (
-    <div className="mt-2 flex items-center justify-center rounded-lg border border-dashed py-20">
-      <div className="flex flex-col items-center justify-center gap-4 text-center">
-        <div className="bg-primary/20 text-primary flex size-14 items-center justify-center rounded-full">
-          <PlusIcon className="size-4" />
+    <div className="mt-2 flex flex-col items-center justify-center gap-8 rounded-lg border border-dashed py-10 text-center">
+      <div className="relative w-44 space-y-1.5 rounded-md border p-3">
+        <div className="h-2 w-1/2 rounded-lg bg-[#e2e3e9]"></div>
+        <div className="h-1.5 w-1/4 rounded-sm bg-[#f2f3f7]"></div>
+
+        <div className="mt-3 h-2 w-full rounded-sm border-t"></div>
+        <div className="h-1.5 w-1/5 rounded-lg bg-[#dbe6f9]"></div>
+        <div className="h-1.5 w-full rounded-lg bg-[#f2f3f7]"></div>
+        <div className="h-1.5 w-4/5 rounded-lg bg-[#f2f3f7]"></div>
+        <div className="h-1.5 w-4/6 rounded-lg bg-[#f2f3f7]"></div>
+
+        <div className="mt-3 h-2 w-full rounded-sm border-t"></div>
+        <div className="h-1.5 w-1/5 rounded-lg bg-[#dbe6f9]"></div>
+        <div className="h-1.5 w-full rounded-lg bg-[#f2f3f7]"></div>
+        <div className="h-1.5 w-4/5 rounded-lg bg-[#f2f3f7]"></div>
+        <div className="h-1.5 w-4/6 rounded-lg bg-[#f2f3f7]"></div>
+
+        <div className="mt-3 h-2 w-full rounded-sm border-t"></div>
+        <div className="h-1.5 w-1/5 rounded-lg bg-[#dbe6f9]"></div>
+        <div className="h-1.5 w-2/5 rounded-lg bg-[#f2f3f7]"></div>
+        <div className="h-1.5 w-4/5 rounded-lg bg-[#f2f3f7]"></div>
+
+        <div className="absolute top-23 right-14 rounded-full border bg-white p-6">
+          <SparkleIcon className="text-primary/20 fill-primary size-3" />
         </div>
-        <p className="font-display text-primary-text text-[20px] leading-[1.6] font-bold tracking-[-0.5px]">
-          No CV Yet
+      </div>
+
+      <div className="flex flex-col items-center gap-4">
+        <p className="font-display text-ink-strong text-[19px] leading-[1.6] font-bold tracking-[-0.5px]">
+          {variant === 'cover_letter'
+            ? 'Your cover letter.'
+            : 'Your tailored CV.'}
         </p>
-        <p className="text-primary-text max-w-2/3 font-sans text-[14px] leading-normal font-normal">
-          Fill in the job posting on the left, then hit{' '}
-          <span className="font-bold">Generate documents</span>
+        <p className="text-ink-muted max-w-75 font-sans text-[13px] leading-[1.55]">
+          {variant === 'cover_letter'
+            ? 'Paste the job description on the left and hit Generate — Co-Pilot will write a short, specific cover letter in your voice.'
+            : 'Paste the job description on the left and hit Generate — Co-Pilot will tailor your CV to match the role using your Pilot Profile.'}
         </p>
-        <p className="text-primary-text max-w-2/3 font-sans text-[14px] leading-normal font-normal">
-          Co-Pilot will use your Pilot Profile to tailor a one-page CV for this
-          role.
+        <p className="text-muted w-fit rounded-full border px-3 py-1 font-mono text-[10px] leading-[1.6] tracking-[1.2px] uppercase">
+          ← paste job details to get started
         </p>
       </div>
     </div>
@@ -70,6 +105,9 @@ export default function FilePreview({
 
   const [fileType, setFileType] = useState<'cv' | 'cover_letter'>('cv')
 
+  const documentExist = (file: 'cv' | 'cover_letter') =>
+    !!documents?.[file]?.length
+
   const handleRetailor = () => {
     onRetailor && onRetailor(fileType)
   }
@@ -87,7 +125,7 @@ export default function FilePreview({
   }
 
   return (
-    <div className="flex flex-row gap-2">
+    <div className="flex flex-col-reverse gap-2 md:flex-row">
       <div className="flex-1 rounded-lg border bg-white p-5.5">
         <Tabs defaultValue="cv">
           <TabsList
@@ -119,7 +157,7 @@ export default function FilePreview({
                 }}
               />
             ) : (
-              <EmptyFilePreview />
+              <EmptyFilePreview variant="cv" />
             )}
           </TabsContent>
 
@@ -132,81 +170,99 @@ export default function FilePreview({
                 }}
               />
             ) : (
-              <EmptyFilePreview />
+              <EmptyFilePreview variant="cover_letter" />
             )}
           </TabsContent>
         </Tabs>
       </div>
-      <div className="sticky top-16 w-12 space-y-2 self-start">
-        {showRetailorButton && (
-          <Tooltip>
-            <TooltipTrigger
-              className="flex h-11! w-full flex-row items-center justify-center gap-1.5 rounded-lg border bg-white px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase"
-              onClick={handleRetailor}
-            >
-              <SparklesIcon className="text-primary size-4" />
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Re-Tailor</p>
-            </TooltipContent>
-          </Tooltip>
-        )}
-        {documents?.[fileType] && applicationId && (
-          <Tooltip>
-            <TooltipTrigger
-              className="flex h-11! w-full flex-row items-center justify-center gap-1.5 rounded-lg border bg-white px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase"
-              onClick={handleDownload}
-              disabled={isExportingCl}
-            >
-              <DownloadIcon className="text-primary size-4" />
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Download File</p>
-            </TooltipContent>
-          </Tooltip>
-        )}
-        {documents?.[fileType] && applicationId && (
-          <DropdownMenu>
-            <DropdownMenuTrigger className="flex h-11! w-full flex-row items-center justify-center gap-1.5 rounded-lg border bg-white px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase">
-              <Tooltip>
-                <TooltipTrigger>
-                  <HistoryIcon className="text-primary size-4" />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>View History</p>
-                </TooltipContent>
-              </Tooltip>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              className="w-70 rounded-lg shadow-none"
-              align="end"
-            >
-              <DropdownMenuLabel className="font-mono text-[11px] tracking-[1.1px] uppercase">
-                Version history
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {history?.[fileType]?.length ? (
-                history[fileType].map((doc) => (
-                  <DropdownMenuItem
-                    key={doc.id}
-                    className="flex flex-row items-center justify-between gap-4"
-                  >
-                    <span className="text-ink-strong font-mono text-[12px] leading-[1.4] font-medium tracking-[0.1px]">
-                      {doc.version}
-                    </span>
-                    <span className="text-muted font-mono text-[11px] leading-[1.4]">
-                      {formatDayTime(doc.createdAt)}
-                    </span>
-                  </DropdownMenuItem>
-                ))
-              ) : (
-                <DropdownMenuItem disabled>
-                  No previous versions
-                </DropdownMenuItem>
+      <div className="sticky top-16 grid w-full grid-cols-3 gap-2 self-start md:flex md:w-12 md:flex-col">
+        <Tooltip>
+          <TooltipTrigger
+            className="flex h-11! w-full flex-row items-center justify-center gap-1.5 rounded-lg border bg-white px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase"
+            onClick={handleRetailor}
+            disabled={!showRetailorButton}
+          >
+            <SparklesIcon
+              className={cn(
+                'size-4',
+                documentExist(fileType) ? 'text-primary' : 'text-muted',
               )}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
+            />
+            <p className="block md:hidden">
+              {documentExist(fileType) ? 'Re-Tailor' : 'Generate'}
+            </p>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{documentExist(fileType) ? 'Re-Tailor' : 'Generate'}</p>
+          </TooltipContent>
+        </Tooltip>
+
+        <Tooltip>
+          <TooltipTrigger
+            className="flex h-11! w-full flex-row items-center justify-center gap-1.5 rounded-lg border bg-white px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase"
+            onClick={handleDownload}
+            disabled={isExportingCl || !documentExist(fileType)}
+          >
+            <DownloadIcon
+              className={cn(
+                'size-4',
+                documentExist(fileType) ? 'text-primary' : 'text-muted',
+              )}
+            />
+            <p className="block md:hidden">Download</p>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Download File</p>
+          </TooltipContent>
+        </Tooltip>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            className="flex h-11! w-full flex-row items-center justify-center gap-1.5 rounded-lg border bg-white px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase"
+            disabled={!documentExist(fileType)}
+          >
+            <Tooltip>
+              <TooltipTrigger className="flex flex-row gap-2 uppercase">
+                <HistoryIcon
+                  className={cn(
+                    'size-4',
+                    documentExist(fileType) ? 'text-primary' : 'text-muted',
+                  )}
+                />
+                <p className="block md:hidden">History</p>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>View History</p>
+              </TooltipContent>
+            </Tooltip>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            className="w-70 rounded-lg shadow-none"
+            align="end"
+          >
+            <DropdownMenuLabel className="font-mono text-[11px] tracking-[1.1px] uppercase">
+              Version history
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {history?.[fileType]?.length ? (
+              history[fileType].map((doc) => (
+                <DropdownMenuItem
+                  key={doc.id}
+                  className="flex flex-row items-center justify-between gap-4"
+                >
+                  <span className="text-ink-strong font-mono text-[12px] leading-[1.4] font-medium tracking-[0.1px]">
+                    {doc.version}
+                  </span>
+                  <span className="text-muted font-mono text-[11px] leading-[1.4]">
+                    {formatDayTime(doc.createdAt)}
+                  </span>
+                </DropdownMenuItem>
+              ))
+            ) : (
+              <DropdownMenuItem disabled>No previous versions</DropdownMenuItem>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   )

@@ -16,8 +16,6 @@ export const Route = createFileRoute('/payment/checkout')({
 
     const payment = await getQrPaymentFn({ data: { intentId: deps.intentId } })
 
-    // Already paid (e.g. the page was reloaded after scanning) — skip straight
-    // to the server-authoritative fulfillment route.
     if (payment.status === 'succeeded')
       throw redirect({
         to: '/payment/return',

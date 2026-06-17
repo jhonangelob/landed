@@ -49,9 +49,7 @@ export default function PaymentForm({
           clearInterval(id)
           setExpired(true)
         }
-      } catch (err) {
-        // Transient error — keep polling until the code expires.
-      }
+      } catch (err) {}
     }, POLL_INTERVAL_MS)
 
     return () => {

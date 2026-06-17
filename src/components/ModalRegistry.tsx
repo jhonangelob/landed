@@ -1,11 +1,18 @@
+import { Suspense, lazy } from 'react'
+
 import { useModalStore } from '#/lib/store/modal'
 
-import ApplicationLandedModal from './modals/ApplicationLandedModal'
 import DeleteAccountModal from './modals/DeleteAccountModal'
 import DeleteApplicationModal from './modals/DeleteApplicationModal'
 import ExportFileModal from './modals/ExportFileModal'
 import PlanInformationModal from './modals/PlanInformationModal'
 import UsageLimitModal from './modals/UsageLimitModal'
+
+// Pulls in canvas-confetti + qrcode.react; only loaded the first time an
+// application actually lands, keeping those libs out of the app shell bundle.
+const ApplicationLandedModal = lazy(
+  () => import('./modals/ApplicationLandedModal'),
+)
 
 const noop = () => {}
 
@@ -53,24 +60,26 @@ export function ModalRegistry({ userName }: ModalRegistryProps) {
         />
       )}
       {payload.applicationLanded && (
-        <ApplicationLandedModal
-          open={activeModal === 'applicationLanded'}
-          onOpenChange={handleClose}
-          userName={userName}
-          company={payload.applicationLanded.company}
-          role={payload.applicationLanded.role}
-          planTier={payload.applicationLanded.planTier}
-          previousCompany={payload.applicationLanded.previousCompany}
-          previousRole={payload.applicationLanded.previousRole}
-          appliedAt={payload.applicationLanded.appliedAt}
-          landedAt={payload.applicationLanded.landedAt}
-          compensation={payload.applicationLanded.compensation}
-          location={payload.applicationLanded.location}
-          appliedCount={payload.applicationLanded.appliedCount}
-          interviewedCount={payload.applicationLanded.interviewedCount}
-          daysCount={payload.applicationLanded.daysCount}
-          shareToken={payload.applicationLanded.shareToken}
-        />
+        <Suspense fallback={null}>
+          <ApplicationLandedModal
+            open={activeModal === 'applicationLanded'}
+            onOpenChange={handleClose}
+            userName={userName}
+            company={payload.applicationLanded.company}
+            role={payload.applicationLanded.role}
+            planTier={payload.applicationLanded.planTier}
+            previousCompany={payload.applicationLanded.previousCompany}
+            previousRole={payload.applicationLanded.previousRole}
+            appliedAt={payload.applicationLanded.appliedAt}
+            landedAt={payload.applicationLanded.landedAt}
+            compensation={payload.applicationLanded.compensation}
+            location={payload.applicationLanded.location}
+            appliedCount={payload.applicationLanded.appliedCount}
+            interviewedCount={payload.applicationLanded.interviewedCount}
+            daysCount={payload.applicationLanded.daysCount}
+            shareToken={payload.applicationLanded.shareToken}
+          />
+        </Suspense>
       )}
       {payload.usageLimit && (
         <UsageLimitModal

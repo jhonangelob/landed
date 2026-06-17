@@ -64,8 +64,7 @@ function SharePage() {
   const [isCelebrating, setIsCelebrating] = useState(true)
 
   useEffect(() => {
-    const CONFETTI_DURATION = 5 * 1000 // confetti runs for 5 seconds
-    const PAUSE_DURATION = 10 * 1000 // then count to 10 before firing again
+    const CONFETTI_DURATION = 5 * 1000
     const colors = ['#a786ff', '#fd8bbc', '#eca184', '#f8deb1']
 
     const randomInRange = (min: number, max: number) =>
@@ -79,7 +78,6 @@ function SharePage() {
       setIsCelebrating(true)
       const end = Date.now() + CONFETTI_DURATION
 
-      // Side cannons
       const frame = () => {
         if (Date.now() > end) return
         confetti({
@@ -102,7 +100,6 @@ function SharePage() {
       }
       frame()
 
-      // Fireworks
       const fireworkDefaults = {
         startVelocity: 30,
         spread: 360,
@@ -128,18 +125,15 @@ function SharePage() {
         })
       }, 250)
 
-      // Stop the wiggle once the confetti finishes, then pause before the next burst
       stopTimeout = setTimeout(() => setIsCelebrating(false), CONFETTI_DURATION)
     }
 
     fire()
-    const loop = setInterval(fire, CONFETTI_DURATION + PAUSE_DURATION)
 
     return () => {
       cancelAnimationFrame(rafId)
       clearInterval(fireworksInterval)
       clearTimeout(stopTimeout)
-      clearInterval(loop)
     }
   }, [])
 
@@ -184,7 +178,7 @@ function SharePage() {
             </div>
             <div className="flex flex-1 flex-row justify-between border-y py-4">
               <div className="w-1/3 space-y-1">
-                <p className="text-primary-text font-mono text-[42px] leading-none font-medium tracking-[1.7px] uppercase">
+                <p className="text-primary-text font-mono text-[34px] leading-none font-medium tracking-[1.7px] uppercase sm:text-[42px]">
                   {snap.previousCompany
                     ? getCompanyCode(snap.previousCompany)
                     : '---'}
@@ -198,7 +192,7 @@ function SharePage() {
               </div>
               <img src="/assets/airplane-1.svg" className="my-auto h-14" />
               <div className="w-1/3 space-y-1 text-end">
-                <p className="text-primary font-mono text-[42px] leading-none font-medium tracking-[1.7px] uppercase">
+                <p className="text-primary font-mono text-[34px] leading-none font-medium tracking-[1.7px] uppercase sm:text-[42px]">
                   {getCompanyCode(snap.company)}
                 </p>
                 <p className="text-primary-text font-display truncate text-[16px] leading-[1.4] font-bold tracking-[-0.4px]">

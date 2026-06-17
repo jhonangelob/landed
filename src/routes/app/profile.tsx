@@ -106,7 +106,7 @@ function RouteComponent() {
           onSaveProfile={handleSave}
           className="w-full md:w-2/3"
         />
-        <div className="sticky top-20 flex w-full flex-col gap-4 self-start md:w-1/3">
+        <div className="top-20 flex w-full flex-col gap-4 self-start md:sticky md:w-1/3">
           <SectionCard
             variant="profile_secondary"
             title="Import File"

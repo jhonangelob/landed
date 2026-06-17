@@ -400,37 +400,35 @@ export const exportCoverLetterPdf = createServerFn({ method: 'POST' })
     }
   })
 
-export const checkRateLimit = createServerFn({ method: 'GET' }).handler(
-  async () => {
-    const session = await ensureSession()
+export async function checkRateLimit() {
+  const session = await ensureSession()
 
-    const windowStart = new Date(
-      Date.now() - RATE_LIMIT_WINDOW_MINUTES * 60 * 1000,
+  const windowStart = new Date(
+    Date.now() - RATE_LIMIT_WINDOW_MINUTES * 60 * 1000,
+  )
+
+  const result = await db
+    .select({ total: count() })
+    .from(generatedDocs)
+    .where(
+      and(
+        eq(generatedDocs.userId, session.user.id),
+        gte(generatedDocs.createdAt, windowStart),
+      ),
     )
+    .then((r) => r.at(0) ?? null)
 
-    const result = await db
-      .select({ total: count() })
-      .from(generatedDocs)
-      .where(
-        and(
-          eq(generatedDocs.userId, session.user.id),
-          gte(generatedDocs.createdAt, windowStart),
-        ),
-      )
-      .then((r) => r.at(0) ?? null)
+  const generations = Math.floor((result?.total ?? 0) / 2)
+  const limit = RATE_LIMIT_MAX_GENERATIONS
+  const remaining = Math.max(0, limit - generations)
+  const exceeded = generations >= limit
 
-    const generations = Math.floor((result?.total ?? 0) / 2)
-    const limit = RATE_LIMIT_MAX_GENERATIONS
-    const remaining = Math.max(0, limit - generations)
-    const exceeded = generations >= limit
+  if (exceeded) {
+    throw new AppError(
+      'RATE_LIMIT_EXCEEDED',
+      `You've generated ${limit} documents in the last ${RATE_LIMIT_WINDOW_MINUTES} minutes. Please wait before generating again.`,
+    )
+  }
 
-    if (exceeded) {
-      throw new AppError(
-        'RATE_LIMIT_EXCEEDED',
-        `You've generated ${limit} documents in the last ${RATE_LIMIT_WINDOW_MINUTES} minutes. Please wait before generating again.`,
-      )
-    }
-
-    return { generations, limit, remaining, exceeded }
-  },
-)
+  return { generations, limit, remaining, exceeded }
+}

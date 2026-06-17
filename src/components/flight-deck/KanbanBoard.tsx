@@ -1,14 +1,8 @@
 import { useState } from 'react'
 
-import {
-  useQuickApplicationMutation,
-  useUpdateApplicationStageMutation,
-} from '#/hooks/useApplicationQueries'
-import type {
-  Application,
-  ApplicationStage,
-  QuickApplicationInput,
-} from '#/types'
+import { useUpdateApplicationStageMutation } from '#/hooks/useApplicationQueries'
+import type { Application, ApplicationStage } from '#/types'
+import { SearchIcon } from 'lucide-react'
 
 import { useNavigate } from '@tanstack/react-router'
 
@@ -16,12 +10,12 @@ import { cn } from '#/lib/utils'
 
 import { KANBAN_COLUMNS } from '#/constants/stage'
 
+import { Input } from '../ui/input'
 import KanbanItem from './KanbanItem'
 import QuickAddField from './QuickAddField'
 
 interface KanbanBoardProps {
   applications: Application[]
-  query?: string
 }
 
 function matchesQuery(app: Application, query: string) {
@@ -31,26 +25,34 @@ function matchesQuery(app: Application, query: string) {
   )
 }
 
-export default function KanbanBoard({
-  applications,
-  query = '',
-}: KanbanBoardProps) {
+export default function KanbanBoard({ applications }: KanbanBoardProps) {
   const navigate = useNavigate()
 
+  const [query, setQuery] = useState('')
   const isFiltering = query.trim() !== ''
 
   const [dragOverStage, setDragOverStage] = useState<string | null>(null)
   const [applicationId, setApplicationId] = useState('')
-
-  const [quickAddFields, setQuickAddFields] = useState<QuickApplicationInput>({
-    company: '',
-    role: '',
-  })
-
-  const { mutateAsync: createApplication } = useQuickApplicationMutation()
+  const [selectedStage, setSelectedStage] = useState<ApplicationStage | 'all'>(
+    'all',
+  )
 
   const { mutate: updateStage } =
     useUpdateApplicationStageMutation(applicationId)
+
+  const matchesStageAndQuery = (
+    a: Application,
+    stage: ApplicationStage | 'all',
+  ) =>
+    (stage === 'all' || a.stage === stage) &&
+    (!isFiltering || matchesQuery(a, query))
+
+  const mobileApps = applications.filter((a) =>
+    matchesStageAndQuery(a, selectedStage),
+  )
+
+  const stageCount = (stage: ApplicationStage | 'all') =>
+    applications.filter((a) => matchesStageAndQuery(a, stage)).length
 
   const handleNewApplication = (stage: ApplicationStage) => {
     navigate({ to: '/app/co-pilot', search: { stage } })
@@ -79,17 +81,20 @@ export default function KanbanBoard({
     updateStage({ id: id, stage })
   }
 
-  const handleQuickAdd = () => {
-    createApplication(quickAddFields)
-    setQuickAddFields({
-      company: '',
-      role: '',
-    })
-  }
-
   return (
-    <div className="flex h-full max-h-[calc(100vh-250px)] flex-1 flex-col gap-6">
-      <div className="flex max-h-[calc(100vh-300px)] min-h-0 flex-1 flex-row gap-2.5 overflow-auto pr-12 pb-6">
+    <div className="flex h-full max-h-[calc(100vh-280px)] flex-1 flex-col gap-6 md:max-h-[calc(100vh-250px)]">
+      <div className="hidden h-12 flex-row items-center justify-between rounded-lg border bg-white px-3.5 py-3 md:flex">
+        <div className="flex flex-row items-center gap-2">
+          <SearchIcon className="stroke-muted size-4" />
+          <Input
+            className="h-5 border-none bg-transparent"
+            placeholder="Search by company or role..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+        </div>
+      </div>
+      <div className="hidden max-h-[calc(100vh-300px)] min-h-0 flex-1 flex-row gap-2.5 overflow-auto pr-12 pb-6 md:flex">
         {KANBAN_COLUMNS.map((col, index) => {
           const colApps = applications.filter((a) => a.stage === col.stage)
           const visibleCount = isFiltering
@@ -123,13 +128,7 @@ export default function KanbanBoard({
                   isOver && 'bg-accent/60 ring-primary ring-1',
                 )}
               >
-                {index === 0 && (
-                  <QuickAddField
-                    onSubmit={handleQuickAdd}
-                    value={quickAddFields}
-                    onChange={setQuickAddFields}
-                  />
-                )}
+                {index === 0 && <QuickAddField />}
 
                 {colApps.map((application) => {
                   const visible =
@@ -166,6 +165,74 @@ export default function KanbanBoard({
             </div>
           )
         })}
+      </div>
+
+      <div className="flex min-h-0 flex-1 flex-col gap-3 md:hidden">
+        <div className="flex [scrollbar-width:none] gap-1 overflow-x-scroll [&::-webkit-scrollbar]:hidden">
+          <button
+            type="button"
+            onClick={() => setSelectedStage('all')}
+            className={cn(
+              'flex h-6.5 items-center rounded-full border px-2.5 font-sans text-[11px] leading-[1.4] font-medium text-nowrap transition-colors',
+              selectedStage === 'all'
+                ? 'border-primary bg-primary text-white'
+                : 'text-muted bg-white',
+            )}
+          >
+            All
+            <span className="ml-1.5 font-mono text-[10px] tabular-nums opacity-60">
+              {stageCount('all')}
+            </span>
+          </button>
+          {KANBAN_COLUMNS.map((item) => (
+            <button
+              key={item.stage}
+              type="button"
+              onClick={() => setSelectedStage(item.stage)}
+              className={cn(
+                'flex h-6.5 items-center rounded-full border px-2.5 font-sans text-[11px] leading-[1.4] font-medium text-nowrap transition-colors',
+                selectedStage === item.stage
+                  ? 'border-primary bg-primary text-white'
+                  : 'text-muted bg-white',
+              )}
+            >
+              {item.label}
+              <span className="ml-1.5 font-mono text-[10px] tabular-nums opacity-60">
+                {stageCount(item.stage)}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-auto pb-6">
+          {mobileApps.length === 0 ? (
+            <p className="text-muted py-10 text-center font-mono text-[11px] tracking-[1.1px] uppercase">
+              No applications
+            </p>
+          ) : (
+            mobileApps.map((application) => {
+              const col = KANBAN_COLUMNS.find(
+                (c) => c.stage === application.stage,
+              )
+              return (
+                <div key={application.id} className="flex flex-col gap-1.5">
+                  {selectedStage === 'all' && (
+                    <div className="flex items-center gap-1.5 px-0.5">
+                      <span
+                        className="h-1.5 w-1.5 rounded-full"
+                        style={{ backgroundColor: col?.color }}
+                      />
+                      <span className="text-muted font-mono text-[10px] leading-[1.4] tracking-[1px] uppercase">
+                        {col?.label ?? application.stage}
+                      </span>
+                    </div>
+                  )}
+                  <KanbanItem data={application} />
+                </div>
+              )
+            })
+          )}
+        </div>
       </div>
     </div>
   )

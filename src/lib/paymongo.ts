@@ -1,13 +1,15 @@
+import { AppError } from './utils'
+
 const PAYMONGO_API = 'https://api.paymongo.com/v1'
 
 function secretKey() {
-  const key = process.env.PAYMONGO_SECRET_KEY
-  if (!key) {
-    throw new Error(
-      'PAYMONGO_SECRET_KEY is not set. Add your PayMongo test secret key (sk_test_…) to .env to enable payments.',
+  if (!process.env.PAYMONGO_SECRET_KEY) {
+    throw new AppError(
+      'MISSING_ENV',
+      'API Key is not defined in the environment variables',
     )
   }
-  return key
+  return process.env.PAYMONGO_SECRET_KEY
 }
 
 function authHeader() {

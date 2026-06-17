@@ -8,7 +8,6 @@ const data = [
 ]
 
 export default function InformationStrip() {
-  // return null if applications are less than 100
   return null
 
   return (

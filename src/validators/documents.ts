@@ -133,3 +133,8 @@ export const coverLetterSchema = z.object({
   body: z.string().min(1),
   closing: z.string().min(1),
 })
+
+export const parseFileSchema = z.object({
+  fileContent: z.string(),
+  fileType: z.string(),
+})

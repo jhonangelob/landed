@@ -34,7 +34,6 @@ export async function applyMonthlyReset(
 ): Promise<Subscription> {
   const now = new Date()
 
-  // 1. Lapsed paid plan → downgrade to free in place.
   if (sub.expiresAt && new Date(sub.expiresAt) < now) {
     const [downgraded] = await db
       .update(subscriptions)
@@ -52,7 +51,6 @@ export async function applyMonthlyReset(
     return downgraded
   }
 
-  // 2. Unlimited (active paid) plans have no monthly refill.
   if (sub.generationsLimit === null) return sub
 
   let resetAt = sub.generationsResetAt
@@ -60,8 +58,6 @@ export async function applyMonthlyReset(
     : addMonths(new Date(sub.startedAt), 1)
 
   if (now < resetAt) {
-    // Not due yet. Backfill the boundary if this is a legacy row so the next
-    // read is a cheap no-op.
     if (sub.generationsResetAt) return sub
     const [updated] = await db
       .update(subscriptions)
@@ -71,7 +67,6 @@ export async function applyMonthlyReset(
     return updated
   }
 
-  // Due: advance the boundary until it lands in the future, then refill.
   while (resetAt <= now) resetAt = addMonths(resetAt, 1)
 
   const [updated] = await db

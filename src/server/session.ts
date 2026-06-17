@@ -12,11 +12,9 @@ export const getSession = createServerFn({ method: 'GET' }).handler(
   },
 )
 
-export const ensureSession = createServerFn({ method: 'GET' }).handler(
-  async () => {
-    const headers = getRequestHeaders()
-    const session = await auth.api.getSession({ headers })
-    if (!session) throw new AppError('UNAUTHORIZED', 'You must be logged in')
-    return session
-  },
-)
+export async function ensureSession() {
+  const headers = getRequestHeaders()
+  const session = await auth.api.getSession({ headers })
+  if (!session) throw new AppError('UNAUTHORIZED', 'You must be logged in')
+  return session
+}

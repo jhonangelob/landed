@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { Outlet, createFileRoute, redirect } from '@tanstack/react-router'
 
 import { ModalRegistry } from '#/components/ModalRegistry'
+import MobileDock from '#/components/layout/MobileDock'
 import { OnboardingTour } from '#/components/onboarding/OnboardingTour'
 
 import { getSession } from '#/server/session'
@@ -31,10 +32,11 @@ function AppLayout() {
   }, [user.hasOnboarded, openOnboarding])
 
   return (
-    <div className="mx-auto flex w-full max-w-370 pt-7 pb-24">
+    <div className="mx-auto flex w-full max-w-370 pt-3 pb-18 md:pt-7 md:pb-24">
       <Outlet />
       <ModalRegistry userName={user.name} />
       <OnboardingTour userName={user.name} />
+      <MobileDock />
     </div>
   )
 }

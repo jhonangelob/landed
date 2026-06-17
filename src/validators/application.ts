@@ -18,6 +18,7 @@ export const applicationSchema = z.object({
     .or(z.literal('')),
   appliedAt: z.date().nullable(),
   updatedAt: z.date(),
+  inFlightAt: z.date(),
   interviewAt: z.date(),
   offerAt: z.date(),
 })
@@ -37,6 +38,7 @@ export const quickApplicationSchema = applicationSchema.pick({
 export const updateApplicationSchema = applicationSchema.omit({
   appliedAt: true,
   updatedAt: true,
+  inFlightAt: true,
   interviewAt: true,
   offerAt: true,
 })

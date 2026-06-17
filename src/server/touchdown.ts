@@ -1,5 +1,4 @@
 import { and, eq } from 'drizzle-orm'
-import { z } from 'zod'
 
 import { createServerFn } from '@tanstack/react-start'
 
@@ -7,33 +6,14 @@ import { db } from '#/lib/db/index.server'
 import { touchdownShares, users } from '#/lib/db/schema'
 
 import { ensureSession } from './session'
-
-export const statsSnapshotSchema = z.object({
-  company: z.string(),
-  role: z.string(),
-  planTier: z.string(),
-  previousCompany: z.string().optional(),
-  previousRole: z.string().optional(),
-  appliedAt: z.string().nullable(),
-  landedAt: z.string(),
-  compensation: z.string().optional(),
-  location: z.string().optional(),
-  appliedCount: z.number(),
-  interviewedCount: z.number(),
-  daysCount: z.number(),
-})
-
-export type StatsSnapshot = z.infer<typeof statsSnapshotSchema>
+import {
+  getShareTokenSchema,
+  getTouchdownShareSchema,
+  statsSnapshotSchema,
+} from '#/validators/touchdown'
 
 export const createTouchdownShare = createServerFn({ method: 'POST' })
-  .inputValidator((data: unknown) =>
-    z
-      .object({
-        applicationId: z.string().uuid(),
-        statsSnapshot: statsSnapshotSchema,
-      })
-      .parse(data),
-  )
+  .inputValidator((data: unknown) => statsSnapshotSchema.parse(data))
   .handler(async ({ data }) => {
     const session = await ensureSession()
 
@@ -63,9 +43,7 @@ export const createTouchdownShare = createServerFn({ method: 'POST' })
   })
 
 export const getTouchdownShare = createServerFn({ method: 'GET' })
-  .inputValidator((data: unknown) =>
-    z.object({ shareToken: z.string() }).parse(data),
-  )
+  .inputValidator((data: unknown) => getTouchdownShareSchema.parse(data))
   .handler(async ({ data }) => {
     return await db
       .select({
@@ -82,11 +60,10 @@ export const getTouchdownShare = createServerFn({ method: 'GET' })
   })
 
 export const getShareTokenForApplication = createServerFn({ method: 'GET' })
-  .inputValidator((data: unknown) =>
-    z.object({ applicationId: z.string().uuid() }).parse(data),
-  )
+  .inputValidator((data: unknown) => getShareTokenSchema.parse(data))
   .handler(async ({ data }) => {
     const session = await ensureSession()
+
     return await db
       .select({ shareToken: touchdownShares.shareToken })
       .from(touchdownShares)

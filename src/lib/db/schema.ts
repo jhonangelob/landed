@@ -137,11 +137,16 @@ export const applications = pgTable('applications', {
   notes: text('notes'),
   salaryRange: text('salary_range'),
   location: text('location'),
-  appliedAt: timestamp('applied_at').defaultNow().notNull(),
+
+  spottedAt: timestamp('spotted_at').defaultNow().notNull(),
+  appliedAt: timestamp('applied_at'),
+  inFlightAt: timestamp('in_flight_at'),
   interviewAt: timestamp('interview_at'),
   offerAt: timestamp('offer_at'),
   landedAt: timestamp('landed_at'),
   rejectedAt: timestamp('rejected_at'),
+  withdrawnAt: timestamp('withdrawn_at'),
+
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
   deletedAt: timestamp('deleted_at'),

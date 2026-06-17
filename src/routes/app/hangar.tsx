@@ -13,7 +13,6 @@ import {
   subscriptionQueryKey,
   useSubscriptionQuery,
 } from '#/hooks/useSubscriptionQueries'
-import { ReceiptTextIcon } from 'lucide-react'
 
 import { createFileRoute } from '@tanstack/react-router'
 
@@ -76,10 +75,6 @@ function RouteComponent() {
     { day: 'numeric', month: 'long' },
   )
 
-  const handleShowReceipts = () => {
-    console.log('unimplemented: show receipts')
-  }
-
   return (
     <div className="section">
       <SectionHeader
@@ -136,15 +131,6 @@ function RouteComponent() {
               key={item.id}
             />
           ))}
-        </div>
-        <div className="flex items-center justify-end gap-2">
-          <Button
-            className="font-mono text-[12px] leading-[1.4] font-medium tracking-[0.7px] uppercase"
-            onClick={handleShowReceipts}
-            variant="ghost"
-          >
-            Receipts <ReceiptTextIcon />
-          </Button>
         </div>
       </SectionCard>
       <div className="flex flex-col gap-4 lg:flex-row">

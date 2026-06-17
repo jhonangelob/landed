@@ -86,7 +86,6 @@ export function OnboardingTour({ userName }: { userName: string }) {
 
   useEffect(() => setMounted(true), [])
 
-  // Restart from the first step every time the tour is opened.
   useEffect(() => {
     if (isOpen) setIndex(0)
   }, [isOpen])

@@ -1,3 +1,4 @@
+import type { ApplicationStage } from '#/types'
 import { and, count, eq, isNull } from 'drizzle-orm'
 
 import { createServerFn } from '@tanstack/react-start'
@@ -19,6 +20,29 @@ import {
 } from '#/validators/application'
 
 import { getPlanById } from '#/constants/plan'
+
+const STAGE_TIMESTAMP: Partial<
+  Record<
+    ApplicationStage,
+    | 'spottedAt'
+    | 'appliedAt'
+    | 'inFlightAt'
+    | 'interviewAt'
+    | 'offerAt'
+    | 'landedAt'
+    | 'rejectedAt'
+    | 'withdrawnAt'
+  >
+> = {
+  spotted: 'spottedAt',
+  applied: 'appliedAt',
+  in_flight: 'inFlightAt',
+  interview: 'interviewAt',
+  offer: 'offerAt',
+  landed: 'landedAt',
+  rejected: 'rejectedAt',
+  withdrawn: 'withdrawnAt',
+}
 
 export const getApplications = createServerFn({ method: 'GET' }).handler(
   async () => {
@@ -105,6 +129,9 @@ export const createApplication = createServerFn({
 
     const plan = getPlanById(await getUserPlan(session.user.id))
 
+    const now = new Date()
+    const stageColumn = STAGE_TIMESTAMP[data.stage]
+
     if (plan.applications != null) {
       const [{ total }] = await db
         .select({ total: count() })
@@ -131,6 +158,7 @@ export const createApplication = createServerFn({
         role: data.role,
         description: data.description,
         stage: data.stage,
+        ...(stageColumn && { [stageColumn]: now }),
       })
       .returning()
 
@@ -144,6 +172,9 @@ export const updateApplication = createServerFn({
   .handler(async ({ data }) => {
     const session = await ensureSession()
 
+    const now = new Date()
+    const stageColumn = STAGE_TIMESTAMP[data.stage]
+
     await db
       .update(applications)
       .set({
@@ -156,6 +187,7 @@ export const updateApplication = createServerFn({
         url: data.url,
         notes: data.notes,
         updatedAt: new Date(),
+        ...(stageColumn && { [stageColumn]: now }),
       })
       .where(
         and(
@@ -173,9 +205,16 @@ export const updateApplicationStage = createServerFn({
   .handler(async ({ data }) => {
     const session = await ensureSession()
 
+    const now = new Date()
+    const stageColumn = STAGE_TIMESTAMP[data.stage]
+
     await db
       .update(applications)
-      .set({ stage: data.stage, updatedAt: new Date() })
+      .set({
+        stage: data.stage,
+        updatedAt: now,
+        ...(stageColumn && { [stageColumn]: now }),
+      })
       .where(
         and(
           eq(applications.userId, session.user.id),

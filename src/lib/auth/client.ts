@@ -10,7 +10,7 @@ const baseURL = import.meta.env.VITE_BETTER_AUTH_URL
 if (!baseURL) {
   throw new AppError(
     'MISSING_ENV',
-    'VITE_BETTER_AUTH_URL is not set in the .env file',
+    'API Key is not defined in the environment variables',
   )
 }
 

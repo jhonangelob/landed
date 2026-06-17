@@ -1,13 +1,9 @@
-import { useState } from 'react'
-
 import { useApplicationsQuery } from '#/hooks/useApplicationQueries'
-import { SearchIcon } from 'lucide-react'
 
 import { createFileRoute } from '@tanstack/react-router'
 
-import { Input } from '#/components/ui/input'
-
 import KanbanBoard from '#/components/flight-deck/KanbanBoard'
+import KanbanBoardEmpty from '#/components/flight-deck/KanbanBoardEmpty'
 import SectionHeader from '#/components/layout/SectionHeader'
 
 import { getApplications } from '#/server/applications'
@@ -30,7 +26,6 @@ export const Route = createFileRoute('/app/')({
 
 function RouteComponent() {
   const { data: applications } = useApplicationsQuery()
-  const [query, setQuery] = useState('')
 
   return (
     <div className="section gap-6! overflow-hidden">
@@ -38,20 +33,14 @@ function RouteComponent() {
         subTitle="Dashboard"
         title1="Flight "
         title2="Deck"
-        description="Every application â and the CV and cover letter Co-Pilot tailored for it â tracked from spotted to landed."
+        description="Every application — and the CV and cover letter Co-Pilot tailored for it — tracked from spotted to landed."
       />
-      <div className="flex h-12 flex-row items-center justify-between rounded-lg border bg-white px-3.5 py-3">
-        <div className="flex flex-row items-center gap-2">
-          <SearchIcon className="stroke-muted size-4" />
-          <Input
-            className="h-5 border-none bg-transparent"
-            placeholder="Search by company or role..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
-        </div>
-      </div>
-      <KanbanBoard applications={applications} query={query} />
+
+      {applications.length > 0 ? (
+        <KanbanBoard applications={applications} />
+      ) : (
+        <KanbanBoardEmpty />
+      )}
     </div>
   )
 }

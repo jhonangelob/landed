@@ -169,7 +169,7 @@ export default function NewApplication({
           </form>
         </div>
 
-        <div className="w-1/2">
+        <div className="w-full md:w-1/2">
           <FilePreview />
         </div>
       </div>

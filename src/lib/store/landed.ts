@@ -98,9 +98,7 @@ export async function maybeCelebrateLanded(
       },
     })
     shareToken = result.shareToken
-  } catch {
-    // Non-fatal: modal still shows without share functionality
-  }
+  } catch {}
 
   useModalStore.getState().open('applicationLanded', {
     applicationId,

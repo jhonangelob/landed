@@ -1240,7 +1240,7 @@ export default function ProfileForm({
           isDirty: s.isDirty,
         })}
         children={({ isSubmitting, isDirty }) => (
-          <div className="sticky bottom-4 mt-4 flex items-center justify-between rounded-lg border bg-white p-4">
+          <div className="bottom-4 mt-4 flex items-center justify-between rounded-lg border bg-white p-4 md:sticky">
             <div className="flex flex-row items-center gap-3.5">
               <div
                 className={cn(
@@ -1251,9 +1251,7 @@ export default function ProfileForm({
                 )}
               />
               <p className="text-primary-text font-mono text-[11px] leading-[1.4] tracking-[0.9px] uppercase">
-                {isDirty
-                  ? 'Unsaved Changes'
-                  : `All changes saved${mounted && profile?.updatedAt ? ` · ${getTimeSince(profile.updatedAt)}` : ''}`}
+                {isDirty ? 'Unsaved Changes' : 'All changes saved'}
               </p>
             </div>
             <Button

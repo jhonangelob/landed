@@ -48,38 +48,34 @@ export const createSubscription = createServerFn({ method: 'POST' })
       .onConflictDoNothing({ target: subscriptions.userId })
   })
 
-export const checkGenerationLimit = createServerFn({ method: 'GET' }).handler(
-  async () => {
-    const session = await ensureSession()
+export async function checkGenerationLimit() {
+  const session = await ensureSession()
 
-    const sub = await db
-      .select()
-      .from(subscriptions)
-      .where(eq(subscriptions.userId, session.user.id))
-      .limit(1)
-      .then((r) => r.at(0) ?? null)
+  const sub = await db
+    .select()
+    .from(subscriptions)
+    .where(eq(subscriptions.userId, session.user.id))
+    .limit(1)
+    .then((r) => r.at(0) ?? null)
 
-    if (!sub)
-      throw new AppError(
-        'SUBSCRIPTION_NOT_FOUND',
-        'No active subscription found — please refresh and try again',
-      )
+  if (!sub)
+    throw new AppError(
+      'SUBSCRIPTION_NOT_FOUND',
+      'No active subscription found — please refresh and try again',
+    )
 
-    const usage = getUsageInfo(await applyMonthlyReset(sub))
+  const usage = getUsageInfo(await applyMonthlyReset(sub))
 
-    if (!usage.unlimited && usage.remaining <= 0)
-      throw new AppError(
-        'GENERATION_LIMIT_REACHED',
-        'You have used all of your generations on the Economy plan',
-      )
+  if (!usage.unlimited && usage.remaining <= 0)
+    throw new AppError(
+      'GENERATION_LIMIT_REACHED',
+      'You have used all of your generations on the Economy plan',
+    )
 
-    return usage
-  },
-)
+  return usage
+}
 
-export const increaseGenerationUsed = createServerFn({
-  method: 'POST',
-}).handler(async () => {
+export async function increaseGenerationUsed() {
   const session = await ensureSession()
 
   const updated = await db
@@ -104,7 +100,7 @@ export const increaseGenerationUsed = createServerFn({
   }
 
   return getUsageInfo(updated[0])
-})
+}
 
 export const createQrPhPayment = createServerFn({ method: 'POST' })
   .inputValidator((data: unknown) => createPaymentSchema.parse(data))
@@ -112,9 +108,16 @@ export const createQrPhPayment = createServerFn({ method: 'POST' })
     const session = await ensureSession()
 
     const plan = getPlanById(data.planId)
+
+    if (!process.env.PAYMONGO_SECRET_KEY) {
+      throw new AppError(
+        'MISSING_ENV',
+        'API Key is not defined in the environment variables',
+      )
+    }
+
     const auth_header = `Basic ${Buffer.from(process.env.PAYMONGO_SECRET_KEY + ':').toString('base64')}`
 
-    // 1. create payment intent
     const intentRes = await fetch(
       'https://api.paymongo.com/v1/payment_intents',
       {
@@ -145,7 +148,6 @@ export const createQrPhPayment = createServerFn({ method: 'POST' })
       )
     }
 
-    // 2. create payment method
     const pmRes = await fetch('https://api.paymongo.com/v1/payment_methods', {
       method: 'POST',
       headers: {
@@ -171,7 +173,6 @@ export const createQrPhPayment = createServerFn({ method: 'POST' })
       )
     }
 
-    // 3. attach
     const attachRes = await fetch(
       `https://api.paymongo.com/v1/payment_intents/${intent.data.id}/attach`,
       {

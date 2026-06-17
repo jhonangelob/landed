@@ -1,4 +1,4 @@
-import { getTimeSince } from '#/helper/date'
+import { formatDate, getTimeSince } from '#/helper/date'
 import { formatNumberCompact } from '#/helper/number'
 import type { Application } from '#/types'
 
@@ -16,6 +16,19 @@ export default function ApplicationSummary({ data }: ApplicationSummaryProps) {
     1 -
     KANBAN_COLUMNS.findIndex((item) => item.stage === data.stage)
 
+  const stageTimeline = [
+    { label: 'Spotted', date: data.spottedAt },
+    { label: 'Applied', date: data.appliedAt },
+    { label: 'In Flight', date: data.inFlightAt },
+    { label: 'Interview', date: data.interviewAt },
+    { label: 'Offer', date: data.offerAt },
+    { label: 'Landed', date: data.landedAt },
+    { label: 'Rejected', date: data.rejectedAt },
+    { label: 'Withdrawn', date: data.withdrawnAt },
+  ]
+    .filter((stage) => stage.date)
+    .map((stage) => ({ label: stage.label, value: formatDate(stage.date) }))
+
   const items = [
     {
       label: 'Current Stage',
@@ -30,14 +43,7 @@ export default function ApplicationSummary({ data }: ApplicationSummaryProps) {
       label: 'Salary',
       value: data.salaryRange && formatNumberCompact(Number(data.salaryRange)),
     },
-    {
-      label: 'Applied',
-      value: new Date(data.appliedAt).toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-      }),
-    },
+    ...stageTimeline,
     {
       label: 'Last updated',
       value: getTimeSince(data.updatedAt),
@@ -45,15 +51,15 @@ export default function ApplicationSummary({ data }: ApplicationSummaryProps) {
   ]
 
   return (
-    <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
+    <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
       {items.map((item, index) => (
         <div
           key={item.label}
           className={cn(
-            'rounded-md border p-4',
+            'rounded-non flex flex-row items-center justify-between border-b bg-none p-4 md:flex-col md:rounded-md md:border',
             index === 0
-              ? 'border-primary/40 bg-primary/10'
-              : 'bg-surface-muted',
+              ? 'border-primary/40 md:bg-primary/10 bg-none'
+              : 'md:bg-surface-muted',
           )}
         >
           <p className="text-muted font-mono text-[10px] leading-[1.4] font-normal tracking-[1.3px] uppercase">
@@ -61,7 +67,7 @@ export default function ApplicationSummary({ data }: ApplicationSummaryProps) {
           </p>
           <p
             className={cn(
-              'font-display text-[19px] leading-[1.4] font-bold tracking-[-0.5px]',
+              'md:font-display font-sans text-[14px] leading-[1.4] font-medium tracking-[-0.5px] md:text-[19px] md:font-bold',
               index === 0 ? 'text-primary capitalize' : 'text-primary-text',
             )}
           >

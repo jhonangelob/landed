@@ -16,9 +16,6 @@ export function getUsageResetDate(sub: {
 }): Date | null {
   if (sub.expiresAt) return new Date(sub.expiresAt)
 
-  // Free plans refill monthly; the authoritative next-reset boundary lives on
-  // the subscription (see applyMonthlyReset). Fall back to rolling forward from
-  // startedAt only for legacy rows created before the column existed.
   if (sub.generationsResetAt) return new Date(sub.generationsResetAt)
 
   const reset = new Date(sub.startedAt)

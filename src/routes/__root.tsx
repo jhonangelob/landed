@@ -9,8 +9,9 @@ import {
 import { Toaster } from '#/components/ui/sonner'
 import { TooltipProvider } from '#/components/ui/tooltip'
 
+import AppHeader from '#/components/layout/AppHeader'
 import Footer from '#/components/layout/Footer'
-import Header from '#/components/layout/Header'
+import MarketingHeader from '#/components/layout/MarketingHeader'
 import { NavigationProgress } from '#/components/layout/NavigationProgress'
 import NotFound from '#/components/layout/NotFound'
 
@@ -60,6 +61,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   const isAuthRoute =
     AUTH_ROUTES.has(pathname) || pathname.startsWith('/share/')
 
+  const isAppRoute = pathname.includes('/app')
+
   return (
     <html lang="en">
       <head>
@@ -72,11 +75,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             children
           ) : (
             <>
-              <Header />
-              <main className="mt-14 flex min-h-[calc(100vh-56px)]">
+              {!isAppRoute ? <MarketingHeader /> : <AppHeader />}
+              <main className="mt-14 flex min-h-[calc(100vh-115px)] md:min-h-[calc(100vh-56px)]">
                 {children}
               </main>
-              <Footer />
+              {!isAppRoute && <Footer />}
             </>
           )}
         </TooltipProvider>

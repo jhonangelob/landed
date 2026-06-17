@@ -407,12 +407,20 @@ export default function UpdateApplication({
           >
             <ApplicationSummary data={application} />
           </SectionCard>
-
+        </div>
+        <div className="flex-1 space-y-4">
+          <FilePreview
+            documents={documents}
+            history={history}
+            showRetailorButton={application.stage === 'spotted'}
+            onRetailor={handleRetailorDocument}
+            applicationId={applicationId}
+          />
           <SectionCard
             variant="copilot"
             title="Delete Application"
             order="danger"
-            className="border-destructive border"
+            className="border-destructive"
           >
             <div className="flex flex-col space-y-2">
               <p className="text-muted font-sans text-[14px] leading-[1.4]">
@@ -437,15 +445,6 @@ export default function UpdateApplication({
               </Button>
             </div>
           </SectionCard>
-        </div>
-        <div className="flex-1">
-          <FilePreview
-            documents={documents}
-            history={history}
-            showRetailorButton={application.stage === 'spotted'}
-            onRetailor={handleRetailorDocument}
-            applicationId={applicationId}
-          />
         </div>
       </div>
     </>

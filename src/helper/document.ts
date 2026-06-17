@@ -187,7 +187,6 @@ export const clToHtml = (cl: CoverLetterContent): string => {
   const line = (value: string | undefined, style: string = CL.line): string =>
     value ? `<p style="${style}">${esc(value)}</p>` : ''
 
-  // Sender block: name, city & ZIP, phone, email.
   const senderBlock = [
     line(cl.sender.name, CL.nameLine),
     line(cl.sender.location),
@@ -195,8 +194,6 @@ export const clToHtml = (cl: CoverLetterContent): string => {
     line(cl.sender.email),
   ].join('')
 
-  // Recipient block: contact name, title, company, address. Any unknown line
-  // is omitted rather than shown as a placeholder.
   const recipientBlock = [
     line(cl.recipient.name),
     line(cl.recipient.title),

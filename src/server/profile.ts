@@ -7,7 +7,6 @@ import {
 import { anthropic } from '@ai-sdk/anthropic'
 import { generateText } from 'ai'
 import { eq } from 'drizzle-orm'
-import z from 'zod'
 
 import { createServerFn } from '@tanstack/react-start'
 
@@ -22,6 +21,7 @@ import {
   pilotProfileSchema,
   savePilotProfileSchema,
 } from '#/validators/profile'
+import { parseFileSchema } from '#/validators/documents'
 
 export const getProfile = createServerFn({ method: 'GET' }).handler(
   async () => {
@@ -108,21 +108,14 @@ export const saveProfile = createServerFn({ method: 'POST' })
   })
 
 export const parseCvFile = createServerFn({ method: 'POST' })
-  .inputValidator((data: unknown) =>
-    z
-      .object({
-        fileContent: z.string(),
-        fileType: z.string(),
-      })
-      .parse(data),
-  )
+  .inputValidator((data: unknown) => parseFileSchema.parse(data))
   .handler(async ({ data }) => {
     const session = await ensureSession()
 
     if (!process.env.ANTHROPIC_HAIKU_MODEL)
       throw new AppError(
         'MISSING_ENV',
-        'API Key is not defined in the environment variables',
+        'ANTHROPIC_HAIKU_MODEL API Key is not defined in the environment variables',
       )
 
     const model = process.env.ANTHROPIC_HAIKU_MODEL
