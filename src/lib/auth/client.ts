@@ -1,18 +1,11 @@
 import { inferAdditionalFields } from 'better-auth/client/plugins'
 import { createAuthClient } from 'better-auth/react'
-
 import type { auth } from '#/lib/auth'
 
-import { AppError } from '../utils'
-
-const baseURL = import.meta.env.VITE_BETTER_AUTH_URL
-
-if (!baseURL) {
-  throw new AppError(
-    'MISSING_ENV',
-    'API Key is not defined in the environment variables',
-  )
-}
+const baseURL =
+  typeof window !== 'undefined'
+    ? window.location.origin
+    : import.meta.env.VITE_BETTER_AUTH_URL
 
 export const authClient = createAuthClient({
   baseURL,
