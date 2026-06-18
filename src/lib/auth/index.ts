@@ -37,6 +37,21 @@ const getBaseUrl = () => {
   return 'http://localhost:3000'
 }
 
+const getTrustedOrigins = () => {
+  const origins = ['http://localhost:3000']
+
+  if (process.env.VERCEL_URL) {
+    origins.push(`https://${process.env.VERCEL_URL}`)
+  }
+
+  // your real production domain, once you have one
+  if (process.env.BETTER_AUTH_URL) {
+    origins.push(process.env.BETTER_AUTH_URL)
+  }
+
+  return origins
+}
+
 export const auth = betterAuth({
   enabled: true,
   window: 60,
@@ -166,6 +181,6 @@ export const auth = betterAuth({
 
   secret,
   baseURL: getBaseUrl(),
-
+  trustedOrigins: getTrustedOrigins(),
   plugins: [tanstackStartCookies()],
 })
