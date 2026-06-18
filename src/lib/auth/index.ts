@@ -27,6 +27,16 @@ if (!secret || !baseURL) {
   )
 }
 
+const getBaseUrl = () => {
+  if (process.env.VERCEL_ENV === 'production') {
+    return process.env.BETTER_AUTH_URL
+  }
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`
+  }
+  return 'http://localhost:3000'
+}
+
 export const auth = betterAuth({
   enabled: true,
   window: 60,
@@ -155,7 +165,7 @@ export const auth = betterAuth({
   },
 
   secret,
-  baseURL,
+  baseURL: getBaseUrl(),
 
   plugins: [tanstackStartCookies()],
 })
