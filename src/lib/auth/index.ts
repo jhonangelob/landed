@@ -52,6 +52,8 @@ const getTrustedOrigins = () => {
   return origins
 }
 
+console.log({ baseURL: getBaseUrl(), trustedOrigins: getTrustedOrigins() })
+
 export const auth = betterAuth({
   enabled: true,
   window: 60,
