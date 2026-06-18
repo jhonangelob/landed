@@ -22,8 +22,15 @@ export function useParseCvMutation() {
           '',
         ),
       )
+
+      // `file.type` is a MIME string (e.g. "application/pdf"); the server
+      // expects the 'pdf' | 'docx' discriminator.
+      const isPdf =
+        file.type === 'application/pdf' ||
+        file.name.toLowerCase().endsWith('.pdf')
+
       const parsePromise = parseCvFile({
-        data: { fileContent, fileType: file.type },
+        data: { fileContent, fileType: isPdf ? 'pdf' : 'docx' },
       })
       notify.promise(parsePromise, {
         loading: 'Parsing CV…',

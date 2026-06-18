@@ -13,10 +13,20 @@ import { getPlanById } from '#/constants/plan'
 export const verifyIntentFn = createServerFn({ method: 'GET' })
   .inputValidator((data: unknown) => verifyIntentSchema.parse(data))
   .handler(async ({ data }) => {
-    await ensureSession()
+    const session = await ensureSession()
 
     const result = await retrievePaymentIntent(data.intentId)
-    return { status: (result.data?.attributes?.status ?? 'failed') as string }
+    const attributes = result.data?.attributes
+    if (!attributes) throw new AppError('NOT_FOUND', 'Payment not found')
+
+    const metadata = (attributes.metadata ?? {}) as { userId?: string }
+    if (metadata.userId !== session.user.id)
+      throw new AppError(
+        'UNAUTHORIZED',
+        'This payment does not belong to your account',
+      )
+
+    return { status: (attributes.status ?? 'failed') as string }
   })
 
 /**

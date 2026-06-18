@@ -42,6 +42,7 @@ import {
   checkGenerationLimit,
   checkRateLimit,
   increaseGenerationUsed,
+  refundGeneration,
 } from './generation.server'
 
 export const getDocuments = createServerFn({ method: 'GET' })
@@ -227,6 +228,8 @@ export const generateDocuments = createServerFn({ method: 'POST' })
     const wantsCv = data.type !== 'cover_letter'
     const wantsCoverLetter = data.type !== 'cv'
 
+    const usageInfo = await increaseGenerationUsed()
+
     const [cv, coverLetter] = await Promise.all([
       wantsCv
         ? callModel(buildCvSystemPrompt()).then(async ({ text, usage }) => {
@@ -275,7 +278,10 @@ export const generateDocuments = createServerFn({ method: 'POST' })
             },
           )
         : Promise.resolve(undefined),
-    ])
+    ]).catch(async (err) => {
+      await refundGeneration()
+      throw err
+    })
 
     const docs: (typeof generatedDocs.$inferInsert)[] = []
     if (cv) {
@@ -299,15 +305,18 @@ export const generateDocuments = createServerFn({ method: 'POST' })
       })
     }
 
-    await db.insert(generatedDocs).values(docs)
-
-    const usage = await increaseGenerationUsed()
+    try {
+      await db.insert(generatedDocs).values(docs)
+    } catch (err) {
+      await refundGeneration()
+      throw err
+    }
 
     return {
       id: application.id,
       cv,
       coverLetter,
-      usage,
+      usage: usageInfo,
     }
   })
 

@@ -1,11 +1,16 @@
-import { RATE_LIMIT_MAX_GENERATIONS, RATE_LIMIT_WINDOW_MINUTES } from '#/config'
+import {
+  PARSE_RATE_LIMIT_MAX,
+  PARSE_RATE_LIMIT_WINDOW_MINUTES,
+  RATE_LIMIT_MAX_GENERATIONS,
+  RATE_LIMIT_WINDOW_MINUTES,
+} from '#/config'
 import { getUsageInfo } from '#/helper/usage'
-import { and, countDistinct, eq, gte, sql } from 'drizzle-orm'
+import { and, count, countDistinct, eq, gte, sql } from 'drizzle-orm'
 
 import { ensureSession } from '#/server/session.server'
 
 import { db } from '#/lib/db/index.server'
-import { generatedDocs, subscriptions } from '#/lib/db/schema'
+import { aiUsage, generatedDocs, subscriptions } from '#/lib/db/schema'
 import { applyMonthlyReset } from '#/lib/subscription/reset'
 import { AppError } from '#/lib/utils'
 
@@ -34,6 +39,55 @@ export async function checkGenerationLimit() {
     )
 
   return usage
+}
+
+/**
+ * Per-user rate limit for CV parsing. Each parse hits the Anthropic API and is
+ * NOT covered by the generation quota, so without this an authenticated user
+ * could spam parses for unbounded cost. Counts `profile_parse` usage rows in
+ * the rolling window (recorded by `recordAiUsage`).
+ */
+export async function checkParseRateLimit() {
+  const session = await ensureSession()
+
+  const windowStart = new Date(
+    Date.now() - PARSE_RATE_LIMIT_WINDOW_MINUTES * 60 * 1000,
+  )
+
+  const [row] = await db
+    .select({ total: count() })
+    .from(aiUsage)
+    .where(
+      and(
+        eq(aiUsage.userId, session.user.id),
+        eq(aiUsage.kind, 'profile_parse'),
+        gte(aiUsage.createdAt, windowStart),
+      ),
+    )
+
+  if (row.total >= PARSE_RATE_LIMIT_MAX) {
+    throw new AppError(
+      'RATE_LIMIT_EXCEEDED',
+      `You've parsed ${PARSE_RATE_LIMIT_MAX} CVs in the last ${PARSE_RATE_LIMIT_WINDOW_MINUTES} minutes. Please wait before trying again.`,
+    )
+  }
+}
+
+/**
+ * Returns a generation slot reserved by `increaseGenerationUsed` when the work
+ * it was reserved for fails, so a failed generation doesn't permanently consume
+ * a credit. Clamped at zero so it can never go negative.
+ */
+export async function refundGeneration() {
+  const session = await ensureSession()
+
+  await db
+    .update(subscriptions)
+    .set({
+      generationsUsed: sql`GREATEST(${subscriptions.generationsUsed} - 1, 0)`,
+      updatedAt: new Date(),
+    })
+    .where(eq(subscriptions.userId, session.user.id))
 }
 
 export async function increaseGenerationUsed() {

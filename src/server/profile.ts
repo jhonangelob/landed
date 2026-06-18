@@ -11,6 +11,7 @@ import { eq } from 'drizzle-orm'
 import { createServerFn } from '@tanstack/react-start'
 
 import { recordAiUsage } from '#/server/aiUsage'
+import { checkParseRateLimit } from '#/server/generation.server'
 import { ensureSession } from '#/server/session.server'
 
 import { db } from '#/lib/db/index.server'
@@ -112,6 +113,8 @@ export const parseCvFile = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const session = await ensureSession()
 
+    await checkParseRateLimit()
+
     if (!process.env.ANTHROPIC_HAIKU_MODEL)
       throw new AppError(
         'MISSING_ENV',
@@ -120,12 +123,18 @@ export const parseCvFile = createServerFn({ method: 'POST' })
 
     const model = process.env.ANTHROPIC_HAIKU_MODEL
 
+    let fileContent = data.fileContent
+    if (data.fileType === 'docx') {
+      const { default: mammoth } = await import('mammoth')
+      const { value } = await mammoth.extractRawText({
+        buffer: Buffer.from(data.fileContent, 'base64'),
+      })
+      fileContent = value
+    }
+
     const { text, usage } = await generateText({
       model: anthropic(model),
-      messages: buildParseFileUserPrompt(
-        data.fileType as 'pdf' | 'docx',
-        data.fileContent,
-      ),
+      messages: buildParseFileUserPrompt(data.fileType, fileContent),
       system: buildParseFileSystemPrompt(),
       maxOutputTokens: 4000,
     })

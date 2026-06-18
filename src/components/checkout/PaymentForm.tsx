@@ -9,7 +9,7 @@ import { Button } from '#/components/ui/button'
 
 import { verifyIntentFn } from '#/server/paymongo'
 
-const EXPIRY_MS = 1 * 60 * 1000
+const EXPIRY_MS = 10 * 60 * 1000
 const POLL_INTERVAL_MS = 5000
 
 interface PaymentFormProps {

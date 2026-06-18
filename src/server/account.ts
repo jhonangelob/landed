@@ -41,7 +41,7 @@ export const updateAccountDetails = createServerFn({ method: 'POST' })
       .set({
         name: data.name,
         updatedAt: new Date(),
-        username: data.username,
+        username: data.username || null,
       })
       .where(eq(users.id, session.user.id))
 

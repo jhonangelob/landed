@@ -139,5 +139,5 @@ export const parseFileSchema = z.object({
     .string()
     .min(1, 'File is empty')
     .max(8_000_000, 'File is too large (max ~6MB)'),
-  fileType: z.string(),
+  fileType: z.enum(['pdf', 'docx']),
 })

@@ -16,6 +16,12 @@ export const LOW_GENERATION_THRESHOLD = 2
 /** Maximum document generations allowed within the rate-limit window. */
 export const RATE_LIMIT_MAX_GENERATIONS = 10
 
+/** Rolling window used for per-user CV-parse rate limiting, in minutes. */
+export const PARSE_RATE_LIMIT_WINDOW_MINUTES = 60
+
+/** Maximum CV parses allowed within the parse rate-limit window. */
+export const PARSE_RATE_LIMIT_MAX = 10
+
 // ── Plan pricing (PHP) ────────────────────────────────────────────────────────
 
 export const PREMIUM_PRICE_PHP = 349
