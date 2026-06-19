@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import { getDaysInStage, getStaleness } from '#/helper/application'
 import { formatNumberCompact } from '#/helper/number'
 import type { Application } from '#/types'
 
@@ -16,6 +17,26 @@ export interface KanbanItemProps {
 export type KanbanItemBadgeProps = {
   label: string
   variant: string
+}
+
+function StaleFlag({ data }: { data: Application }) {
+  const staleness = getStaleness(data)
+  if (staleness === 'fresh') return null
+
+  const days = getDaysInStage(data)
+
+  return (
+    <span
+      title={`${days} days in this stage — time to follow up`}
+      className={cn(
+        'ml-auto flex shrink-0 items-center gap-1 text-nowrap',
+        staleness === 'very_stale' ? 'text-danger-strong' : 'text-warning',
+      )}
+    >
+      <span className="h-1.25 w-1.25 rounded-full bg-current" />
+      {days}d
+    </span>
+  )
 }
 
 export default function KanbanItem({ data }: KanbanItemProps) {
@@ -40,7 +61,7 @@ export default function KanbanItem({ data }: KanbanItemProps) {
       onDragEnd={() => setIsDragging(false)}
       onClick={handleClickApplicationItem}
       className={cn(
-        'hover:border-primary/70 border-divider/50 flex flex-row justify-between rounded-lg border bg-white px-3.5 pt-3.5 pb-3 transition-opacity md:flex-col',
+        'hover:border-red/70 border-divider/50 flex flex-row justify-between rounded-lg border bg-white px-3.5 pt-3.5 pb-3 transition-opacity md:flex-col',
         isDragging ? 'cursor-grabbing opacity-40' : 'cursor-grab',
       )}
     >
@@ -48,7 +69,7 @@ export default function KanbanItem({ data }: KanbanItemProps) {
         <p className="font-display text-primary-text truncate text-[15px] leading-[1.3] font-bold tracking-[-0.1px]">
           {data.role}
         </p>
-        <p className="text-muted flex flex-row font-mono text-[11px] leading-[1.4] tracking-[0.4px]">
+        <p className="text-muted flex flex-row items-center font-mono text-[11px] leading-[1.4] tracking-[0.4px]">
           <span className="truncate">{data.company}</span>·{' '}
           <span className="text-nowrap">
             {data.appliedAt
@@ -58,6 +79,7 @@ export default function KanbanItem({ data }: KanbanItemProps) {
                 })
               : ''}
           </span>
+          <StaleFlag data={data} />
         </p>
       </div>
 
@@ -80,7 +102,7 @@ export default function KanbanItem({ data }: KanbanItemProps) {
         <p className="font-display text-primary-text truncate text-[15px] leading-[1.3] font-bold tracking-[-0.1px]">
           {data.role}
         </p>
-        <p className="text-muted flex flex-row font-mono text-[11px] leading-[1.4] tracking-[0.4px]">
+        <p className="text-muted flex flex-row items-center font-mono text-[11px] leading-[1.4] tracking-[0.4px]">
           <span className="truncate">{data.company}</span>·{' '}
           <span className="text-nowrap">
             {data.appliedAt
@@ -90,6 +112,7 @@ export default function KanbanItem({ data }: KanbanItemProps) {
                 })
               : ''}
           </span>
+          <StaleFlag data={data} />
         </p>
       </div>
 

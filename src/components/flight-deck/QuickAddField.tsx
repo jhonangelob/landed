@@ -4,10 +4,16 @@ import { useQuickApplicationMutation } from '#/hooks/useApplicationQueries'
 import type { QuickApplicationInput } from '#/types'
 import { PlusIcon } from 'lucide-react'
 
+import { cn } from '#/lib/utils'
+
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 
-export default function QuickAddField() {
+interface QuickAddFieldProp {
+  className?: string
+}
+
+export default function QuickAddField({ className }: QuickAddFieldProp) {
   const [fields, setFields] = useState<QuickApplicationInput>({
     company: '',
     role: '',
@@ -24,9 +30,14 @@ export default function QuickAddField() {
   }
 
   return (
-    <div className="mb-2 flex h-10 min-h-10 w-full flex-row items-center rounded-lg border bg-white pr-2">
+    <div
+      className={cn(
+        'mb-2 flex h-11 min-h-11 w-full flex-row items-center rounded-lg border bg-white pr-2',
+        className,
+      )}
+    >
       <Input
-        className="h-6! w-1/3 border-none bg-white! px-2 placeholder:text-[13px]"
+        className="h-6! w-2/5 border-none bg-white! px-3 placeholder:text-[13px]"
         placeholder="Company..."
         value={fields.company}
         onChange={(e) =>
@@ -37,7 +48,7 @@ export default function QuickAddField() {
         }
       />
       <Input
-        className="h-6! flex-1 rounded-none border-t-0! border-r-0! border-b-0! border-l! bg-white! px-2 placeholder:text-[13px]"
+        className="h-6! flex-1 rounded-none border-t-0! border-r-0! border-b-0! border-l! bg-white! px-3 placeholder:text-[13px]"
         placeholder="Role..."
         value={fields.role}
         onChange={(e) =>

@@ -1,8 +1,10 @@
 import { useState } from 'react'
 
+import { SORT_OPTIONS, sortApplications } from '#/helper/application'
+import type { SortKey } from '#/helper/application'
 import { useUpdateApplicationStageMutation } from '#/hooks/useApplicationQueries'
 import type { Application, ApplicationStage } from '#/types'
-import { SearchIcon } from 'lucide-react'
+import { ArrowUpDownIcon, ListFilterIcon, SearchIcon } from 'lucide-react'
 
 import { useNavigate } from '@tanstack/react-router'
 
@@ -11,6 +13,14 @@ import { cn } from '#/lib/utils'
 import { KANBAN_COLUMNS } from '#/constants/stage'
 
 import { Input } from '../ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select'
+import BoardSummary from './BoardSummary'
 import KanbanItem from './KanbanItem'
 import QuickAddField from './QuickAddField'
 
@@ -36,6 +46,7 @@ export default function KanbanBoard({ applications }: KanbanBoardProps) {
   const [selectedStage, setSelectedStage] = useState<ApplicationStage | 'all'>(
     'all',
   )
+  const [sortKey, setSortKey] = useState<SortKey>('newest')
 
   const { mutate: updateStage } =
     useUpdateApplicationStageMutation(applicationId)
@@ -47,12 +58,18 @@ export default function KanbanBoard({ applications }: KanbanBoardProps) {
     (stage === 'all' || a.stage === stage) &&
     (!isFiltering || matchesQuery(a, query))
 
-  const mobileApps = applications.filter((a) =>
-    matchesStageAndQuery(a, selectedStage),
+  const mobileApps = sortApplications(
+    applications.filter((a) => matchesStageAndQuery(a, selectedStage)),
+    sortKey,
   )
 
   const stageCount = (stage: ApplicationStage | 'all') =>
     applications.filter((a) => matchesStageAndQuery(a, stage)).length
+
+  const visibleColumns =
+    selectedStage === 'all'
+      ? KANBAN_COLUMNS
+      : KANBAN_COLUMNS.filter((col) => col.stage === selectedStage)
 
   const handleNewApplication = (stage: ApplicationStage) => {
     navigate({ to: '/app/co-pilot', search: { stage } })
@@ -82,10 +99,10 @@ export default function KanbanBoard({ applications }: KanbanBoardProps) {
   }
 
   return (
-    <div className="flex h-full max-h-[calc(100vh-280px)] flex-1 flex-col gap-6 md:max-h-[calc(100vh-250px)]">
-      <div className="hidden h-12 flex-row items-center justify-between rounded-lg border bg-white px-3.5 py-3 md:flex">
-        <div className="flex flex-row items-center gap-2">
-          <SearchIcon className="stroke-muted size-4" />
+    <div className="flex h-full max-h-[calc(100vh-280px)] flex-1 flex-col gap-4 md:max-h-[calc(100vh-250px)]">
+      <div className="hidden h-12 flex-row items-center justify-between gap-3 rounded-lg border bg-white px-3.5 py-3 md:flex">
+        <div className="flex min-w-0 flex-1 flex-row items-center gap-2">
+          <SearchIcon className="stroke-muted size-4 shrink-0" />
           <Input
             className="h-5 border-none bg-transparent"
             placeholder="Search by company or role..."
@@ -93,10 +110,52 @@ export default function KanbanBoard({ applications }: KanbanBoardProps) {
             onChange={(e) => setQuery(e.target.value)}
           />
         </div>
+        <div className="flex shrink-0 flex-row items-center gap-3">
+          <BoardSummary applications={applications} />
+          <Select
+            value={selectedStage}
+            onValueChange={(value) =>
+              setSelectedStage(value as ApplicationStage | 'all')
+            }
+          >
+            <SelectTrigger size="sm" className="gap-1.5">
+              <ListFilterIcon className="size-3.5" />
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent align="end">
+              <SelectItem value="all">All stages</SelectItem>
+              {KANBAN_COLUMNS.map((col) => (
+                <SelectItem key={col.stage} value={col.stage}>
+                  {col.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select
+            value={sortKey}
+            onValueChange={(value) => setSortKey(value as SortKey)}
+          >
+            <SelectTrigger size="sm" className="gap-1.5">
+              <ArrowUpDownIcon className="size-3.5" />
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent align="end">
+              {SORT_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
+
       <div className="hidden max-h-[calc(100vh-300px)] min-h-0 flex-1 flex-row gap-2.5 overflow-auto pr-12 pb-6 md:flex">
-        {KANBAN_COLUMNS.map((col, index) => {
-          const colApps = applications.filter((a) => a.stage === col.stage)
+        {visibleColumns.map((col) => {
+          const colApps = sortApplications(
+            applications.filter((a) => a.stage === col.stage),
+            sortKey,
+          )
           const visibleCount = isFiltering
             ? colApps.filter((a) => matchesQuery(a, query)).length
             : colApps.length
@@ -104,7 +163,7 @@ export default function KanbanBoard({ applications }: KanbanBoardProps) {
 
           return (
             <div
-              key={index}
+              key={col.stage}
               className="flex flex-col gap-4.5"
               onDragOver={(e) => handleDragOver(e, col.stage)}
               onDragLeave={handleDragLeave}
@@ -124,11 +183,11 @@ export default function KanbanBoard({ applications }: KanbanBoardProps) {
               </div>
               <div
                 className={cn(
-                  'flex w-60 flex-1 flex-col rounded-lg pb-2 transition-colors',
-                  isOver && 'bg-accent/60 ring-primary ring-1',
+                  'flex w-60 flex-1 flex-col rounded-lg border border-transparent pb-2 transition-colors',
+                  isOver && 'border-primary bg-accent/10 border-dashed',
                 )}
               >
-                {index === 0 && <QuickAddField />}
+                {col.stage === 'spotted' && <QuickAddField />}
 
                 {colApps.map((application) => {
                   const visible =
@@ -151,7 +210,7 @@ export default function KanbanBoard({ applications }: KanbanBoardProps) {
                   )
                 })}
 
-                {index + 1 !== KANBAN_COLUMNS.length && (
+                {col.stage !== 'landed' && (
                   <div
                     className="group hover:border-primary flex cursor-pointer flex-col items-center justify-center rounded-md border border-dashed px-4 py-2 text-center hover:bg-white"
                     onClick={() => handleNewApplication(col.stage)}
@@ -168,6 +227,34 @@ export default function KanbanBoard({ applications }: KanbanBoardProps) {
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col gap-3 md:hidden">
+        <div className="flex flex-row items-center gap-2">
+          <div className="flex h-9 min-w-0 flex-1 flex-row items-center gap-2 rounded-lg border bg-white px-3">
+            <SearchIcon className="stroke-muted size-4 shrink-0" />
+            <Input
+              className="h-5 border-none bg-transparent"
+              placeholder="Search..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+          </div>
+          <Select
+            value={sortKey}
+            onValueChange={(value) => setSortKey(value as SortKey)}
+          >
+            <SelectTrigger size="sm" className="h-9 gap-1.5">
+              <ArrowUpDownIcon className="size-3.5" />
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent align="end">
+              {SORT_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
         <div className="flex [scrollbar-width:none] gap-1 overflow-x-scroll [&::-webkit-scrollbar]:hidden">
           <button
             type="button"

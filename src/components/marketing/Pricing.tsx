@@ -83,8 +83,8 @@ export default function Pricing() {
           ))}
         </div>
         <p className="text-muted text-center font-mono text-[12px] leading-[1.4] tracking-[0.5px]">
-          One-time for each access period — no auto-renewal, no surprise
-          charges. Renew whenever you’re ready.
+          One-time for each access period. No auto-renewal, no surprise charges.
+          Renew whenever you’re ready.
         </p>
       </div>
     </div>

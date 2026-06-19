@@ -1,8 +1,9 @@
+import { useMutation } from '@tanstack/react-query'
+
 import { parseCvFile } from '#/server/profile'
 
-import { notify } from '#/lib/toast'
-import { useMutation } from '@tanstack/react-query'
 import { parseError } from '#/lib/error'
+import { notify } from '#/lib/toast'
 
 export function useParseCvMutation() {
   return useMutation({

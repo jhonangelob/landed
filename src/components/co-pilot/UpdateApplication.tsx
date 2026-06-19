@@ -11,6 +11,7 @@ import {
   useDocumentsQuery,
   useGenerateDocumentsMutation,
 } from '#/hooks/useDocumentQueries'
+import { useProfileQuery } from '#/hooks/useProfileQueries'
 import type {
   Application,
   ApplicationStage,
@@ -76,11 +77,15 @@ export default function UpdateApplication({
     useUpdateApplicationStageMutation(applicationId)
   const { mutateAsync: updateApplicationDetails } =
     useUpdateApplicationMutation(applicationId)
-  const { mutateAsync: generateDocuments } =
-    useGenerateDocumentsMutation(applicationId)
+  const {
+    mutateAsync: generateDocuments,
+    isPending: isGenerating,
+    variables: generatingVars,
+  } = useGenerateDocumentsMutation(applicationId)
 
   const { data: documents } = useDocumentsQuery(applicationId)
   const { data: history } = useDocumentsHistoryQuery(applicationId)
+  const { data: profile } = useProfileQuery()
 
   const form = useForm({
     defaultValues: {
@@ -415,12 +420,15 @@ export default function UpdateApplication({
             showRetailorButton={application.stage === 'spotted'}
             onRetailor={handleRetailorDocument}
             applicationId={applicationId}
+            isGenerating={isGenerating}
+            generatingType={generatingVars?.type}
+            profileReady={!!profile}
           />
           <SectionCard
             variant="copilot"
             title="Delete Application"
             order="danger"
-            className="border-border-danger! bg-surface-danger!"
+            className="border-border-danger! bg-surface-danger! w-full md:w-[calc(100%-56px)]"
           >
             <div className="flex flex-col space-y-2">
               <p className="text-muted font-sans text-[14px] leading-[1.4]">

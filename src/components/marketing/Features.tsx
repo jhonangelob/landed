@@ -3,7 +3,7 @@ import {
   ImportIcon,
   KanbanIcon,
   PartyPopperIcon,
-  SparkleIcon,
+  SparklesIcon,
   UserIcon,
 } from 'lucide-react'
 
@@ -14,14 +14,14 @@ const features = [
   {
     title: 'The Flight Deck',
     description:
-      'A board for every application — Spotted, Applied, In Flight, Interview, Offer, Landed. Move a role to the next stage as it progresses; nothing slips through the cracks.',
+      'A board for every application: Spotted, Applied, In Flight, Interview, Offer, Landed. Move a role to the next stage as it progresses; nothing slips through the cracks.',
     icon: <KanbanIcon className={iconClassName} />,
   },
   {
     title: 'Co-Pilot tailoring',
     description:
-      'Paste a job posting. Co-Pilot cross-references your Pilot Profile and drafts a CV and cover letter tuned to that exact role — in seconds.',
-    icon: <SparkleIcon className={iconClassName} />,
+      'Paste a job posting. Co-Pilot cross-references your Pilot Profile and drafts a CV and cover letter tuned to that exact role, in seconds.',
+    icon: <SparklesIcon className={iconClassName} />,
   },
   {
     title: 'One Pilot Profile',
@@ -32,19 +32,19 @@ const features = [
   {
     title: 'CV import',
     description:
-      'Drop in your existing CV as a PDF or DOCX and Co-Pilot reads it straight into your Pilot Profile — no retyping your whole history.',
+      'Drop in your existing CV as a PDF or DOCX and Co-Pilot reads it straight into your Pilot Profile, no retyping your whole history.',
     icon: <ImportIcon className={iconClassName} />,
   },
   {
     title: 'Polished CV templates',
     description:
-      'Export any tailored CV to a clean PDF — pick from Classic, Minimal or Modern — ready to send the moment you finish editing.',
+      'Export any tailored CV to a clean PDF (pick from Classic, Minimal or Modern), ready to send the moment you finish editing.',
     icon: <FileTextIcon className={iconClassName} />,
   },
   {
     title: 'Shareable touchdown',
     description:
-      'Land the role and Landed turns your search into a shareable boarding pass — the applications, the days, the win, ready to post.',
+      'Land the role and Landed turns your search into a shareable boarding pass: the applications, the days, the win, ready to post.',
     icon: <PartyPopperIcon className={iconClassName} />,
   },
 ]
@@ -65,7 +65,7 @@ export default function Features() {
           <span className="text-primary italic">"applied"</span> and "landed".
         </p>
         <p className="text-muted font-sans text-[17px] leading-[1.6]">
-          One workspace for the whole search — the tracking, the tailoring, and
+          One workspace for the whole search: the tracking, the tailoring, and
           the polish that
           <br /> usually lives in a dozen scattered docs.
         </p>

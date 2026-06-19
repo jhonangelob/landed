@@ -68,7 +68,7 @@ export default function InformationPanel({
       </div>
 
       <div className="text-muted mt-4 font-mono text-[11px] leading-[1.4] font-normal tracking-[0.4px]">
-        One-time charge for this access period. No auto-renewal — renew manually
+        One-time charge for this access period. No auto-renewal; renew manually
         whenever you're ready.
       </div>
     </div>

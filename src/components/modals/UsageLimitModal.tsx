@@ -69,7 +69,7 @@ export default function UsageLimitModal({
         <p className="text-ink-muted font-sans text-[14px] leading-[1.55]">
           You tried to generate a document, but your Economy plan includes{' '}
           <span className="font-bold">10 Co-Pilot generations</span> per month.
-          Your allowance refills in 14 days — or upgrade now to keep going.
+          Your allowance refills in 14 days, or upgrade now to keep going.
         </p>
 
         <div className="bg-surface-muted flex flex-col gap-3 rounded-lg border px-3.75 py-3.25">

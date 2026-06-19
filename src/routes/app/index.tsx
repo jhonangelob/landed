@@ -33,7 +33,7 @@ function RouteComponent() {
         subTitle="Dashboard"
         title1="Flight "
         title2="Deck"
-        description="Every application — and the CV and cover letter Co-Pilot tailored for it — tracked from spotted to landed."
+        description="Every application, and the CV and cover letter Co-Pilot tailored for it, tracked from spotted to landed."
       />
 
       {applications.length > 0 ? (

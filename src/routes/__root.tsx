@@ -3,7 +3,7 @@ import {
   HeadContent,
   Scripts,
   createRootRouteWithContext,
-  useLocation,
+  useRouterState,
 } from '@tanstack/react-router'
 
 import { Toaster } from '#/components/ui/sonner'
@@ -56,7 +56,9 @@ const AUTH_ROUTES = new Set([
 ])
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-  const { pathname } = useLocation()
+  const pathname = useRouterState({
+    select: (s) => (s.resolvedLocation ?? s.location).pathname,
+  })
 
   const isAuthRoute =
     AUTH_ROUTES.has(pathname) || pathname.startsWith('/share/')

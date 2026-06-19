@@ -21,7 +21,6 @@ interface NewApplicationProps {
 }
 
 export default function NewApplication({
-  profile,
   stage = 'spotted',
 }: NewApplicationProps) {
   const navigate = useNavigate()
@@ -45,10 +44,6 @@ export default function NewApplication({
       })
     },
   })
-
-  const handleSetupProfile = () => {
-    navigate({ to: '/app/profile' })
-  }
 
   return (
     <>
@@ -147,24 +142,24 @@ export default function NewApplication({
               )}
             />
             <div className="flex justify-end border-t border-dashed pt-3.5">
-              {!profile ? (
+              {/* {!profile ? (
                 <Button type="button" onClick={handleSetupProfile}>
                   Setup Profile
                 </Button>
-              ) : (
-                <form.Subscribe
-                  selector={(s) => [s.isSubmitting, s.isDirty]}
-                  children={([isSubmitting, isDirty]) => (
-                    <Button
-                      type="submit"
-                      className="w-full text-[12px] text-white! uppercase md:w-auto"
-                      disabled={isSubmitting || !isDirty}
-                    >
-                      <PlusIcon /> Create Application
-                    </Button>
-                  )}
-                />
-              )}
+              ) : ( */}
+              <form.Subscribe
+                selector={(s) => [s.isSubmitting, s.isDirty]}
+                children={([isSubmitting, isDirty]) => (
+                  <Button
+                    type="submit"
+                    className="w-full text-[12px] text-white! uppercase md:w-auto"
+                    disabled={isSubmitting || !isDirty}
+                  >
+                    <PlusIcon /> Create Application
+                  </Button>
+                )}
+              />
+              {/* )} */}
             </div>
           </form>
         </div>

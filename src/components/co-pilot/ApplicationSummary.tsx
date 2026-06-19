@@ -51,30 +51,30 @@ export default function ApplicationSummary({ data }: ApplicationSummaryProps) {
   ]
 
   return (
-    <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
-      {items.map((item, index) => (
-        <div
-          key={item.label}
-          className={cn(
-            'rounded-non flex flex-row items-center justify-between border-b bg-none p-4 md:flex-col md:rounded-md md:border',
-            index === 0
-              ? 'border-primary/40 md:bg-primary/10 bg-none'
-              : 'md:bg-surface-muted',
-          )}
-        >
-          <p className="text-muted font-mono text-[10px] leading-[1.4] font-normal tracking-[1.3px] uppercase">
-            {item.label}
-          </p>
-          <p
+    <div className="overflow-hidden rounded-md border">
+      <div className="-mb-px grid grid-cols-1 md:-mr-px md:grid-cols-3">
+        {items.map((item, index) => (
+          <div
+            key={item.label}
             className={cn(
-              'md:font-display font-sans text-[14px] leading-[1.4] font-medium tracking-[-0.5px] md:text-[19px] md:font-bold',
-              index === 0 ? 'text-primary capitalize' : 'text-primary-text',
+              'flex flex-row justify-between border-b bg-white p-4 md:flex-col md:border-r',
+              index === 0 && 'md:bg-primary/10',
             )}
           >
-            {item.value || '-'}
-          </p>
-        </div>
-      ))}
+            <p className="text-muted font-mono text-[10px] leading-[1.4] font-normal tracking-[1.3px] uppercase">
+              {item.label}
+            </p>
+            <p
+              className={cn(
+                'md:font-display font-sans text-[14px] leading-[1.4] font-medium tracking-[-0.5px] md:text-[19px] md:font-bold',
+                index === 0 ? 'text-primary capitalize' : 'text-primary-text',
+              )}
+            >
+              {item.value || '-'}
+            </p>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }

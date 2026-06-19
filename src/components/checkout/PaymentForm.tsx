@@ -89,7 +89,7 @@ export default function PaymentForm({
             </div>
 
             <p className="text-muted text-center font-sans text-[12px] leading-[1.45]">
-              Keep this page open — it updates automatically once your bank
+              Keep this page open. It updates automatically once your bank
               confirms the payment.
             </p>
           </>

@@ -144,7 +144,7 @@ export const generateDocuments = createServerFn({ method: 'POST' })
     if (!profile)
       throw new AppError(
         'NOT_FOUND',
-        'Profile not found — complete your Pilot Profile first',
+        'Profile not found. Complete your Pilot Profile first',
       )
 
     const user = await db

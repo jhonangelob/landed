@@ -79,7 +79,7 @@ export function Dropzone({
           'bg-primary/5 hover:bg-primary/10! flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-dashed p-8 transition-colors',
           isDragging && 'border-primary bg-primary/5',
           !isDragging &&
-            'border-border hover:border-primary/50 hover:bg-muted/50',
+            'hover:border-primary/50 hover:bg-muted/50 border-dashed',
           disabled && 'cursor-not-allowed opacity-50',
           error && 'border-destructive',
         )}

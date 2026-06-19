@@ -33,7 +33,7 @@ function buildSteps(userName: string): TourStep[] {
       target: 'flight-deck',
       kicker: 'Step 1 of 5',
       title: 'Flight Deck',
-      body: 'Your command center — every application tracked by stage on a single board.',
+      body: 'Your command center: every application tracked by stage on a single board.',
     },
     {
       target: 'co-pilot',
@@ -45,7 +45,7 @@ function buildSteps(userName: string): TourStep[] {
       target: 'profile',
       kicker: 'Step 3 of 5',
       title: 'Pilot Profile',
-      body: 'Your master CV. Set this up first — Co-Pilot uses it for everything it writes.',
+      body: 'Your master CV. Set this up first; Co-Pilot uses it for everything it writes.',
     },
     {
       target: 'hangar',

@@ -29,8 +29,8 @@ function PaymentFailed() {
           </p>
           <p className="text-ink-muted font-sans text-[14px] leading-[1.55]">
             Your QR Ph payment may have already gone through, but we couldn't
-            activate your plan on our end. You won't be charged twice — reach
-            out and we'll get your cabin open.
+            activate your plan on our end. You won't be charged twice; reach out
+            and we'll get your cabin open.
           </p>
         </div>
 
@@ -38,7 +38,7 @@ function PaymentFailed() {
           <TriangleAlertIcon className="text-destructive size-10" />
           <div className="flex flex-col gap-1">
             <p className="text-ink-strong font-sans text-[13px] leading-normal font-bold">
-              Your payment went through — activation didn't.
+              Your payment went through, activation didn't.
             </p>
             <p className="text-ink-muted font-sans text-[13px] leading-normal font-normal">
               The QR Ph charge cleared, but updating your subscription failed on
@@ -56,7 +56,7 @@ function PaymentFailed() {
               1
             </p>
             <p className="text-ink-muted text-[13px] leading-[1.45]">
-              Don't pay again — your QR Ph payment already cleared.
+              Don't pay again; your QR Ph payment already cleared.
             </p>
           </div>
           <div className="flex flex-row items-center gap-2">
@@ -92,7 +92,7 @@ function PaymentFailed() {
             <span className="text-ink-muted cursor-pointer underline">
               Contact Support
             </span>{' '}
-            — we'll sort it.
+            and we'll sort it.
           </p>
         </div>
       </div>

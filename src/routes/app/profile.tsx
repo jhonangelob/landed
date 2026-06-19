@@ -1,9 +1,17 @@
+import { useState } from 'react'
+
+import {
+  profileChecklist,
+  strengthFromSignature,
+  strengthLabel,
+  strengthSignature,
+} from '#/helper/profileStrength'
 import { useParseCvMutation } from '#/hooks/useParseQueries'
 import {
   useProfileQuery,
   useSaveProfileMutation,
 } from '#/hooks/useProfileQueries'
-import type { PilotProfile, PilotProfileInput } from '#/types'
+import type { PilotProfileInput } from '#/types'
 import {
   BatteryMediumIcon,
   CheckIcon,
@@ -36,44 +44,6 @@ export const Route = createFileRoute('/app/profile')({
   component: RouteComponent,
 })
 
-const profileChecklist: {
-  label: string
-  check: (p: PilotProfile | null) => boolean
-}[] = [
-  {
-    label: 'Contact details',
-    check: (p) => !!(p?.name && p.email && p.phone && p.location),
-  },
-  {
-    label: 'Headline written',
-    check: (p) => !!p?.headline,
-  },
-  {
-    label: '2+ roles detailed',
-    check: (p) => (p?.experience?.length ?? 0) >= 2,
-  },
-  {
-    label: '6+ skills listed',
-    check: (p) => (p?.skills?.length ?? 0) >= 6,
-  },
-  {
-    label: 'Profile links added',
-    check: (p) => (p?.links?.filter((l) => l.url).length ?? 0) >= 1,
-  },
-  {
-    label: 'Voice & tone set',
-    check: (p) => !!p?.preferences?.preferredVoice,
-  },
-]
-
-function strengthLabel(percent: number) {
-  if (percent === 100) return 'Flight-ready'
-  if (percent >= 80) return 'Almost ready'
-  if (percent >= 60) return 'Looking good'
-  if (percent >= 40) return 'Building up'
-  return 'Getting started'
-}
-
 function RouteComponent() {
   const { data: profile } = useProfileQuery()
   const { mutateAsync: saveProfileDetails } = useSaveProfileMutation()
@@ -84,15 +54,18 @@ function RouteComponent() {
     isPending,
   } = useParseCvMutation()
 
+  // Seeded from the saved profile, then kept in sync live by ProfileForm as the
+  // user edits fields or imports a resume.
+  const [strengthSig, setStrengthSig] = useState(() =>
+    strengthSignature(profile),
+  )
+
   const handleSave = async (value: PilotProfileInput) => {
     await saveProfileDetails(value)
   }
 
-  const checks = profileChecklist.map((item) => item.check(profile))
-  const completedCount = checks.filter(Boolean).length
-  const strengthPercent = Math.round(
-    (completedCount / profileChecklist.length) * 100,
-  )
+  const { checks, percent: strengthPercent } =
+    strengthFromSignature(strengthSig)
 
   return (
     <div className="section overflow-visible">
@@ -108,6 +81,7 @@ function RouteComponent() {
           profile={profile}
           parsedData={parsedData}
           onSaveProfile={handleSave}
+          onStrengthChange={setStrengthSig}
           className="w-full md:w-2/3"
         />
         <div className="top-20 flex w-full flex-col gap-4 self-start md:sticky md:w-1/3">

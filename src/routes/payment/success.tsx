@@ -62,7 +62,7 @@ function PaymentSuccess() {
             <span className="text-primary italic">{planName}</span>.
           </p>
           <p className="text-ink-muted font-sans text-[14px] leading-[1.55]">
-            Your cabin is live — unlimited Co-Pilot generations and the rest are
+            Your cabin is live. Unlimited Co-Pilot generations and the rest are
             unlocked
             {subscription.expiresAt ? ` through ${accessThrough}` : ''}. A
             receipt is on its way to your inbox.
@@ -110,7 +110,7 @@ function PaymentSuccess() {
                 Auto-renewal
               </p>
               <p className="text-success font-mono text-[12px] leading-[1.3]">
-                Off — renew manually
+                Off, renew manually
               </p>
             </div>
           </div>

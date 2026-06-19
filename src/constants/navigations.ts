@@ -1,8 +1,8 @@
-import { FileTextIcon, KanbanIcon, SparkleIcon, UserIcon } from 'lucide-react'
+import { FileTextIcon, KanbanIcon, SparklesIcon, UserIcon } from 'lucide-react'
 
 export const NAVIGATION = [
   { label: 'Flight Deck', url: '/app', icon: KanbanIcon },
-  { label: 'Co-Pilot', url: '/app/co-pilot', icon: SparkleIcon },
+  { label: 'Co-Pilot', url: '/app/co-pilot', icon: SparklesIcon },
   { label: 'Pilot Profile', url: '/app/profile', icon: UserIcon },
   { label: 'Hangar', url: '/app/hangar', icon: FileTextIcon },
 ]

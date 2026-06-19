@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 
 import { PROFILE_LIMITS } from '#/config'
+import { strengthSignature } from '#/helper/profileStrength'
 import type {
   PilotProfile,
   PilotProfileInput,
@@ -8,7 +9,7 @@ import type {
 } from '#/types'
 import { PlusIcon, XIcon } from 'lucide-react'
 
-import { useForm } from '@tanstack/react-form'
+import { useForm, useStore } from '@tanstack/react-form'
 
 import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
@@ -25,6 +26,7 @@ interface ProfileFormProps {
   profile: PilotProfile | null
   parsedData?: Partial<PilotProfileInput> | null
   onSaveProfile: (value: PilotProfileInput) => Promise<void> | void
+  onStrengthChange?: (signature: string) => void
   className: string
 }
 
@@ -32,6 +34,7 @@ export default function ProfileForm({
   profile,
   parsedData,
   onSaveProfile,
+  onStrengthChange,
   className,
 }: ProfileFormProps) {
   const [skillInput, setSkillInput] = useState('')
@@ -94,6 +97,17 @@ export default function ProfileForm({
       }
     }
   }, [parsedData])
+
+  // Live profile-strength signal: recomputed as fields change (typing, adding
+  // skills/experience, or an imported resume populating the form). Selecting a
+  // primitive signature avoids re-rendering the whole form on every keystroke.
+  const strengthSig = useStore(form.store, (state) =>
+    strengthSignature(state.values),
+  )
+
+  useEffect(() => {
+    onStrengthChange?.(strengthSig)
+  }, [strengthSig, onStrengthChange])
 
   return (
     <form

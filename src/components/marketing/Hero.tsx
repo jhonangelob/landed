@@ -13,15 +13,15 @@ export default function Hero() {
             Your job search, navigated with AI.
           </p>
           <p className="font-display text-ink-strong text-[40px] leading-[1.05] font-bold tracking-[-1px] md:text-[68px] md:leading-[1.02] md:tracking-[-1.7px]">
-            Land the job
-            <br /> — with the
+            Land the job,
+            <br /> with the
             <br /> whole search <br />
             <span className="text-primary italic">under control.</span>
           </p>
           <p className="text-ink-muted font-sans text-[17px] leading-[1.6] md:text-[19px]">
             Landed gives every application a place to live, an AI Co-Pilot that
             tailors your CV and cover letter to each role, and a clear read on
-            what’s next — so nothing stalls on the tarmac.
+            what’s next, so nothing stalls on the tarmac.
           </p>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
             <Button asChild>

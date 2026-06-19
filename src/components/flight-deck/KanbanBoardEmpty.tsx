@@ -39,7 +39,7 @@ export default function KanbanBoardEmpty() {
           <p className="text-ink-strong font-sans text-[15px] leading-[1.6]">
             Your Flight Deck tracks every application as a boarding pass, moving
             <br />
-            through six stages — from first spotted to fully landed. Add your
+            through six stages, from first spotted to fully landed. Add your
             first one
             <br /> below.
           </p>

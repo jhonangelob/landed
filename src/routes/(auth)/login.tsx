@@ -51,20 +51,21 @@ function RouteComponent() {
     },
     onSubmit: async ({ value }) => {
       setIsLoading(true)
+      setErrorMessage('')
+
       const res = await signIn.email({
         email: value.email,
         password: value.password,
         callbackURL: '/app',
       })
 
-      form.reset()
-
       if (res.error) {
         setErrorMessage(res.error.message || '')
+        setIsLoading(false)
+        return
       }
 
       navigate({ to: '/app' })
-      setIsLoading(false)
     },
   })
 

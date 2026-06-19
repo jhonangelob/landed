@@ -26,7 +26,7 @@ export default function MarketingHeader() {
           <img src={logo} alt="FlightDeck Logo" className="h-8 min-w-fit" />
 
           <p className="text-muted hidden font-mono text-[10px] font-medium tracking-[1.4px] text-nowrap uppercase lg:block">
-            Your job search, navigated by AI.
+            Your job search, navigated with AI.
           </p>
         </div>
 

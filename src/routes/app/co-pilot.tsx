@@ -1,5 +1,4 @@
 import { useApplicationQuery } from '#/hooks/useApplicationQueries'
-import { useProfileQuery } from '#/hooks/useProfileQueries'
 
 import { createFileRoute } from '@tanstack/react-router'
 
@@ -49,7 +48,6 @@ function RouteComponent() {
 
   const isEditMode = !!applicationId
 
-  const { data: profile } = useProfileQuery()
   const { data: application } = useApplicationQuery(applicationId)
 
   const normalizedApplication = application
@@ -73,7 +71,7 @@ function RouteComponent() {
           application={normalizedApplication}
         />
       ) : (
-        <NewApplication profile={profile} stage={stage} />
+        <NewApplication stage={stage} />
       )}
     </div>
   )

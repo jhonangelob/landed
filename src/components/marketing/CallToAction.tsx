@@ -16,8 +16,7 @@ export default function CallToAction() {
         <p className="font-sans text-[16px] leading-[1.4] font-normal text-[#c3c7cd]">
           Start free, track every application, and let Co-Pilot do the writing.
           No
-          <br /> card, no auto-renewal — just your search, finally under
-          control.
+          <br /> card, no auto-renewal. Just your search, finally under control.
         </p>
         <div className="mt-6 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center sm:gap-4">
           <Link

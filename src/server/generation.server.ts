@@ -27,7 +27,7 @@ export async function checkGenerationLimit() {
   if (!sub)
     throw new AppError(
       'SUBSCRIPTION_NOT_FOUND',
-      'No active subscription found — please refresh and try again',
+      'No active subscription found, please refresh and try again',
     )
 
   const usage = getUsageInfo(await applyMonthlyReset(sub))
@@ -110,7 +110,7 @@ export async function increaseGenerationUsed() {
   if (updated.length === 0) {
     throw new AppError(
       'GENERATION_LIMIT_REACHED',
-      'Generation limit reached — upgrade your plan to continue',
+      'Generation limit reached. Upgrade your plan to continue',
     )
   }
 

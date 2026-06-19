@@ -102,7 +102,7 @@ export const quickApplication = createServerFn({
       if (total >= plan.applications)
         throw new AppError(
           'APPLICATION_LIMIT_REACHED',
-          `You've reached the ${plan.applications}-application limit on your plan — upgrade to add more.`,
+          `You've reached the ${plan.applications}-application limit on your plan. Upgrade to add more.`,
         )
     }
 
@@ -146,7 +146,7 @@ export const createApplication = createServerFn({
       if (total >= plan.applications)
         throw new AppError(
           'APPLICATION_LIMIT_REACHED',
-          `You've reached the ${plan.applications}-application limit on your plan — upgrade to add more.`,
+          `You've reached the ${plan.applications}-application limit on your plan. Upgrade to add more.`,
         )
     }
 

@@ -15,7 +15,7 @@ export function parseAiResponse<T>(text: string, schema: ZodType<T>): T {
   } catch {
     throw new AppError(
       'AI_PARSE_ERROR',
-      'AI returned malformed JSON — please try again',
+      'AI returned malformed JSON, please try again',
     )
   }
 
@@ -24,7 +24,7 @@ export function parseAiResponse<T>(text: string, schema: ZodType<T>): T {
     console.error('AI response validation failed:', result.error.issues)
     throw new AppError(
       'AI_VALIDATION_ERROR',
-      'AI response has unexpected structure — please try again',
+      'AI response has unexpected structure, please try again',
     )
   }
 

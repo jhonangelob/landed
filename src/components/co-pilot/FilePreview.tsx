@@ -4,12 +4,7 @@ import { formatDayTime } from '#/helper/date'
 import { downloadBase64Pdf } from '#/helper/download'
 import { useExportCoverLetterMutation } from '#/hooks/useDocumentQueries'
 import type { GeneratedDoc } from '#/types'
-import {
-  DownloadIcon,
-  HistoryIcon,
-  SparkleIcon,
-  SparklesIcon,
-} from 'lucide-react'
+import { DownloadIcon, HistoryIcon, SparklesIcon } from 'lucide-react'
 
 import { useModal } from '#/lib/store/modal'
 import { cn } from '#/lib/utils'
@@ -22,6 +17,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu'
+import { Skeleton } from '../ui/skeleton'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
 
@@ -37,10 +33,32 @@ interface FilePreviewProps {
   }
   onRetailor?: (type: 'cv' | 'cover_letter') => void
   applicationId?: string
+  isGenerating?: boolean
+  generatingType?: 'cv' | 'cover_letter'
+  profileReady?: boolean
 }
 
 interface EmptyFilePreviewProps {
   variant: 'cv' | 'cover_letter'
+}
+
+function FilePreviewSkeleton() {
+  return (
+    <div className="space-y-6 px-4 py-8">
+      <div className="space-y-2">
+        <Skeleton className="h-6 w-1/3" />
+        <Skeleton className="h-3 w-1/2" />
+      </div>
+      {Array.from({ length: 5 }).map((_, i) => (
+        <div key={i} className="space-y-2.5">
+          <Skeleton className="h-3 w-1/4" />
+          <Skeleton className="h-2.5 w-full" />
+          <Skeleton className="h-2.5 w-5/6" />
+          <Skeleton className="h-2.5 w-4/6" />
+        </div>
+      ))}
+    </div>
+  )
 }
 
 function EmptyFilePreview({ variant }: EmptyFilePreviewProps) {
@@ -68,7 +86,7 @@ function EmptyFilePreview({ variant }: EmptyFilePreviewProps) {
         <div className="h-1.5 w-4/5 rounded-lg bg-[#f2f3f7]"></div>
 
         <div className="absolute top-23 right-14 rounded-full border bg-white p-6">
-          <SparkleIcon className="text-primary/20 fill-primary size-3" />
+          <SparklesIcon className="text-primary/20 fill-primary size-3" />
         </div>
       </div>
 
@@ -80,8 +98,8 @@ function EmptyFilePreview({ variant }: EmptyFilePreviewProps) {
         </p>
         <p className="text-ink-muted max-w-75 font-sans text-[13px] leading-[1.55]">
           {variant === 'cover_letter'
-            ? 'Paste the job description on the left and hit Generate — Co-Pilot will write a short, specific cover letter in your voice.'
-            : 'Paste the job description on the left and hit Generate — Co-Pilot will tailor your CV to match the role using your Pilot Profile.'}
+            ? 'Paste the job description on the left and hit Generate. Co-Pilot will write a short, specific cover letter in your voice.'
+            : 'Paste the job description on the left and hit Generate. Co-Pilot will tailor your CV to match the role using your Pilot Profile.'}
         </p>
         <p className="text-muted w-fit rounded-full border px-3 py-1 font-mono text-[10px] leading-[1.6] tracking-[1.2px] uppercase">
           ← paste job details to get started
@@ -97,6 +115,9 @@ export default function FilePreview({
   history,
   onRetailor,
   applicationId,
+  isGenerating = false,
+  generatingType,
+  profileReady = true,
 }: FilePreviewProps) {
   const { open } = useModal()
 
@@ -108,9 +129,11 @@ export default function FilePreview({
   const documentExist = (file: 'cv' | 'cover_letter') =>
     !!documents?.[file]?.length
 
+  const isLoading = (file: 'cv' | 'cover_letter') =>
+    isGenerating && (!generatingType || generatingType === file)
+
   const hasDoc = documentExist(fileType)
-  // Each control's visual state must mirror its own disabled condition.
-  const canGenerate = showRetailorButton
+  const canGenerate = showRetailorButton && profileReady
   const canDownload = hasDoc && !isExportingCl
   const canViewHistory = hasDoc
 
@@ -155,9 +178,11 @@ export default function FilePreview({
           </TabsList>
 
           <TabsContent value="cv">
-            {documents?.cv?.length ? (
+            {isLoading('cv') ? (
+              <FilePreviewSkeleton />
+            ) : documents?.cv?.length ? (
               <div
-                className="prose prose-sm max-w-none p-8"
+                className="prose prose-sm max-w-none px-4 py-8"
                 dangerouslySetInnerHTML={{
                   __html: documents.cv[0].contentHtml,
                 }}
@@ -168,9 +193,11 @@ export default function FilePreview({
           </TabsContent>
 
           <TabsContent value="cl">
-            {documents?.cover_letter?.length ? (
+            {isLoading('cover_letter') ? (
+              <FilePreviewSkeleton />
+            ) : documents?.cover_letter?.length ? (
               <div
-                className="prose prose-sm max-w-none p-8"
+                className="prose prose-sm max-w-none px-4 py-8"
                 dangerouslySetInnerHTML={{
                   __html: documents.cover_letter[0].contentHtml,
                 }}
@@ -197,7 +224,13 @@ export default function FilePreview({
             <p className="block md:hidden">{hasDoc ? 'Refine' : 'Generate'}</p>
           </TooltipTrigger>
           <TooltipContent>
-            <p>{hasDoc ? 'Refine' : 'Generate'}</p>
+            <p>
+              {showRetailorButton && !profileReady
+                ? 'Set up your Pilot Profile first'
+                : hasDoc
+                  ? 'Refine'
+                  : 'Generate'}
+            </p>
           </TooltipContent>
         </Tooltip>
 

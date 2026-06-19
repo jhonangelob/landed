@@ -11,7 +11,7 @@ export default function Footer() {
             <img src={logo} alt="FlightDeck Logo" className="h-10 min-w-fit" />
             <p className="text-muted font-sans text-[14px] leading-[1.6]">
               The control tower for your job search. Track,
-              <br /> tailor and land — all on one runway.
+              <br /> tailor and land, all on one runway.
             </p>
           </div>
 
