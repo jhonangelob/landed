@@ -77,3 +77,20 @@ export const savePilotProfileSchema = pilotProfileSchema.omit({
   id: true,
   updatedAt: true,
 })
+
+// Lenient schema matching the partial shape returned by the CV-parse prompt
+// (buildParseFileSystemPrompt). The parse handler normalises every field
+// defensively afterward, so this only confirms the overall JSON shape and
+// must NOT enforce the full-profile constraints.
+export const parsedCvSchema = z.object({
+  headline: z.string().optional(),
+  summary: z.string().optional(),
+  location: z.string().optional(),
+  phone: z.string().optional(),
+  skills: z.array(z.unknown()).optional(),
+  experience: z.array(z.record(z.string(), z.unknown())).optional(),
+  education: z.array(z.record(z.string(), z.unknown())).optional(),
+  certifications: z.array(z.record(z.string(), z.unknown())).optional(),
+  projects: z.array(z.record(z.string(), z.unknown())).optional(),
+  links: z.array(z.record(z.string(), z.unknown())).optional(),
+})

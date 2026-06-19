@@ -45,7 +45,7 @@ interface EmptyFilePreviewProps {
 
 function EmptyFilePreview({ variant }: EmptyFilePreviewProps) {
   return (
-    <div className="mt-2 flex flex-col items-center justify-center gap-8 rounded-lg border border-dashed py-10 text-center">
+    <div className="mt-2 flex flex-col items-center justify-center gap-8 rounded-lg border border-dashed px-4 py-10 text-center">
       <div className="relative w-44 space-y-1.5 rounded-md border p-3">
         <div className="h-2 w-1/2 rounded-lg bg-[#e2e3e9]"></div>
         <div className="h-1.5 w-1/4 rounded-sm bg-[#f2f3f7]"></div>
@@ -175,7 +175,7 @@ export default function FilePreview({
           </TabsContent>
         </Tabs>
       </div>
-      <div className="sticky top-16 grid w-full grid-cols-3 gap-2 self-start md:flex md:w-12 md:flex-col">
+      <div className="top-16 grid w-full grid-cols-3 gap-2 self-start md:sticky md:flex md:w-12 md:flex-col">
         <Tooltip>
           <TooltipTrigger
             className="flex h-11! w-full flex-row items-center justify-center gap-1.5 rounded-lg border bg-white px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase"
@@ -189,11 +189,11 @@ export default function FilePreview({
               )}
             />
             <p className="block md:hidden">
-              {documentExist(fileType) ? 'Re-Tailor' : 'Generate'}
+              {documentExist(fileType) ? 'Refine' : 'Generate'}
             </p>
           </TooltipTrigger>
           <TooltipContent>
-            <p>{documentExist(fileType) ? 'Re-Tailor' : 'Generate'}</p>
+            <p>{documentExist(fileType) ? 'Refine' : 'Generate'}</p>
           </TooltipContent>
         </Tooltip>
 
@@ -217,12 +217,12 @@ export default function FilePreview({
         </Tooltip>
 
         <DropdownMenu>
-          <DropdownMenuTrigger
-            className="flex h-11! w-full flex-row items-center justify-center gap-1.5 rounded-lg border bg-white px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase"
-            disabled={!documentExist(fileType)}
-          >
-            <Tooltip>
-              <TooltipTrigger className="flex flex-row gap-2 uppercase">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <DropdownMenuTrigger
+                className="flex h-11! w-full flex-row items-center justify-center gap-1.5 rounded-lg border bg-white px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase"
+                disabled={!documentExist(fileType)}
+              >
                 <HistoryIcon
                   className={cn(
                     'size-4',
@@ -230,12 +230,12 @@ export default function FilePreview({
                   )}
                 />
                 <p className="block md:hidden">History</p>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>View History</p>
-              </TooltipContent>
-            </Tooltip>
-          </DropdownMenuTrigger>
+              </DropdownMenuTrigger>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>View History</p>
+            </TooltipContent>
+          </Tooltip>
           <DropdownMenuContent
             className="w-70 rounded-lg shadow-none"
             align="end"

@@ -76,7 +76,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           ) : (
             <>
               {!isAppRoute ? <MarketingHeader /> : <AppHeader />}
-              <main className="mt-14 flex min-h-[calc(100vh-115px)] md:min-h-[calc(100vh-56px)]">
+              <main className="bg-surface-muted mt-14 flex min-h-[calc(100vh-115px)] md:min-h-[calc(100vh-56px)]">
                 {children}
               </main>
               {!isAppRoute && <Footer />}

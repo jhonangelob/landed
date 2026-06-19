@@ -52,8 +52,6 @@ const getTrustedOrigins = () => {
   return origins
 }
 
-console.log({ baseURL: getBaseUrl(), trustedOrigins: getTrustedOrigins() })
-
 export const auth = betterAuth({
   enabled: true,
   window: 60,
@@ -71,8 +69,6 @@ export const auth = betterAuth({
   databaseHooks: {
     user: {
       create: {
-        // Provision the free subscription server-side at account creation so the
-        // client never supplies a userId to an unauthenticated endpoint.
         after: async (user) => {
           await db
             .insert(subscriptions)

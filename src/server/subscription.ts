@@ -128,6 +128,9 @@ export const createQrPhPayment = createServerFn({ method: 'POST' })
       )
     }
 
+    // Todo: Remove after testing payment
+    console.log(attached.data.attributes.next_action.code.test_url)
+
     return {
       intentId: intent.data.id,
       qrCodeUrl: attached.data.attributes.next_action.code.image_url,

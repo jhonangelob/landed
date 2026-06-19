@@ -34,7 +34,6 @@ export default function SubscriptionCard({
         ₱{data.price}
         {data.price > 0 && (
           <span className="text-muted text-[13px] font-normal">
-            {' '}
             {data.duration === 30 ? 'per month' : 'one-time'}
           </span>
         )}
@@ -43,7 +42,10 @@ export default function SubscriptionCard({
         {data.features.map((item, index) => (
           <p
             key={index}
-            className="text-ink-muted flex flex-row items-center gap-2 font-sans text-[13px] leading-[1.4] font-normal"
+            className={cn(
+              'text-ink-muted flex flex-row items-center gap-2 border-dashed pb-1 font-sans text-[13px] leading-[1.4] font-normal',
+              data.features.length > index + 1 && 'border-b',
+            )}
           >
             <CheckIcon className="text-primary size-3 stroke-4" />
             {item}

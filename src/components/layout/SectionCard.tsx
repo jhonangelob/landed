@@ -49,7 +49,7 @@ export default function SectionCard({
       return (
         <div
           className={cn(
-            'flex flex-col rounded-lg border bg-white p-6 shadow-none',
+            'flex flex-col rounded-lg border bg-white px-3 py-6 shadow-none md:p-6',
             className,
           )}
         >
@@ -68,7 +68,7 @@ export default function SectionCard({
     case 'profile':
       return (
         <div
-          className={`flex flex-col rounded-lg border bg-white p-6 shadow-none ${className}`}
+          className={`flex flex-col rounded-lg border bg-white px-3 py-6 shadow-none md:p-6 ${className}`}
         >
           <div className="flex flex-row items-start justify-between gap-4">
             <p className="font-display text-ink-strong text-[22px] leading-[1.4] font-bold tracking-[-0.6px]">

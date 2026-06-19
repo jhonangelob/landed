@@ -20,7 +20,7 @@ import { AppError } from '#/lib/utils'
 
 import { parseFileSchema } from '#/validators/documents'
 import {
-  pilotProfileSchema,
+  parsedCvSchema,
   savePilotProfileSchema,
 } from '#/validators/profile'
 
@@ -146,7 +146,7 @@ export const parseCvFile = createServerFn({ method: 'POST' })
       usage,
     })
 
-    const parsed = parseAiResponse(text, pilotProfileSchema)
+    const parsed = parseAiResponse(text, parsedCvSchema)
 
     const tryUrl = (u: string): string => {
       if (!u) return ''
