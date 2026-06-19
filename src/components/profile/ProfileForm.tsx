@@ -75,6 +75,8 @@ export default function ProfileForm({
   useEffect(() => {
     if (!parsedData) return
     const knownKeys = [
+      'name',
+      'email',
       'headline',
       'summary',
       'location',
@@ -662,6 +664,36 @@ export default function ProfileForm({
                       )}
                     />
                   </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <form.Field
+                      name={`education[${i}].gpa`}
+                      children={(f) => (
+                        <div className="space-y-1.5">
+                          <Label>GPA (optional)</Label>
+                          <Input
+                            placeholder="3.8 / 4.0"
+                            value={f.state.value ?? ''}
+                            onChange={(e) => f.handleChange(e.target.value)}
+                            onBlur={f.handleBlur}
+                          />
+                        </div>
+                      )}
+                    />
+                    <form.Field
+                      name={`education[${i}].achievement`}
+                      children={(f) => (
+                        <div className="space-y-1.5">
+                          <Label>Achievement (optional)</Label>
+                          <Input
+                            placeholder="Cum Laude, Dean's List"
+                            value={f.state.value ?? ''}
+                            onChange={(e) => f.handleChange(e.target.value)}
+                            onBlur={f.handleBlur}
+                          />
+                        </div>
+                      )}
+                    />
+                  </div>
                 </div>
               ))}
               <Button
@@ -674,6 +706,8 @@ export default function ProfileForm({
                     institution: '',
                     degree: '',
                     year: '',
+                    gpa: '',
+                    achievement: '',
                   })
                 }
               >

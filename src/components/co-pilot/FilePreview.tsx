@@ -108,6 +108,12 @@ export default function FilePreview({
   const documentExist = (file: 'cv' | 'cover_letter') =>
     !!documents?.[file]?.length
 
+  const hasDoc = documentExist(fileType)
+  // Each control's visual state must mirror its own disabled condition.
+  const canGenerate = showRetailorButton
+  const canDownload = hasDoc && !isExportingCl
+  const canViewHistory = hasDoc
+
   const handleRetailor = () => {
     onRetailor && onRetailor(fileType)
   }
@@ -178,35 +184,33 @@ export default function FilePreview({
       <div className="top-16 grid w-full grid-cols-3 gap-2 self-start md:sticky md:flex md:w-12 md:flex-col">
         <Tooltip>
           <TooltipTrigger
-            className="flex h-11! w-full flex-row items-center justify-center gap-1.5 rounded-lg border bg-white px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase"
+            className="flex h-11! w-full flex-row items-center justify-center gap-1.5 rounded-lg border bg-white px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase disabled:cursor-not-allowed"
             onClick={handleRetailor}
-            disabled={!showRetailorButton}
+            disabled={!canGenerate}
           >
             <SparklesIcon
               className={cn(
                 'size-4',
-                documentExist(fileType) ? 'text-primary' : 'text-muted',
+                canGenerate ? 'text-primary' : 'text-muted',
               )}
             />
-            <p className="block md:hidden">
-              {documentExist(fileType) ? 'Refine' : 'Generate'}
-            </p>
+            <p className="block md:hidden">{hasDoc ? 'Refine' : 'Generate'}</p>
           </TooltipTrigger>
           <TooltipContent>
-            <p>{documentExist(fileType) ? 'Refine' : 'Generate'}</p>
+            <p>{hasDoc ? 'Refine' : 'Generate'}</p>
           </TooltipContent>
         </Tooltip>
 
         <Tooltip>
           <TooltipTrigger
-            className="flex h-11! w-full flex-row items-center justify-center gap-1.5 rounded-lg border bg-white px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase"
+            className="flex h-11! w-full flex-row items-center justify-center gap-1.5 rounded-lg border bg-white px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase disabled:cursor-not-allowed"
             onClick={handleDownload}
-            disabled={isExportingCl || !documentExist(fileType)}
+            disabled={!canDownload}
           >
             <DownloadIcon
               className={cn(
                 'size-4',
-                documentExist(fileType) ? 'text-primary' : 'text-muted',
+                canDownload ? 'text-primary' : 'text-muted',
               )}
             />
             <p className="block md:hidden">Download</p>
@@ -220,13 +224,13 @@ export default function FilePreview({
           <Tooltip>
             <TooltipTrigger asChild>
               <DropdownMenuTrigger
-                className="flex h-11! w-full flex-row items-center justify-center gap-1.5 rounded-lg border bg-white px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase"
-                disabled={!documentExist(fileType)}
+                className="flex h-11! w-full flex-row items-center justify-center gap-1.5 rounded-lg border bg-white px-2.5 py-2 font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase disabled:cursor-not-allowed"
+                disabled={!canViewHistory}
               >
                 <HistoryIcon
                   className={cn(
                     'size-4',
-                    documentExist(fileType) ? 'text-primary' : 'text-muted',
+                    canViewHistory ? 'text-primary' : 'text-muted',
                   )}
                 />
                 <p className="block md:hidden">History</p>

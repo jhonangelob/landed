@@ -31,6 +31,21 @@ export function parseAiResponse<T>(text: string, schema: ZodType<T>): T {
   return result.data
 }
 
+// House writing standards appended to every AI generation prompt so spelling
+// and punctuation rules stay consistent across CV and cover letter output.
+const WRITING_STANDARDS = `
+── SPELLING & PUNCTUATION (MANDATORY) ────────────────────────────────────────
+- Proofread every field before returning. Spelling and grammar must be flawless. Use consistent US English spelling unless the candidate's profile clearly uses another variant.
+- Keep proper nouns exactly as written in the profile (names, companies, schools, technologies). Never alter their spelling.
+- Never use the em dash (—) or en dash (–). Use a comma, colon, parentheses, or a regular hyphen (-) instead. For number or date ranges use "to" (e.g. "2020 to 2024").
+`.trim()
+
+// LLMs frequently emit em/en dashes despite instructions; strip them from
+// generated output as a deterministic safety net.
+export function stripEmDash(text: string): string {
+  return text.replace(/[—–]/g, '-')
+}
+
 export function buildCvSystemPrompt(): string {
   return `
 You are Co-Pilot, a senior career strategist and CV specialist inside the Landed app. Your sole objective is to produce a highly tailored, ATS-optimised CV that maximises the candidate's interview chances for the specific role provided.
@@ -153,6 +168,8 @@ Only suggest documenting real experience the candidate has but hasn't yet captur
 
 ── LENGTH ────────────────────────────────────────────────────────────────────
 - Target one PDF page. If the profile is sparse, prefer clean white space over weak filler content.
+
+${WRITING_STANDARDS}
   `.trim()
 }
 
@@ -213,6 +230,8 @@ Closing / sign-off (1 paragraph):
   - Do NOT write "Sincerely", a valediction, or a signature — those are appended automatically from the candidate's name.
 
 Total length: 250–300 words. Tight and purposeful — no padding.
+
+${WRITING_STANDARDS}
   `.trim()
 }
 
@@ -256,6 +275,8 @@ export function buildParseFileSystemPrompt(): string {
           Return ONLY valid JSON — no explanation, no markdown, no backticks.
           Use this exact structure:
           {
+            "name": "",
+            "email": "",
             "headline": "",
             "summary": "",
             "location": "",
@@ -295,6 +316,8 @@ export function buildParseFileSystemPrompt(): string {
           STRICT RULES:
           - Only use data explicitly present in the CV
           - Do NOT invent, infer, or assume anything
+          - Put the candidate's full name in "name" and their email address in "email"
+          - "links" is for web/profile URLs only (e.g. LinkedIn, GitHub, portfolio) — NEVER put the email address or a mailto: link in "links"
           - If a field has no match use empty string "" or empty array []
           - Never return null
           - Never add fields not in the structure above

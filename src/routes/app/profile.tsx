@@ -78,7 +78,11 @@ function RouteComponent() {
   const { data: profile } = useProfileQuery()
   const { mutateAsync: saveProfileDetails } = useSaveProfileMutation()
 
-  const { parse, isParsing, data: parsedData } = useParseCvMutation()
+  const {
+    mutateAsync: parseDocument,
+    data: parsedData,
+    isPending,
+  } = useParseCvMutation()
 
   const handleSave = async (value: PilotProfileInput) => {
     await saveProfileDetails(value)
@@ -117,8 +121,8 @@ function RouteComponent() {
           >
             <Dropzone
               accept={['.pdf', '.docx']}
-              disabled={isParsing}
-              onFileAccepted={parse}
+              disabled={isPending}
+              onFileAccepted={parseDocument}
             />
           </SectionCard>
 

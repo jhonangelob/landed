@@ -19,10 +19,7 @@ import { pilotProfiles } from '#/lib/db/schema'
 import { AppError } from '#/lib/utils'
 
 import { parseFileSchema } from '#/validators/documents'
-import {
-  parsedCvSchema,
-  savePilotProfileSchema,
-} from '#/validators/profile'
+import { parsedCvSchema, savePilotProfileSchema } from '#/validators/profile'
 
 export const getProfile = createServerFn({ method: 'GET' }).handler(
   async () => {
@@ -153,11 +150,33 @@ export const parseCvFile = createServerFn({ method: 'POST' })
       return /^https?:\/\//.test(u) ? u : `https://${u}`
     }
 
+    const stripMailto = (u: string): string => u.replace(/^mailto:/i, '').trim()
+    const isEmail = (u: string): boolean =>
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(stripMailto(u))
+
+    // The model sometimes drops the email into the links array — keep real
+    // web/profile URLs in links and lift any email-shaped entry into `email`.
+    const rawLinks = Array.isArray(parsed.links)
+      ? parsed.links.map((l: Record<string, unknown>) => ({
+          name: String(l.name ?? ''),
+          url: String(l.url ?? ''),
+        }))
+      : []
+
+    const emailFromLinks = rawLinks.map((l) => stripMailto(l.url)).find(isEmail)
+
+    const email =
+      (typeof parsed.email === 'string' && stripMailto(parsed.email)) ||
+      emailFromLinks ||
+      undefined
+
     return {
+      name: parsed.name || undefined,
+      email: email || undefined,
       headline: parsed.headline || undefined,
       summary: parsed.summary || undefined,
       location: parsed.location || undefined,
-      phone: parsed.phone || undefined,
+      phone: parsed.phone?.replace(/\s+/g, '') || undefined,
 
       skills: Array.isArray(parsed.skills)
         ? parsed.skills
@@ -228,12 +247,10 @@ export const parseCvFile = createServerFn({ method: 'POST' })
             }))
         : undefined,
 
-      links: Array.isArray(parsed.links)
-        ? parsed.links
-            .map((l: Record<string, unknown>) => ({
-              name: String(l.name ?? ''),
-              url: tryUrl(l.url as string),
-            }))
+      links: rawLinks.length
+        ? rawLinks
+            .filter((l) => !isEmail(l.url))
+            .map((l) => ({ name: l.name, url: tryUrl(l.url) }))
             .slice(0, PROFILE_LIMITS.links)
         : undefined,
     }

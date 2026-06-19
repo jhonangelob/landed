@@ -29,6 +29,8 @@ export const educationSchema = z.object({
   institution: z.string().min(1, 'Institution is required'),
   degree: z.string().min(1, 'Degree is required'),
   year: z.string().min(1, 'Year is required'),
+  gpa: z.string().optional(),
+  achievement: z.string().optional(),
 })
 
 export const certificationSchema = z.object({
@@ -56,7 +58,6 @@ export const projectSchema = z.object({
 export const preferencesSchema = z.object({
   roles: z
     .array(z.string().min(1))
-    .min(1, 'Add at least one preferred role')
     .max(
       PROFILE_LIMITS.roles,
       `Maximum ${PROFILE_LIMITS.roles} preferred roles`,

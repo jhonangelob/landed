@@ -22,7 +22,7 @@ const s = StyleSheet.create({
   name: { fontFamily: 'Times-Bold' },
   date: { marginBottom: 14 },
   greeting: { marginBottom: 10 },
-  para: { marginBottom: 10, textAlign: 'justify', lineHeight: 1.35 },
+  para: { marginBottom: 10, textAlign: 'justify', lineHeight: 1.1 },
   signoff: { marginTop: 14 },
 })
 

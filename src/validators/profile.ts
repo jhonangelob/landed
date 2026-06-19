@@ -83,6 +83,8 @@ export const savePilotProfileSchema = pilotProfileSchema.omit({
 // defensively afterward, so this only confirms the overall JSON shape and
 // must NOT enforce the full-profile constraints.
 export const parsedCvSchema = z.object({
+  name: z.string().optional(),
+  email: z.string().optional(),
   headline: z.string().optional(),
   summary: z.string().optional(),
   location: z.string().optional(),

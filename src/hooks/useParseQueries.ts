@@ -1,20 +1,12 @@
-import { useState } from 'react'
-
-import type { PilotProfileInput } from '#/types'
-
 import { parseCvFile } from '#/server/profile'
 
 import { notify } from '#/lib/toast'
+import { useMutation } from '@tanstack/react-query'
+import { parseError } from '#/lib/error'
 
 export function useParseCvMutation() {
-  const [isParsing, setIsParsing] = useState(false)
-  const [data, setData] = useState<Partial<PilotProfileInput> | null>(null)
-  const [error, setError] = useState<Error | null>(null)
-
-  const parse = async (file: File) => {
-    setIsParsing(true)
-    setError(null)
-    try {
+  return useMutation({
+    mutationFn: async (file: File) => {
       const arrayBuffer = await file.arrayBuffer()
       const fileContent = btoa(
         new Uint8Array(arrayBuffer).reduce(
@@ -32,19 +24,23 @@ export function useParseCvMutation() {
       const parsePromise = parseCvFile({
         data: { fileContent, fileType: isPdf ? 'pdf' : 'docx' },
       })
+
       notify.promise(parsePromise, {
         loading: 'Parsing CV…',
         success: 'CV parsed successfully',
         error: 'Failed to parse CV',
       })
-      const parsed = await parsePromise
-      setData(parsed)
-    } catch (err) {
-      setError(err as Error)
-    } finally {
-      setIsParsing(false)
-    }
-  }
 
-  return { parse, isParsing, data, error }
+      return parsePromise
+    },
+
+    onError: (error, _variables) => {
+      const { code, message } = parseError(error)
+
+      if (code === 'RATE_LIMIT_EXCEEDED') {
+        notify.error('Slow down a moment', message)
+        return
+      }
+    },
+  })
 }

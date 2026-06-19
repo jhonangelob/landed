@@ -58,7 +58,7 @@ export default function ExportFileModal({
               className={cn(
                 'flex-1 cursor-pointer space-y-2 rounded-md border p-3',
                 template === item.id && 'border-primary',
-                !item.enabled && 'cursor-not-allowed',
+                !item.enabled && 'cursor-not-allowed opacity-50',
               )}
               key={item.id}
               onClick={() =>

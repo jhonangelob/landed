@@ -4,6 +4,7 @@ import {
   buildCvSystemPrompt,
   buildUserPrompt,
   parseAiResponse,
+  stripEmDash,
 } from '#/helper/prompt'
 import type { CoverLetterContent, CvContent } from '#/types'
 import { anthropic } from '@ai-sdk/anthropic'
@@ -198,8 +199,8 @@ export const generateDocuments = createServerFn({ method: 'POST' })
         userId: profile.userId,
         timezone: profile.timezone ?? null,
         projects: profile.projects ?? [],
-        name: user.name,
-        email: user.email,
+        name: profile.name,
+        email: profile.email,
         phone: profile.phone ?? '',
         location: profile.location ?? '',
         headline: profile.headline ?? '',
@@ -217,13 +218,16 @@ export const generateDocuments = createServerFn({ method: 'POST' })
       },
     })
 
-    const callModel = (system: string) =>
-      generateText({
+    const callModel = async (system: string) => {
+      const result = await generateText({
         model: anthropic(model),
         system,
         prompt: userPrompt,
         maxOutputTokens: 4000,
       })
+      // Safety net: enforce the no-em-dash rule regardless of model compliance.
+      return { ...result, text: stripEmDash(result.text) }
+    }
 
     const wantsCv = data.type !== 'cover_letter'
     const wantsCoverLetter = data.type !== 'cv'
@@ -254,10 +258,10 @@ export const generateDocuments = createServerFn({ method: 'POST' })
               const ai = parseAiResponse(text, coverLetterAiSchema)
               return {
                 sender: {
-                  name: user.name,
+                  name: profile.name ?? '',
                   location: profile.location ?? '',
                   phone: profile.phone ?? '',
-                  email: user.email,
+                  email: profile.email,
                 },
                 date: new Date().toLocaleDateString('en-US', {
                   month: 'long',

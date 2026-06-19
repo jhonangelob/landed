@@ -29,7 +29,7 @@ export const CV_TEMPLATES: CvTemplate[] = [
     description: 'Clean lines, generous whitespace. Lets your content breathe.',
     plan: 'economy',
     preview: '/assets/template_minimal.svg',
-    enabled: true,
+    enabled: false,
   },
   {
     id: 'modern',
@@ -38,7 +38,7 @@ export const CV_TEMPLATES: CvTemplate[] = [
       'Two column with sidebar. Visually distinct, great for tech and design roles.',
     plan: 'economy',
     preview: '/assets/template_modern.svg',
-    enabled: true,
+    enabled: false,
   },
 ] as const
 
