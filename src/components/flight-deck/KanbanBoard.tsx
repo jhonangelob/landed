@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { SORT_OPTIONS, sortApplications } from '#/helper/application'
 import type { SortKey } from '#/helper/application'
 import { useUpdateApplicationStageMutation } from '#/hooks/useApplicationQueries'
-import type { Application, ApplicationStage } from '#/types'
+import type { ApplicationStage, ApplicationWithDocStatus } from '#/types'
 import { ArrowUpDownIcon, ListFilterIcon, SearchIcon } from 'lucide-react'
 
 import { useNavigate } from '@tanstack/react-router'
@@ -25,10 +25,10 @@ import KanbanItem from './KanbanItem'
 import QuickAddField from './QuickAddField'
 
 interface KanbanBoardProps {
-  applications: Application[]
+  applications: ApplicationWithDocStatus[]
 }
 
-function matchesQuery(app: Application, query: string) {
+function matchesQuery(app: ApplicationWithDocStatus, query: string) {
   const q = query.toLowerCase()
   return (
     app.company.toLowerCase().includes(q) || app.role.toLowerCase().includes(q)
@@ -52,7 +52,7 @@ export default function KanbanBoard({ applications }: KanbanBoardProps) {
     useUpdateApplicationStageMutation(applicationId)
 
   const matchesStageAndQuery = (
-    a: Application,
+    a: ApplicationWithDocStatus,
     stage: ApplicationStage | 'all',
   ) =>
     (stage === 'all' || a.stage === stage) &&

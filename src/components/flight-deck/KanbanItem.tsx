@@ -2,7 +2,8 @@ import { useState } from 'react'
 
 import { getDaysInStage, getStaleness } from '#/helper/application'
 import { formatNumberCompact } from '#/helper/number'
-import type { Application } from '#/types'
+import type { Application, ApplicationWithDocStatus } from '#/types'
+import { FileTextIcon } from 'lucide-react'
 
 import { useNavigate } from '@tanstack/react-router'
 
@@ -11,7 +12,7 @@ import { cn } from '#/lib/utils'
 import { KANBAN_COLUMNS } from '#/constants/stage'
 
 export interface KanbanItemProps {
-  data: Application
+  data: ApplicationWithDocStatus
 }
 
 export type KanbanItemBadgeProps = {
@@ -72,22 +73,19 @@ export default function KanbanItem({ data }: KanbanItemProps) {
         <p className="text-muted flex flex-row items-center font-mono text-[11px] leading-[1.4] tracking-[0.4px]">
           <span className="truncate">{data.company}</span>·{' '}
           <span className="text-nowrap">
-            {data.appliedAt
-              ? new Date(data.appliedAt).toLocaleDateString('en-US', {
-                  day: 'numeric',
-                  month: 'short',
-                })
-              : ''}
+            {new Date(data.spottedAt).toLocaleDateString('en-US', {
+              day: 'numeric',
+              month: 'short',
+            })}
           </span>
           <StaleFlag data={data} />
         </p>
       </div>
-
       <div className="hidden flex-row items-center justify-between pt-2 md:flex">
         <p className="text-primary-text font-mono text-[13px] leading-[1.4] font-medium">
           ₱{formatNumberCompact(Number(data.salaryRange))}
         </p>
-        <div className="flex flex-row items-end gap-1">
+        <div className="just flex flex-row items-end gap-1">
           <div
             className="mb-1 h-1.25 w-1.25 rounded-full"
             style={{ backgroundColor: stageColor }}
@@ -95,6 +93,10 @@ export default function KanbanItem({ data }: KanbanItemProps) {
           <p className="text-muted font-sans text-[12px] leading-[1.4] font-normal">
             {data.status || 'Spotted'}
           </p>
+
+          {data.hasDocuments && (
+            <FileTextIcon className="text-primary/80 size-4 rounded-full" />
+          )}
         </div>
       </div>
 

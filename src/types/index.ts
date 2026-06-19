@@ -19,6 +19,7 @@ import type {
   updatePasswordSchema,
 } from '#/validators/account'
 import type {
+  applicationWithDocStatusSchema,
   deleteApplicationSchema,
   newApplicationSchema,
   quickApplicationSchema,
@@ -81,6 +82,9 @@ export type UpdateApplicationStageInput = z.input<
   typeof updateApplicationStageSchema
 >
 export type ApplicationStage = z.infer<typeof applicationStageSchema>
+export type ApplicationWithDocStatus = z.infer<
+  typeof applicationWithDocStatusSchema
+>
 
 // ── Account ───────────────────────────────────────────────────────────────────
 export type Account = z.infer<typeof accountSchema>

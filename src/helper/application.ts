@@ -70,10 +70,10 @@ export const SORT_OPTIONS: { value: SortKey; label: string }[] = [
   { value: 'stale', label: 'Most stale' },
 ]
 
-export function sortApplications(
-  apps: Application[],
+export function sortApplications<T extends Application>(
+  apps: T[],
   key: SortKey,
-): Application[] {
+): T[] {
   const sorted = [...apps]
   switch (key) {
     case 'newest':

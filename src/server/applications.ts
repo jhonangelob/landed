@@ -1,5 +1,13 @@
 import type { ApplicationStage } from '#/types'
-import { and, count, eq, isNull } from 'drizzle-orm'
+import {
+  and,
+  count,
+  eq,
+  exists,
+  getTableColumns,
+  isNull,
+  sql,
+} from 'drizzle-orm'
 
 import { createServerFn } from '@tanstack/react-start'
 
@@ -7,7 +15,7 @@ import { ensureSession } from '#/server/session.server'
 
 import { getUserPlan } from '#/lib/auth/subscription'
 import { db } from '#/lib/db/index.server'
-import { applications } from '#/lib/db/schema'
+import { applications, generatedDocs } from '#/lib/db/schema'
 import { AppError } from '#/lib/utils'
 
 import {
@@ -49,7 +57,15 @@ export const getApplications = createServerFn({ method: 'GET' }).handler(
     const session = await ensureSession()
 
     return await db
-      .select()
+      .select({
+        ...getTableColumns(applications),
+        hasDocuments: sql<boolean>`${exists(
+          db
+            .select({ id: generatedDocs.id })
+            .from(generatedDocs)
+            .where(eq(generatedDocs.applicationId, applications.id)),
+        )}`,
+      })
       .from(applications)
       .where(
         and(
