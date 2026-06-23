@@ -33,25 +33,40 @@ export const applicationSchema = z.object({
   deletedAt: z.date().nullable(),
 })
 
-export const newApplicationSchema = applicationSchema.pick({
-  company: true,
-  role: true,
-  description: true,
-  stage: true,
-})
+export const newApplicationSchema = applicationSchema
+  .pick({
+    company: true,
+    role: true,
+    stage: true,
+  })
+  .extend({
+    description: z
+      .string()
+      .max(8000, 'Reached maximum description character limit'),
+  })
 
 export const quickApplicationSchema = applicationSchema.pick({
   company: true,
   role: true,
 })
 
-export const updateApplicationSchema = applicationSchema.omit({
-  appliedAt: true,
-  updatedAt: true,
-  inFlightAt: true,
-  interviewAt: true,
-  offerAt: true,
-})
+export const updateApplicationSchema = applicationSchema
+  .pick({
+    id: true,
+    company: true,
+    role: true,
+    stage: true,
+  })
+  .extend({
+    url: z.string().url('Must be a valid URL').or(z.literal('')),
+    location: z.string(),
+    salaryRange: z.string(),
+    notes: z.string(),
+    status: z.string(),
+    description: z
+      .string()
+      .max(8000, 'Reached maximum description character limit'),
+  })
 
 export const deleteApplicationSchema = applicationSchema.pick({
   id: true,

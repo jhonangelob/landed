@@ -21,7 +21,6 @@ export function parseAiResponse<T>(text: string, schema: ZodType<T>): T {
 
   const result = schema.safeParse(raw)
   if (!result.success) {
-    console.error('AI response validation failed:', result.error.issues)
     throw new AppError(
       'AI_VALIDATION_ERROR',
       'AI response has unexpected structure, please try again',
@@ -82,6 +81,15 @@ Respond ONLY with valid JSON — no markdown, no backticks, no explanatory text.
   "certifications": [
     { "name": "string", "issuer": "string", "date": "string" }
   ],
+  "projects": [
+    {
+      "name": "string",
+      "role": "string",
+      "dates": "string",
+      "url": "string",
+      "bullets": ["string"]
+    }
+  ],
   "skillGroups": [
     { "label": "string", "value": "string" }
   ],
@@ -108,7 +116,7 @@ Respond ONLY with valid JSON — no markdown, no backticks, no explanatory text.
 - Return valid JSON ONLY. No text before or after the JSON object.
 - Use ONLY information explicitly present in the candidate's profile. Never invent, infer, or embellish facts, roles, skills, or achievements.
 - If the job posting mentions a technology or skill absent from the profile, omit it entirely — do not hint at it, paraphrase it, or imply it.
-- Omit optional sections (certifications, leadership, skillGroups) if the profile lacks the data — do not return empty arrays.
+- Omit optional sections (certifications, projects, leadership, skillGroups) if the profile lacks the data — do not return empty arrays.
 
 ── ATS & KEYWORD STRATEGY ────────────────────────────────────────────────────
 - Mirror exact terminology from the job posting wherever the profile supports it (e.g. use "CI/CD" if that is what the posting uses, not "continuous integration").
@@ -139,6 +147,12 @@ Respond ONLY with valid JSON — no markdown, no backticks, no explanatory text.
 - Copy institution, degree, year, and location verbatim from the profile. Do not rewrite or infer.
 - For certifications: copy name and issuer verbatim; map the profile's issueDate to the output's date field.
 - Omit the certifications section entirely if the profile has none.
+
+── PROJECTS ──────────────────────────────────────────────────────────────────
+- Populate from the candidate's Projects. Copy the project name verbatim; map the profile's role, dates and url to the matching output fields. Drop the url if it is missing or malformed.
+- Rewrite each project's highlights and bullets into achievement-focused bullets using the same [Action Verb → Work Done → Result/Scope] structure as Experience. Draw ONLY on the profile's project data — never invent.
+- Reorder projects, and the bullets within each, to front-load what is most relevant to this posting. Maximum 4 bullets per project.
+- Omit the projects section entirely if the profile has none.
 
 ── LEADERSHIP ────────────────────────────────────────────────────────────────
 - Include ONLY entries that are clearly volunteer, extracurricular, or non-professional in nature.

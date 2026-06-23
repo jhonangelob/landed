@@ -331,6 +331,24 @@ export function TemplateB({ content }: Props) {
           </View>
         )} */}
 
+        {/* ── Projects ── */}
+        {content.projects && content.projects.length > 0 && (
+          <View style={s.section}>
+            <SectionHeading title="Projects" />
+            {content.projects.map((proj, i) => (
+              <View key={i} style={s.entry} wrap={false}>
+                <EntryHeader
+                  org={proj.name}
+                  location={proj.url}
+                  role={proj.role}
+                  dates={proj.dates}
+                />
+                <Bullets items={proj.bullets ?? []} />
+              </View>
+            ))}
+          </View>
+        )}
+
         {/* ── Skills & Interests ── */}
         {(content.skills.length > 0 ||
           (content.skillGroups && content.skillGroups.length > 0)) && (

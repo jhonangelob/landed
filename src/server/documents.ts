@@ -339,13 +339,17 @@ export const exportCvPdf = createServerFn({ method: 'POST' })
     }
 
     const doc = await db
-      .select({ contentJson: generatedDocs.contentJson })
+      .select({
+        contentJson: generatedDocs.contentJson,
+        version: generatedDocs.version,
+      })
       .from(generatedDocs)
       .where(
         and(
           eq(generatedDocs.applicationId, data.applicationId),
           eq(generatedDocs.userId, session.user.id),
           eq(generatedDocs.type, 'cv'),
+          ...(data.docId ? [eq(generatedDocs.id, data.docId)] : []),
         ),
       )
       .orderBy(desc(generatedDocs.createdAt))
@@ -371,7 +375,7 @@ export const exportCvPdf = createServerFn({ method: 'POST' })
 
     return {
       base64: Buffer.from(pdfBuffer).toString('base64'),
-      filename: `${fileName}-CV.pdf`,
+      filename: `${fileName}-CV-v${doc.version}.pdf`,
     }
   })
 
@@ -381,13 +385,17 @@ export const exportCoverLetterPdf = createServerFn({ method: 'POST' })
     const session = await ensureSession()
 
     const doc = await db
-      .select({ contentJson: generatedDocs.contentJson })
+      .select({
+        contentJson: generatedDocs.contentJson,
+        version: generatedDocs.version,
+      })
       .from(generatedDocs)
       .where(
         and(
           eq(generatedDocs.applicationId, data.applicationId),
           eq(generatedDocs.userId, session.user.id),
           eq(generatedDocs.type, 'cover_letter'),
+          ...(data.docId ? [eq(generatedDocs.id, data.docId)] : []),
         ),
       )
       .orderBy(desc(generatedDocs.createdAt))
@@ -412,6 +420,6 @@ export const exportCoverLetterPdf = createServerFn({ method: 'POST' })
 
     return {
       base64: Buffer.from(pdfBuffer).toString('base64'),
-      filename: `${fileName}-Cover-Letter.pdf`,
+      filename: `${fileName}-Cover-Letter-v${doc.version}.pdf`,
     }
   })

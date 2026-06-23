@@ -76,7 +76,7 @@ function RouteComponent() {
   )
 
   return (
-    <div className="section">
+    <div className="section pb-24!">
       <SectionHeader
         subTitle="Settings & billing"
         title1="The"

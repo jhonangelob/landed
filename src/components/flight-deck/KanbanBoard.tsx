@@ -122,7 +122,12 @@ export default function KanbanBoard({ applications }: KanbanBoardProps) {
               <ListFilterIcon className="size-3.5" />
               <SelectValue />
             </SelectTrigger>
-            <SelectContent align="end">
+            <SelectContent
+              position="popper"
+              side="bottom"
+              align="start"
+              avoidCollisions={false}
+            >
               <SelectItem value="all">All stages</SelectItem>
               {KANBAN_COLUMNS.map((col) => (
                 <SelectItem key={col.stage} value={col.stage}>
@@ -139,7 +144,12 @@ export default function KanbanBoard({ applications }: KanbanBoardProps) {
               <ArrowUpDownIcon className="size-3.5" />
               <SelectValue />
             </SelectTrigger>
-            <SelectContent align="end">
+            <SelectContent
+              position="popper"
+              side="bottom"
+              align="end"
+              avoidCollisions={false}
+            >
               {SORT_OPTIONS.map((option) => (
                 <SelectItem key={option.value} value={option.value}>
                   {option.label}
@@ -150,7 +160,7 @@ export default function KanbanBoard({ applications }: KanbanBoardProps) {
         </div>
       </div>
 
-      <div className="hidden max-h-[calc(100vh-300px)] min-h-0 flex-1 flex-row gap-2.5 overflow-auto pr-12 pb-6 md:flex">
+      <div className="hidden max-h-[calc(100vh-300px)] min-h-0 flex-1 auto-rows-fr grid-cols-6 gap-4 pb-6 md:grid">
         {visibleColumns.map((col) => {
           const colApps = sortApplications(
             applications.filter((a) => a.stage === col.stage),
@@ -164,12 +174,12 @@ export default function KanbanBoard({ applications }: KanbanBoardProps) {
           return (
             <div
               key={col.stage}
-              className="flex flex-col gap-4.5"
+              className="flex min-h-0 flex-col gap-4.5"
               onDragOver={(e) => handleDragOver(e, col.stage)}
               onDragLeave={handleDragLeave}
               onDrop={(e) => handleDrop(e, col.stage)}
             >
-              <div className="flex flex-row items-center justify-between gap-2 border-b pb-2">
+              <div className="sticky flex flex-row items-center justify-between gap-2 border-b pb-2">
                 <div
                   className="h-1.5 w-1.5 rounded-full"
                   style={{ backgroundColor: col.color }}
@@ -183,7 +193,7 @@ export default function KanbanBoard({ applications }: KanbanBoardProps) {
               </div>
               <div
                 className={cn(
-                  'flex w-60 flex-1 flex-col rounded-lg border border-transparent pb-2 transition-colors',
+                  'flex min-h-0 w-60 flex-1 scrollbar-none flex-col overflow-y-auto rounded-lg border border-transparent pb-2 transition-colors',
                   isOver && 'border-primary bg-accent/10 border-dashed',
                 )}
               >
@@ -255,7 +265,7 @@ export default function KanbanBoard({ applications }: KanbanBoardProps) {
           </Select>
         </div>
 
-        <div className="flex [scrollbar-width:none] gap-1 overflow-x-scroll [&::-webkit-scrollbar]:hidden">
+        <div className="flex scrollbar-none gap-1 overflow-x-scroll [&::-webkit-scrollbar]:hidden">
           <button
             type="button"
             onClick={() => setSelectedStage('all')}
@@ -290,7 +300,6 @@ export default function KanbanBoard({ applications }: KanbanBoardProps) {
             </button>
           ))}
         </div>
-
         <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-auto pb-6">
           {mobileApps.length === 0 ? (
             <p className="text-muted py-10 text-center font-mono text-[11px] tracking-[1.1px] uppercase">

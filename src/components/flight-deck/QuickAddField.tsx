@@ -58,8 +58,13 @@ export default function QuickAddField({ className }: QuickAddFieldProp) {
           })
         }
       />
-      <Button variant="outline" className="h-6 w-6" onClick={handleSubmit}>
-        <PlusIcon className="text-muted" />
+      <Button
+        variant="outline"
+        className="border-primary/20 bg-primary/10 h-6 w-6"
+        onClick={handleSubmit}
+        disabled={!fields.company || !fields.role}
+      >
+        <PlusIcon className="text-primary" />
       </Button>
     </div>
   )

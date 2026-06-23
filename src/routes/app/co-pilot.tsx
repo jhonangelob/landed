@@ -2,8 +2,8 @@ import { useApplicationQuery } from '#/hooks/useApplicationQueries'
 
 import { createFileRoute } from '@tanstack/react-router'
 
-import NewApplication from '#/components/co-pilot/NewApplication'
-import UpdateApplication from '#/components/co-pilot/UpdateApplication'
+import ApplicationCreate from '#/components/co-pilot/ApplicationCreate'
+import ApplicationUpdate from '#/components/co-pilot/ApplicationUpdate'
 
 import { getApplicationById } from '#/server/applications'
 import { getProfile } from '#/server/profile'
@@ -65,13 +65,13 @@ function RouteComponent() {
   return (
     <div className="section overflow-visible">
       {isEditMode ? (
-        <UpdateApplication
+        <ApplicationUpdate
           key={application?.updatedAt.getTime()}
           applicationId={applicationId}
           application={normalizedApplication}
         />
       ) : (
-        <NewApplication stage={stage} />
+        <ApplicationCreate stage={stage} />
       )}
     </div>
   )

@@ -147,7 +147,7 @@ function SharePage() {
     <div className="flex min-h-screen w-screen flex-col items-center justify-center bg-white px-4 pt-4 pb-12">
       <div className="mx-auto w-full max-w-4xl space-y-6">
         <h1 className="font-display text-primary-text text-[36px] leading-none font-bold tracking-[-1.2px] md:text-[56px] md:leading-[0.95] md:tracking-[-2px]">
-          They <span className="text-primary italic">landed!</span>
+          Just <span className="text-primary italic">landed!</span>
         </h1>
 
         <p className="text-ink-muted max-w-lg font-sans text-[15px] leading-normal">

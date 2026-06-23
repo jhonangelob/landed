@@ -101,23 +101,21 @@ export function cvToHtml(cv: CvContent): string {
     ? section('Summary', `<p style="${S.plainLine}">${esc(cv.summary)}</p>`)
     : ''
 
-  const education =
-    cv.education.length > 0
-      ? section(
-          'Education',
-          cv.education
-            .map(
-              (edu) =>
-                `<div style="${S.entry}">${entryHeader({
-                  org: edu.institution,
-                  location: edu.location,
-                  role: edu.degree,
-                  dates: edu.year,
-                })}${edu.detail ? `<p style="${S.plainLine}">${esc(edu.detail)}</p>` : ''}</div>`,
-            )
-            .join(''),
-        )
-      : ''
+  const hasSkills =
+    cv.skills.length > 0 || (cv.skillGroups && cv.skillGroups.length > 0)
+  const skills = hasSkills
+    ? section(
+        'Skills &amp; Interests',
+        cv.skillGroups && cv.skillGroups.length > 0
+          ? cv.skillGroups
+              .map(
+                (g) =>
+                  `<div style="${S.skillRow}"><p style="${S.skillValue}"><span style="${S.skillLabel}">${esc(g.label)}: </span>${esc(g.value)}</p></div>`,
+              )
+              .join('')
+          : `<div style="${S.skillRow}"><p style="${S.skillValue}"><span style="${S.skillLabel}">Skills: </span>${cv.skills.map(esc).join(', ')}</p></div>`,
+      )
+    : ''
 
   const experience =
     cv.experience.length > 0
@@ -132,6 +130,24 @@ export function cvToHtml(cv: CvContent): string {
                   role: exp.role,
                   dates: exp.dates,
                 })}${bulletList(exp.bullets)}</div>`,
+            )
+            .join(''),
+        )
+      : ''
+
+  const projects =
+    cv.projects && cv.projects.length > 0
+      ? section(
+          'Projects',
+          cv.projects
+            .map(
+              (proj) =>
+                `<div style="${S.entry}">${entryHeader({
+                  org: proj.name,
+                  location: proj.url,
+                  role: proj.role,
+                  dates: proj.dates,
+                })}${bulletList(proj.bullets ?? [])}</div>`,
             )
             .join(''),
         )
@@ -154,23 +170,25 @@ export function cvToHtml(cv: CvContent): string {
         )
       : ''
 
-  const hasSkills =
-    cv.skills.length > 0 || (cv.skillGroups && cv.skillGroups.length > 0)
-  const skills = hasSkills
-    ? section(
-        'Skills &amp; Interests',
-        cv.skillGroups && cv.skillGroups.length > 0
-          ? cv.skillGroups
-              .map(
-                (g) =>
-                  `<div style="${S.skillRow}"><p style="${S.skillValue}"><span style="${S.skillLabel}">${esc(g.label)}: </span>${esc(g.value)}</p></div>`,
-              )
-              .join('')
-          : `<div style="${S.skillRow}"><p style="${S.skillValue}"><span style="${S.skillLabel}">Skills: </span>${cv.skills.map(esc).join(', ')}</p></div>`,
-      )
-    : ''
+  const education =
+    cv.education.length > 0
+      ? section(
+          'Education',
+          cv.education
+            .map(
+              (edu) =>
+                `<div style="${S.entry}">${entryHeader({
+                  org: edu.institution,
+                  location: edu.location,
+                  role: edu.degree,
+                  dates: edu.year,
+                })}${edu.detail ? `<p style="${S.plainLine}">${esc(edu.detail)}</p>` : ''}</div>`,
+            )
+            .join(''),
+        )
+      : ''
 
-  return `<div style="${S.page}">${header}${summary}${education}${experience}${certifications}${skills}</div>`.trim()
+  return `<div style="${S.page}">${header}${summary}${education}${experience}${projects}${certifications}${skills}</div>`.trim()
 }
 
 /** Business-letter styles for the cover letter — reuse the serif page from S. */

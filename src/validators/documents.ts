@@ -19,10 +19,12 @@ export const generateDocumentSchema = z.object({
 export const exportDocumentSchema = z.object({
   applicationId: z.string().uuid(),
   template: templateSchema,
+  docId: z.string().uuid().optional(),
 })
 
 export const exportCoverLetterSchema = z.object({
   applicationId: z.string().uuid(),
+  docId: z.string().uuid().optional(),
 })
 
 export const cvSchema = z.object({
@@ -78,6 +80,17 @@ export const cvSchema = z.object({
         name: z.string(),
         issuer: z.string(),
         date: optionalString,
+      }),
+    )
+    .optional(),
+  projects: z
+    .array(
+      z.object({
+        name: z.string(),
+        role: z.string().optional(),
+        dates: z.string().optional(),
+        url: optionalString,
+        bullets: z.array(z.string()).optional(),
       }),
     )
     .optional(),

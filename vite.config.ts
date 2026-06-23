@@ -25,3 +25,9 @@ const config = defineConfig({
 })
 
 export default config
+
+// Todo:
+// Experience on pdf uses profile address as location
+// Resume not limited to 1 page
+// KanbanBoard items are not responsive(has fixed width)
+// Textare default rowCount not working

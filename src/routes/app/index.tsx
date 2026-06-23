@@ -36,7 +36,7 @@ function RouteComponent() {
         description="Every application, and the CV and cover letter Co-Pilot tailored for it, tracked from spotted to landed."
       />
 
-      {applications.length > 0 ? (
+      {applications.length ? (
         <KanbanBoard applications={applications} />
       ) : (
         <KanbanBoardEmpty />

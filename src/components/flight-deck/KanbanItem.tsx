@@ -63,7 +63,7 @@ export default function KanbanItem({ data }: KanbanItemProps) {
       onClick={handleClickApplicationItem}
       className={cn(
         'hover:border-red/70 border-divider/50 flex flex-row justify-between rounded-lg border bg-white px-3.5 pt-3.5 pb-3 transition-opacity md:flex-col',
-        isDragging ? 'cursor-grabbing opacity-40' : 'cursor-grab',
+        isDragging ? 'cursor-grabbing opacity-40' : 'cursor-pointer',
       )}
     >
       <div className="hidden flex-col gap-1 border-b border-dashed pb-2 md:flex">
@@ -90,8 +90,8 @@ export default function KanbanItem({ data }: KanbanItemProps) {
             className="mb-1 h-1.25 w-1.25 rounded-full"
             style={{ backgroundColor: stageColor }}
           />
-          <p className="text-muted font-sans text-[12px] leading-[1.4] font-normal">
-            {data.status || 'Spotted'}
+          <p className="text-muted font-sans text-[12px] leading-[1.4] font-normal capitalize">
+            {data.status || data.stage}
           </p>
 
           {data.hasDocuments && (

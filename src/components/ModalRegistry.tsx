@@ -48,6 +48,7 @@ export function ModalRegistry({ userName }: ModalRegistryProps) {
         open={activeModal === 'exportFile'}
         onOpenChange={handleClose}
         applicationId={payload.exportFile?.applicationId ?? ''}
+        docId={payload.exportFile?.docId}
       />
       {payload.planInformation && (
         <PlanInformationModal

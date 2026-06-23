@@ -202,6 +202,7 @@ export const updateApplication = createServerFn({
         salaryRange: data.salaryRange,
         url: data.url,
         notes: data.notes,
+        description: data.description,
         updatedAt: new Date(),
         ...(stageColumn && { [stageColumn]: now }),
       })

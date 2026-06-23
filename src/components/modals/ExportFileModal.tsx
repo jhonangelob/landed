@@ -24,12 +24,14 @@ interface ExportFileModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   applicationId: string
+  docId?: string
 }
 
 export default function ExportFileModal({
   open,
   onOpenChange,
   applicationId,
+  docId,
 }: ExportFileModalProps) {
   const [template, setTemplate] = useState<'classic' | 'modern' | 'minimal'>(
     'classic',
@@ -38,7 +40,7 @@ export default function ExportFileModal({
   const { mutateAsync: exportDocuments } = useExportDocumentsMutation()
 
   const handleExport = async () => {
-    const result = await exportDocuments({ applicationId, template })
+    const result = await exportDocuments({ applicationId, template, docId })
     downloadBase64Pdf(result.base64, result.filename)
     onOpenChange(false)
   }
@@ -84,17 +86,6 @@ export default function ExportFileModal({
           ))}
         </div>
 
-        {/* Temporarily disabled, all templates are currently free */}
-        {/* <div className="flex justify-center rounded-md border border-dashed p-4 text-center text-[12px]">
-          <TicketsPlaneIcon className="mr-2 size-4" />
-          Unlock Premium templates with
-          <span
-            className="text-primary ml-1 cursor-pointer font-medium"
-            onClick={handleClickPremium}
-          >
-            Premium
-          </span>
-        </div> */}
         <DialogFooter>
           <DialogClose asChild>
             <Button

@@ -6,11 +6,13 @@ import { cn } from '#/lib/utils'
 
 import { KANBAN_COLUMNS } from '#/constants/stage'
 
-interface ApplicationSummaryProps {
+interface ApplicationTimnelineProps {
   data: Application
 }
 
-export default function ApplicationSummary({ data }: ApplicationSummaryProps) {
+export default function ApplicationTimneline({
+  data,
+}: ApplicationTimnelineProps) {
   const stagesToLand =
     KANBAN_COLUMNS.length -
     1 -

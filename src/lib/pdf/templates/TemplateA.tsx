@@ -222,23 +222,28 @@ export function TemplateA({ content }: Props) {
           <Text style={s.plainLine}>{content.summary}</Text>
         </View>
 
-        {/* ── Education ── */}
-        {content.education.length > 0 && (
+        {/* ── Skills & Interests ── */}
+        {(content.skills.length > 0 ||
+          (content.skillGroups && content.skillGroups.length > 0)) && (
           <View style={s.section}>
-            <Text style={s.sectionTitle}>Education</Text>
-            {content.education.map((edu, i) => (
-              <View key={i} style={s.entry} wrap={false}>
-                <EntryHeader
-                  org={edu.institution}
-                  location={edu.location}
-                  role={edu.degree}
-                  dates={edu.year}
-                />
-                {edu.detail ? (
-                  <Text style={s.plainLine}>{edu.detail}</Text>
-                ) : null}
+            <Text style={s.sectionTitle}>Skills &amp; Interests</Text>
+            {content.skillGroups && content.skillGroups.length > 0 ? (
+              content.skillGroups.map((g, i) => (
+                <View key={i} style={s.skillRow}>
+                  <Text style={s.skillValue}>
+                    <Text style={s.skillLabel}>{g.label}: </Text>
+                    {g.value}
+                  </Text>
+                </View>
+              ))
+            ) : (
+              <View style={s.skillRow}>
+                <Text style={s.skillValue}>
+                  <Text style={s.skillLabel}>Skills: </Text>
+                  {content.skills.join(', ')}
+                </Text>
               </View>
-            ))}
+            )}
           </View>
         )}
 
@@ -255,6 +260,24 @@ export function TemplateA({ content }: Props) {
                   dates={exp.dates}
                 />
                 <Bullets items={exp.bullets} />
+              </View>
+            ))}
+          </View>
+        )}
+
+        {/* ── Projects ── */}
+        {content.projects && content.projects.length > 0 && (
+          <View style={s.section}>
+            <Text style={s.sectionTitle}>Projects</Text>
+            {content.projects.map((proj, i) => (
+              <View key={i} style={s.entry} wrap={false}>
+                <EntryHeader
+                  org={proj.name}
+                  location={proj.url}
+                  role={proj.role}
+                  dates={proj.dates}
+                />
+                <Bullets items={proj.bullets ?? []} />
               </View>
             ))}
           </View>
@@ -294,28 +317,23 @@ export function TemplateA({ content }: Props) {
           </View>
         )} */}
 
-        {/* ── Skills & Interests ── */}
-        {(content.skills.length > 0 ||
-          (content.skillGroups && content.skillGroups.length > 0)) && (
+        {/* ── Education ── */}
+        {content.education.length > 0 && (
           <View style={s.section}>
-            <Text style={s.sectionTitle}>Skills &amp; Interests</Text>
-            {content.skillGroups && content.skillGroups.length > 0 ? (
-              content.skillGroups.map((g, i) => (
-                <View key={i} style={s.skillRow}>
-                  <Text style={s.skillValue}>
-                    <Text style={s.skillLabel}>{g.label}: </Text>
-                    {g.value}
-                  </Text>
-                </View>
-              ))
-            ) : (
-              <View style={s.skillRow}>
-                <Text style={s.skillValue}>
-                  <Text style={s.skillLabel}>Skills: </Text>
-                  {content.skills.join(', ')}
-                </Text>
+            <Text style={s.sectionTitle}>Education</Text>
+            {content.education.map((edu, i) => (
+              <View key={i} style={s.entry} wrap={false}>
+                <EntryHeader
+                  org={edu.institution}
+                  location={edu.location}
+                  role={edu.degree}
+                  dates={edu.year}
+                />
+                {edu.detail ? (
+                  <Text style={s.plainLine}>{edu.detail}</Text>
+                ) : null}
               </View>
-            )}
+            ))}
           </View>
         )}
       </Page>

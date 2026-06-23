@@ -15,6 +15,8 @@ export type DeleteApplicationPayload = {
 
 export type ExportFilePayload = {
   applicationId: string
+  /** Specific document version to export; defaults to the latest when omitted. */
+  docId?: string
 }
 
 export type PlanInformationPayload = {

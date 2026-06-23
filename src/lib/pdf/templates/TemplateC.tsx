@@ -220,6 +220,29 @@ export function TemplateC({ content }: Props) {
           </View>
         )}
 
+        {/* ── Projects ── */}
+        {content.projects && content.projects.length > 0 && (
+          <View style={s.section}>
+            <Text style={s.sectionTitle}>Projects</Text>
+            {content.projects.map((proj, i) => (
+              <View key={i} style={s.entry} wrap={false}>
+                <View style={s.entryTopRow}>
+                  <Text style={s.roleText}>{proj.name}</Text>
+                  {proj.dates ? (
+                    <Text style={s.datesText}>{proj.dates}</Text>
+                  ) : null}
+                </View>
+                {[proj.role, proj.url].filter(Boolean).length > 0 && (
+                  <Text style={s.orgLine}>
+                    {[proj.role, proj.url].filter(Boolean).join('  ·  ')}
+                  </Text>
+                )}
+                <Bullets items={proj.bullets ?? []} />
+              </View>
+            ))}
+          </View>
+        )}
+
         {/* ── Education ── */}
         {content.education.length > 0 && (
           <View style={s.section}>

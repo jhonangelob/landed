@@ -181,4 +181,9 @@ export const auth = betterAuth({
   baseURL: getBaseUrl(),
   trustedOrigins: getTrustedOrigins(),
   plugins: [tanstackStartCookies()],
+
+  ssr: {
+    // Forces Vite to compile Recharts & standard dependencies into clean ESM for the server
+    noExternal: ['recharts', 'lodash', 'lodash-es', 'clsx'],
+  },
 })

@@ -13,16 +13,16 @@ import { Textarea } from '#/components/ui/textarea'
 import { newApplicationSchema } from '#/validators/application'
 
 import SectionHeader from '../layout/SectionHeader'
-import FilePreview from './FilePreview'
+import DocumentPreview from './DocumentPreview'
 
-interface NewApplicationProps {
+interface ApplicationCreateProps {
   profile?: PilotProfile | null
   stage?: ApplicationStage
 }
 
-export default function NewApplication({
+export default function ApplicationCreate({
   stage = 'spotted',
-}: NewApplicationProps) {
+}: ApplicationCreateProps) {
   const navigate = useNavigate()
 
   const { mutateAsync: createApplication } = useCreateApplicationMutation()
@@ -54,7 +54,7 @@ export default function NewApplication({
         description="Paste a job posting and we'll tailor your CV and Cover Letter using your Pilot Profile."
       />
       <div className="flex flex-col gap-4 lg:flex-row">
-        <div className="flex h-fit min-w-1/2 flex-col gap-4 rounded-lg border bg-white p-6">
+        <div className="flex h-fit w-1/2 flex-col gap-4 rounded-lg border bg-white p-6">
           <div className="flex flex-row items-center justify-between border-b border-dashed pb-3.5">
             <p className="text-muted font-mono text-[11px] leading-[1.4] font-normal tracking-[1.5px] uppercase">
               Job Posting
@@ -142,11 +142,6 @@ export default function NewApplication({
               )}
             />
             <div className="flex justify-end border-t border-dashed pt-3.5">
-              {/* {!profile ? (
-                <Button type="button" onClick={handleSetupProfile}>
-                  Setup Profile
-                </Button>
-              ) : ( */}
               <form.Subscribe
                 selector={(s) => [s.isSubmitting, s.isDirty]}
                 children={([isSubmitting, isDirty]) => (
@@ -164,9 +159,7 @@ export default function NewApplication({
           </form>
         </div>
 
-        <div className="w-full md:w-1/2">
-          <FilePreview />
-        </div>
+        <DocumentPreview />
       </div>
     </>
   )

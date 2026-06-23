@@ -32,7 +32,7 @@ function AppLayout() {
   }, [user.hasOnboarded, openOnboarding])
 
   return (
-    <div className="mx-auto flex w-full max-w-370 pt-3 pb-18 md:pt-7 md:pb-24">
+    <div className="mx-auto flex w-full max-w-370">
       <Outlet />
       <ModalRegistry userName={user.name} />
       <OnboardingTour userName={user.name} />
