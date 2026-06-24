@@ -320,7 +320,7 @@ export default function ProfileForm({
               <Label htmlFor="summary">Summary</Label>
               <Textarea
                 id="summary"
-                rows={4}
+                rows={6}
                 placeholder="Brief professional summary (50–600 characters)..."
                 value={field.state.value}
                 onChange={(e) => field.handleChange(e.target.value)}
@@ -536,16 +536,18 @@ export default function ProfileForm({
                   {field.state.value.map((skill: string, i: number) => (
                     <span
                       key={i}
-                      className="bg-secondary text-foreground flex items-center gap-1 rounded-md px-2 py-1 text-[12px] font-medium"
+                      className="bg-primary/20 text-foreground border-primary flex items-center gap-1 rounded-full border py-1 pr-1 pl-4 text-[12px] font-medium"
                     >
                       {skill}
-                      <button
+                      <Button
                         type="button"
+                        variant="ghost"
+                        size="icon-xs"
                         onClick={() => form.removeFieldValue('skills', i)}
-                        className="text-muted-foreground hover:text-destructive"
+                        className="text-muted-foreground hover:text-destructive bg-transparent!"
                       >
-                        <XIcon className="size-3" />
-                      </button>
+                        <XIcon className="size-3 stroke-3" />
+                      </Button>
                     </span>
                   ))}
                 </div>
@@ -1139,18 +1141,20 @@ export default function ProfileForm({
                   {field.state.value.map((role: string, i: number) => (
                     <span
                       key={i}
-                      className="bg-secondary text-foreground flex items-center gap-1 rounded-md px-2 py-1 text-[12px] font-medium"
+                      className="bg-primary/20 text-foreground border-primary flex items-center gap-1 rounded-full border py-1 pr-1 pl-4 text-[12px] font-medium"
                     >
                       {role}
-                      <button
+                      <Button
                         type="button"
+                        variant="ghost"
+                        size="icon-xs"
                         onClick={() =>
                           form.removeFieldValue('preferences.roles', i)
                         }
-                        className="text-muted-foreground hover:text-destructive"
+                        className="text-muted-foreground hover:text-destructive bg-transparent!"
                       >
-                        <XIcon className="size-3" />
-                      </button>
+                        <XIcon className="size-3 stroke-3" />
+                      </Button>
                     </span>
                   ))}
                 </div>
@@ -1241,18 +1245,20 @@ export default function ProfileForm({
                   {words.map((word, i) => (
                     <span
                       key={i}
-                      className="bg-secondary text-foreground flex items-center gap-1 rounded-md px-2 py-1 text-[12px] font-medium"
+                      className="bg-primary/20 text-foreground border-primary flex items-center gap-1 rounded-full border py-1 pr-1 pl-4 text-[12px] font-medium"
                     >
                       {word}
-                      <button
+                      <Button
                         type="button"
+                        variant="ghost"
+                        size="icon-xs"
                         onClick={() =>
                           field.handleChange(words.filter((_, j) => j !== i))
                         }
-                        className="text-muted-foreground hover:text-destructive"
+                        className="text-muted-foreground hover:text-destructive bg-transparent!"
                       >
-                        <XIcon className="size-3" />
-                      </button>
+                        <XIcon className="size-3 stroke-3" />
+                      </Button>
                     </span>
                   ))}
                 </div>

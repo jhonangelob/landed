@@ -63,7 +63,7 @@ function RouteComponent() {
     : undefined
 
   return (
-    <div className="section overflow-visible">
+    <div className="section overflow-visible pb-24!">
       {isEditMode ? (
         <ApplicationUpdate
           key={application?.updatedAt.getTime()}

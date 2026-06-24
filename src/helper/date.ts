@@ -43,6 +43,16 @@ export function getTimeSince(date: Date | string): string {
   return `${years} year${years > 1 ? 's' : ''} ago`
 }
 
+export function getDaysSince(date: Date | string): number {
+  const inputDate = new Date(date)
+  const now = new Date()
+
+  const diffMs = now.getTime() - inputDate.getTime()
+  const days = diffMs / (1000 * 60 * 60 * 24)
+
+  return Number(days.toFixed(1))
+}
+
 export function formatDate(date: Date | string | null): string {
   if (!date) return 'Not set'
 

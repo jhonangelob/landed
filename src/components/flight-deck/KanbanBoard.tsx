@@ -160,7 +160,7 @@ export default function KanbanBoard({ applications }: KanbanBoardProps) {
         </div>
       </div>
 
-      <div className="hidden max-h-[calc(100vh-300px)] min-h-0 flex-1 auto-rows-fr grid-cols-6 gap-4 pb-6 md:grid">
+      <div className="hidden max-h-[calc(100vh-300px)] min-h-0 flex-1 gap-4 overflow-x-auto pb-6 md:flex">
         {visibleColumns.map((col) => {
           const colApps = sortApplications(
             applications.filter((a) => a.stage === col.stage),
@@ -174,7 +174,7 @@ export default function KanbanBoard({ applications }: KanbanBoardProps) {
           return (
             <div
               key={col.stage}
-              className="flex min-h-0 flex-col gap-4.5"
+              className="flex min-h-0 w-56 shrink-0 flex-col gap-4.5"
               onDragOver={(e) => handleDragOver(e, col.stage)}
               onDragLeave={handleDragLeave}
               onDrop={(e) => handleDrop(e, col.stage)}
@@ -193,7 +193,7 @@ export default function KanbanBoard({ applications }: KanbanBoardProps) {
               </div>
               <div
                 className={cn(
-                  'flex min-h-0 w-60 flex-1 scrollbar-none flex-col overflow-y-auto rounded-lg border border-transparent pb-2 transition-colors',
+                  'flex min-h-0 w-full flex-1 scrollbar-none flex-col overflow-y-auto rounded-lg border border-transparent pb-2 transition-colors',
                   isOver && 'border-primary bg-accent/10 border-dashed',
                 )}
               >

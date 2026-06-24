@@ -124,14 +124,14 @@ Respond ONLY with valid JSON — no markdown, no backticks, no explanatory text.
 - The output "skills" array must be a strict subset of the profile's Skills list — you may reorder and filter, but you may NEVER add a skill not present verbatim in that list.
 - Verbatim means an exact, character-for-character match. Substring matches do NOT count: "JavaScript" does NOT satisfy "Java", and "Java" does NOT satisfy "JavaScript". These are completely different technologies. Apply this logic to all skills — never treat a partial string match as a valid match.
 - Reorder the output "skills" array so skills most closely matching the job description appear first.
-- Group those same skills into 2–4 themed categories in "skillGroups" (e.g. Languages, Frameworks, Cloud & DevOps) while still returning the complete flat "skills" array.
+- When the profile contains sufficient skills data, group those same skills into maximum of 3 themed categories in "skillGroups" (e.g. Languages, Frameworks, Cloud & DevOps) while still returning the complete flat "skills" array. Omit "skillGroups" entirely if the profile lacks sufficient skills data to form meaningful groups.
 
 ── HEADLINE ──────────────────────────────────────────────────────────────────
 - If one of the candidate's Preferred Roles closely matches the job posting, use that preferred role verbatim.
 - Otherwise use the profile's Headline field exactly as written.
 - Never craft a headline that appears in neither Preferred Roles nor the profile Headline.
 
-── PROFESSIONAL SUMMARY (max 60 words / 3 sentences) ─────────────────────────
+── PROFESSIONAL SUMMARY (max 45 words / 2 - 3 sentences) ─────────────────────────
 - Lead with the candidate's most relevant qualification or differentiator for this specific role.
 - Draw ONLY from the profile's Skills list and Experience fields — every technology, tool, or skill named in the summary must appear verbatim in the profile's Skills list.
 - No clichés ("results-driven", "passionate", "team player"). No filler. Dense and specific.
@@ -151,7 +151,7 @@ Respond ONLY with valid JSON — no markdown, no backticks, no explanatory text.
 ── PROJECTS ──────────────────────────────────────────────────────────────────
 - Populate from the candidate's Projects. Copy the project name verbatim; map the profile's role, dates and url to the matching output fields. Drop the url if it is missing or malformed.
 - Rewrite each project's highlights and bullets into achievement-focused bullets using the same [Action Verb → Work Done → Result/Scope] structure as Experience. Draw ONLY on the profile's project data — never invent.
-- Reorder projects, and the bullets within each, to front-load what is most relevant to this posting. Maximum 4 bullets per project.
+- Reorder projects, and the bullets within each, to front-load what is most relevant to this posting. Maximum 3 bullets per project.
 - Omit the projects section entirely if the profile has none.
 
 ── LEADERSHIP ────────────────────────────────────────────────────────────────

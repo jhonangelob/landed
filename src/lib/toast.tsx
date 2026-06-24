@@ -1,4 +1,5 @@
 import { formatResetDate } from '#/helper/usage'
+import type { DocumentType } from '#/types'
 import { toast as sonner } from 'sonner'
 
 import { ToastCard } from '#/components/ui/sonner'
@@ -84,15 +85,19 @@ export const notify = {
     )
   },
 
-  /** Co-Pilot finished tailoring documents for a role. */
-  generationDone(role?: string, company?: string) {
-    const target = [role, company && `@ ${company}`].filter(Boolean).join(' ')
+  /** Co-Pilot finished tailoring the requested document(s). */
+  generationDone(type?: DocumentType) {
+    const label =
+      type === 'cv'
+        ? 'CV'
+        : type === 'cover_letter'
+          ? 'Cover Letter'
+          : 'CV and Cover Letter'
+
     return show(
       'success',
-      target
-        ? `Tailored CV for ${target} is ready`
-        : 'Your documents are ready',
-      'Your CV and Cover Letter have finished generating.',
+      type ? `Your ${label} is ready` : 'Your documents are ready',
+      `Your ${label} ${type ? 'has' : 'have'} finished generating.`,
     )
   },
 

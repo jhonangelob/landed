@@ -70,7 +70,7 @@ export function useGenerateDocumentsMutation(applicationId?: string) {
       queryClient.invalidateQueries({ queryKey: subscriptionQueryKey })
 
       notify.dismiss(context.toastId)
-      notify.generationDone()
+      notify.generationDone(variables.type)
 
       const { usage } = data
 

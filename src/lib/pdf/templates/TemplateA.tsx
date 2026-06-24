@@ -19,18 +19,17 @@ import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer'
  */
 
 const COLORS = {
-  ink: '#000000',
+  ink: '#1a1a1a',
   rule: '#000000',
   note: '#555555',
 }
 
 const s = StyleSheet.create({
   page: {
-    fontSize: 11,
+    fontSize: 10,
     color: COLORS.ink,
-    paddingTop: 36,
-    paddingBottom: 36,
-    paddingHorizontal: 44,
+    paddingVertical: 28,
+    paddingHorizontal: 28,
     lineHeight: 1.35,
     fontFamily: 'Times-Roman',
   },
@@ -40,19 +39,19 @@ const s = StyleSheet.create({
     marginBottom: 10,
   },
   name: {
-    fontSize: 18,
+    fontSize: 14,
     fontFamily: 'Times-Bold',
     textAlign: 'center',
-    marginBottom: 3,
+    marginBottom: 4,
   },
   headline: {
-    fontSize: 10,
+    fontSize: 12,
     fontFamily: 'Times-Bold',
     textAlign: 'center',
-    marginTop: 6,
+    marginBottom: 1,
   },
   contactLine: {
-    fontSize: 10,
+    fontSize: 11,
     textAlign: 'center',
   },
 
@@ -89,7 +88,7 @@ const s = StyleSheet.create({
     paddingRight: 8,
   },
   orgRight: {
-    fontSize: 10,
+    fontSize: 11,
     fontFamily: 'Times-Italic',
     textAlign: 'right',
   },
@@ -102,14 +101,14 @@ const s = StyleSheet.create({
     paddingRight: 8,
   },
   roleRight: {
-    fontSize: 10,
+    fontSize: 11,
     fontFamily: 'Times-Italic',
     textAlign: 'right',
   },
 
   // single supplementary line (thesis, coursework, study abroad detail)
   plainLine: {
-    fontSize: 10,
+    fontSize: 11,
     marginTop: 1,
     textAlign: 'justify',
   },
@@ -129,7 +128,7 @@ const s = StyleSheet.create({
   },
   bulletText: {
     flex: 1,
-    fontSize: 10,
+    fontSize: 11,
     textAlign: 'justify',
   },
 
@@ -139,12 +138,12 @@ const s = StyleSheet.create({
     marginBottom: 1,
   },
   skillValue: {
-    fontSize: 10,
+    fontSize: 11,
     flex: 1,
   },
   skillLabel: {
     fontFamily: 'Times-BoldItalic',
-    fontSize: 10,
+    fontSize: 11,
   },
 })
 
@@ -203,7 +202,7 @@ export function TemplateA({ content }: Props) {
 
   return (
     <Document title="CV" creator="Harvard CV">
-      <Page size="LETTER" style={s.page}>
+      <Page size="A4" style={s.page}>
         {/* ── Header ── */}
         <View style={s.header}>
           <Text style={s.name}>{content.name}</Text>
@@ -216,9 +215,9 @@ export function TemplateA({ content }: Props) {
           )}
         </View>
 
-        {/* ── Summary ── */}
+        {/* ── Professional Summary ── */}
         <View style={s.section}>
-          <Text style={s.sectionTitle}>Summary</Text>
+          <Text style={s.sectionTitle}>Professional Summary</Text>
           <Text style={s.plainLine}>{content.summary}</Text>
         </View>
 
@@ -271,67 +270,37 @@ export function TemplateA({ content }: Props) {
             <Text style={s.sectionTitle}>Projects</Text>
             {content.projects.map((proj, i) => (
               <View key={i} style={s.entry} wrap={false}>
-                <EntryHeader
-                  org={proj.name}
-                  location={proj.url}
-                  role={proj.role}
-                  dates={proj.dates}
-                />
+                <EntryHeader org={proj.name} location={proj.url} />
                 <Bullets items={proj.bullets ?? []} />
               </View>
             ))}
           </View>
         )}
 
-        {/* ── Certifications ── */}
-        {content.certifications && content.certifications.length > 0 && (
+        {/* ── Education and Certifications ── */}
+        {((content.education.length > 0 || content.certifications?.length) ??
+          0) && (
           <View style={s.section}>
-            <Text style={s.sectionTitle}>Certifications</Text>
-            {content.certifications.map((cert, i) => (
-              <View key={i} style={s.entry} wrap={false}>
-                <EntryHeader
-                  org={cert.name}
-                  role={cert.issuer}
-                  dates={cert.date}
-                />
-              </View>
-            ))}
-          </View>
-        )}
-
-        {/* ── Projects & Activities ── */}
-        {/* {content.leadership && content.leadership.length > 0 && (
-          <View style={s.section}>
-            <Text style={s.sectionTitle}>Projects and Activities</Text>
-            {content.leadership.map((act, i) => (
-              <View key={i} style={s.entry} wrap={false}>
-                <EntryHeader
-                  org={act.organization}
-                  location={act.location}
-                  role={act.role}
-                  dates={act.dates}
-                />
-                <Bullets items={act.bullets ?? []} />
-              </View>
-            ))}
-          </View>
-        )} */}
-
-        {/* ── Education ── */}
-        {content.education.length > 0 && (
-          <View style={s.section}>
-            <Text style={s.sectionTitle}>Education</Text>
+            <Text style={s.sectionTitle}>Education and Certifications</Text>
             {content.education.map((edu, i) => (
               <View key={i} style={s.entry} wrap={false}>
                 <EntryHeader
                   org={edu.institution}
-                  location={edu.location}
                   role={edu.degree}
                   dates={edu.year}
                 />
                 {edu.detail ? (
                   <Text style={s.plainLine}>{edu.detail}</Text>
                 ) : null}
+              </View>
+            ))}
+            {content.certifications?.map((cert, i) => (
+              <View key={i} style={s.entry} wrap={false}>
+                <EntryHeader
+                  org={cert.name}
+                  role={cert.issuer}
+                  dates={cert.date}
+                />
               </View>
             ))}
           </View>

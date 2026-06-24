@@ -145,50 +145,38 @@ export function cvToHtml(cv: CvContent): string {
                 `<div style="${S.entry}">${entryHeader({
                   org: proj.name,
                   location: proj.url,
-                  role: proj.role,
-                  dates: proj.dates,
                 })}${bulletList(proj.bullets ?? [])}</div>`,
             )
             .join(''),
         )
       : ''
 
-  const certifications =
-    cv.certifications && cv.certifications.length > 0
+  const educationAndCertifications =
+    cv.education.length > 0 || (cv.certifications?.length ?? 0) > 0
       ? section(
-          'Certifications',
-          cv.certifications
-            .map(
+          'Education and Certifications',
+          [
+            ...cv.education.map(
+              (edu) =>
+                `<div style="${S.entry}">${entryHeader({
+                  org: edu.institution,
+                  role: edu.degree,
+                  dates: edu.year,
+                })}${edu.detail ? `<p style="${S.plainLine}">${esc(edu.detail)}</p>` : ''}</div>`,
+            ),
+            ...(cv.certifications?.map(
               (cert) =>
                 `<div style="${S.entry}">${entryHeader({
                   org: cert.name,
                   role: cert.issuer,
                   dates: cert.date,
                 })}</div>`,
-            )
-            .join(''),
+            ) ?? []),
+          ].join(''),
         )
       : ''
 
-  const education =
-    cv.education.length > 0
-      ? section(
-          'Education',
-          cv.education
-            .map(
-              (edu) =>
-                `<div style="${S.entry}">${entryHeader({
-                  org: edu.institution,
-                  location: edu.location,
-                  role: edu.degree,
-                  dates: edu.year,
-                })}${edu.detail ? `<p style="${S.plainLine}">${esc(edu.detail)}</p>` : ''}</div>`,
-            )
-            .join(''),
-        )
-      : ''
-
-  return `<div style="${S.page}">${header}${summary}${education}${experience}${projects}${certifications}${skills}</div>`.trim()
+  return `<div style="${S.page}">${header}${summary}${skills}${experience}${projects}${educationAndCertifications}</div>`.trim()
 }
 
 /** Business-letter styles for the cover letter — reuse the serif page from S. */

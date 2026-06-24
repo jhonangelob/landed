@@ -16,7 +16,7 @@ import SectionHeader from '#/components/layout/SectionHeader'
 
 import { useModal } from '#/lib/store/modal'
 
-import ApplicationTimneline from './ApplicationTimeline'
+import ApplicationTimeline from './ApplicationTimeline'
 import ApplicationUpdateForm from './ApplicationUpdateForm'
 import DocumentPreview from './DocumentPreview'
 import StageBar from './StageBar'
@@ -61,6 +61,9 @@ export default function ApplicationUpdate({
       })
   }
 
+  const totalDocuments =
+    (history?.cover_letter.length || 0) + (history?.cv.length || 0)
+
   const loading =
     pendingGenerate ||
     loadingDocuments ||
@@ -80,7 +83,7 @@ export default function ApplicationUpdate({
       />
       <StageBar stage={application.stage} onUpdateStage={handleUpdateStage} />
       <div className="flex flex-col gap-4 lg:flex-row">
-        <div className="flex w-1/2 flex-col gap-4">
+        <div className="flex w-full flex-col gap-4 lg:w-1/2">
           <ApplicationUpdateForm
             application={application}
             onUpdate={updateApplicationDetails}
@@ -92,12 +95,13 @@ export default function ApplicationUpdate({
             title="Application  Timeline"
             order="summary"
           >
-            <ApplicationTimneline
-            // data={application}
+            <ApplicationTimeline
+              application={application}
+              generatedDocuments={totalDocuments}
             />
           </SectionCard>
         </div>
-        <div className="w-1/2 space-y-4">
+        <div className="w-full space-y-4 lg:w-1/2">
           <DocumentPreview
             application={application}
             documents={documents}
