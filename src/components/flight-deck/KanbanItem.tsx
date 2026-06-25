@@ -71,7 +71,7 @@ export default function KanbanItem({ data }: KanbanItemProps) {
           {data.role}
         </p>
         <p className="text-muted flex flex-row items-center font-mono text-[11px] leading-[1.4] tracking-[0.4px]">
-          <span className="truncate">{data.company}</span>·{' '}
+          <span className="truncate">{data.company}</span> ·{' '}
           <span className="text-nowrap">
             {new Date(data.spottedAt).toLocaleDateString('en-US', {
               day: 'numeric',

@@ -1,4 +1,5 @@
 import { clToHtml, cvToHtml } from '#/helper/document'
+import { computeMaxBullets } from '#/helper/file'
 import {
   buildCoverLetterSystemPrompt,
   buildCvSystemPrompt,
@@ -189,6 +190,16 @@ export const generateDocuments = createServerFn({ method: 'POST' })
       url: link.url.replace(/^https?:\/\/(www\.)?/, ''),
     }))
 
+    const limits = computeMaxBullets({
+      numExperiences: (profile.experience && profile.experience.length) || 0,
+      numProjects: (profile.projects && profile.projects.length) || 0,
+      numEducations:
+        ((profile.education && profile.education.length) || 0) +
+        ((profile.certifications && profile.certifications.length) || 0),
+    })
+
+    console.log(limits)
+
     const userPrompt = buildUserPrompt({
       company: application.company,
       role: application.role,
@@ -236,7 +247,12 @@ export const generateDocuments = createServerFn({ method: 'POST' })
 
     const [cv, coverLetter] = await Promise.all([
       wantsCv
-        ? callModel(buildCvSystemPrompt()).then(async ({ text, usage }) => {
+        ? callModel(
+            buildCvSystemPrompt({
+              experienceMaxBullet: limits.bulletsPerExperience,
+              projectMaxBullet: limits.bulletsPerProject,
+            }),
+          ).then(async ({ text, usage }) => {
             await recordAiUsage({
               userId: session.user.id,
               model,

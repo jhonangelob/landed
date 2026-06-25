@@ -45,7 +45,13 @@ export function stripEmDash(text: string): string {
   return text.replace(/[—–]/g, '-')
 }
 
-export function buildCvSystemPrompt(): string {
+export function buildCvSystemPrompt({
+  experienceMaxBullet,
+  projectMaxBullet,
+}: {
+  experienceMaxBullet: number
+  projectMaxBullet: number
+}): string {
   return `
 You are Co-Pilot, a senior career strategist and CV specialist inside the Landed app. Your sole objective is to produce a highly tailored, ATS-optimised CV that maximises the candidate's interview chances for the specific role provided.
 
@@ -141,7 +147,7 @@ Respond ONLY with valid JSON — no markdown, no backticks, no explanatory text.
 - Quantify wherever the profile provides numbers, percentages, timeframes, or team/project sizes.
 - Where no metric exists, anchor impact in scope or outcome (e.g. "across 4 product lines", "eliminating manual review steps").
 - Reorder bullets within each role to front-load achievements most relevant to this posting.
-- Maximum 5 bullets per role. Cut weak bullets before adding generic filler.
+- Maximum ${experienceMaxBullet} bullets per role. Cut weak bullets before adding generic filler.
 
 ── EDUCATION & CERTIFICATIONS ────────────────────────────────────────────────
 - Copy institution, degree, year, and location verbatim from the profile. Do not rewrite or infer.
@@ -153,6 +159,7 @@ Respond ONLY with valid JSON — no markdown, no backticks, no explanatory text.
 - Rewrite each project's highlights and bullets into achievement-focused bullets using the same [Action Verb → Work Done → Result/Scope] structure as Experience. Draw ONLY on the profile's project data — never invent.
 - Reorder projects, and the bullets within each, to front-load what is most relevant to this posting. Maximum 3 bullets per project.
 - Omit the projects section entirely if the profile has none.
+- Maximum ${projectMaxBullet} bullets per projects. Cut weak bullets before adding generic filler.
 
 ── LEADERSHIP ────────────────────────────────────────────────────────────────
 - Include ONLY entries that are clearly volunteer, extracurricular, or non-professional in nature.
