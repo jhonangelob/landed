@@ -32,3 +32,12 @@ export const KANBAN_COLUMNS = [
     color: '#059669',
   },
 ]
+
+/** Days a card can sit in a stage before it's considered stale. */
+export const STALE_DAYS: Partial<Record<ApplicationStage, number>> = {
+  spotted: 7,
+  applied: 14,
+  in_flight: 10,
+  interview: 7,
+  offer: 5,
+}

@@ -9,7 +9,7 @@ import { useNavigate } from '@tanstack/react-router'
 
 import { cn } from '#/lib/utils'
 
-import { KANBAN_COLUMNS } from '#/constants/stage'
+import { KANBAN_COLUMNS, STALE_DAYS } from '#/constants/stage'
 
 export interface KanbanItemProps {
   data: ApplicationWithDocStatus
@@ -47,6 +47,24 @@ export default function KanbanItem({ data }: KanbanItemProps) {
   const stageColor =
     KANBAN_COLUMNS.find((col) => col.stage === data.stage)?.color ?? '#94a3b8'
 
+  // Border fades from full stage color toward transparent as the card ages in
+  // its stage, then flips to a warning yellow once it crosses the stale threshold.
+  const staleThreshold = STALE_DAYS[data.stage]
+  const daysInStage = getDaysInStage(data)
+  const isStale = staleThreshold !== undefined && daysInStage >= staleThreshold
+
+  const borderColor = (() => {
+    if (isStale) return 'var(--warning)'
+    if (data.stage === 'spotted') return undefined
+    const opacity = staleThreshold
+      ? Math.max(0.2, 1 - daysInStage / staleThreshold)
+      : 1
+    const alpha = Math.round(opacity * 255)
+      .toString(16)
+      .padStart(2, '0')
+    return `${stageColor}${alpha}`
+  })()
+
   const handleClickApplicationItem = () => {
     navigate({ to: '/app/co-pilot', search: { applicationId: data.id } })
   }
@@ -61,6 +79,7 @@ export default function KanbanItem({ data }: KanbanItemProps) {
       }}
       onDragEnd={() => setIsDragging(false)}
       onClick={handleClickApplicationItem}
+      style={borderColor ? { borderColor } : undefined}
       className={cn(
         'hover:border-red/70 border-divider/50 flex flex-row justify-between rounded-lg border bg-white px-3.5 pt-3.5 pb-3 transition-opacity md:flex-col',
         isDragging ? 'cursor-grabbing opacity-40' : 'cursor-pointer',
