@@ -68,7 +68,7 @@ function RouteComponent() {
     strengthFromSignature(strengthSig)
 
   return (
-    <div className="section overflow-visible">
+    <div className="section overflow-visible pb-24!">
       <SectionHeader
         subTitle="Master profile"
         title1="Pilot"

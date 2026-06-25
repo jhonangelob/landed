@@ -43,39 +43,32 @@ export default function ApplicationTimeline({
   application,
   generatedDocuments,
 }: ApplicationTimelineProps) {
-  const data = [
-    { stage: 'spotted', date: application.spottedAt, index: 0, placeholder: 0 },
-    {
-      stage: 'applied',
-      date: application.appliedAt ?? undefined,
-      index: application.appliedAt ? 1 : undefined,
-      placeholder: 1,
-    },
-    {
-      stage: 'in_flight',
-      date: application.inFlightAt ?? undefined,
-      index: application.inFlightAt ? 2.5 : undefined,
-      placeholder: 2.5,
-    },
-    {
-      stage: 'interview',
-      date: application.interviewAt ?? undefined,
-      index: application.interviewAt ? 3.6 : undefined,
-      placeholder: 3.6,
-    },
-    {
-      stage: 'offer',
-      date: application.offerAt ?? undefined,
-      index: application.offerAt ? 4.5 : undefined,
-      placeholder: 4.5,
-    },
-    {
-      stage: 'landed',
-      date: application.landedAt ?? undefined,
-      index: application.landedAt ? 5 : undefined,
-      placeholder: 5,
-    },
-  ]
+  const stageTimeline = [
+    { stage: 'spotted', date: application.spottedAt, y: 0 },
+    { stage: 'applied', date: application.appliedAt, y: 1 },
+    { stage: 'in_flight', date: application.inFlightAt, y: 2.5 },
+    { stage: 'interview', date: application.interviewAt, y: 3.6 },
+    { stage: 'offer', date: application.offerAt, y: 4.5 },
+    { stage: 'landed', date: application.landedAt, y: 5 },
+  ] as const
+
+  // Plot the line up to the current stage only. Stage timestamps are sticky, so
+  // moving an application back to an earlier stage would otherwise keep drawing
+  // points for stages it has since left. Terminal stages (rejected/withdrawn)
+  // aren't on this track, so fall back to whichever stages were actually reached.
+  const currentIndex = stageTimeline.findIndex(
+    (s) => s.stage === application.stage,
+  )
+
+  const data = stageTimeline.map((s, i) => {
+    const reached = currentIndex >= 0 ? i <= currentIndex : s.date != null
+    return {
+      stage: s.stage,
+      date: reached ? (s.date ?? undefined) : undefined,
+      index: reached ? s.y : undefined,
+      placeholder: s.y,
+    }
+  })
 
   const atStage =
     application.stage === 'in_flight' ? 'inFlightAt' : `${application.stage}At`

@@ -198,8 +198,6 @@ export const generateDocuments = createServerFn({ method: 'POST' })
         ((profile.certifications && profile.certifications.length) || 0),
     })
 
-    console.log(limits)
-
     const userPrompt = buildUserPrompt({
       company: application.company,
       role: application.role,

@@ -4,14 +4,22 @@ import { SORT_OPTIONS, sortApplications } from '#/helper/application'
 import type { SortKey } from '#/helper/application'
 import { useUpdateApplicationStageMutation } from '#/hooks/useApplicationQueries'
 import type { ApplicationStage, ApplicationWithDocStatus } from '#/types'
-import { ArrowUpDownIcon, ListFilterIcon, SearchIcon } from 'lucide-react'
-
-import { useNavigate } from '@tanstack/react-router'
+import {
+  ArchiveIcon,
+  ArrowUpDownIcon,
+  ListFilterIcon,
+  SearchIcon,
+} from 'lucide-react'
 
 import { cn } from '#/lib/utils'
 
-import { KANBAN_COLUMNS } from '#/constants/stage'
+import {
+  ARCHIVE_COLUMN,
+  ARCHIVE_STAGES,
+  KANBAN_COLUMNS,
+} from '#/constants/stage'
 
+import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import {
   Select,
@@ -36,8 +44,6 @@ function matchesQuery(app: ApplicationWithDocStatus, query: string) {
 }
 
 export default function KanbanBoard({ applications }: KanbanBoardProps) {
-  const navigate = useNavigate()
-
   const [query, setQuery] = useState('')
   const isFiltering = query.trim() !== ''
 
@@ -47,6 +53,7 @@ export default function KanbanBoard({ applications }: KanbanBoardProps) {
     'all',
   )
   const [sortKey, setSortKey] = useState<SortKey>('newest')
+  const [showArchive, setShowArchive] = useState(false)
 
   const { mutate: updateStage } =
     useUpdateApplicationStageMutation(applicationId)
@@ -66,14 +73,12 @@ export default function KanbanBoard({ applications }: KanbanBoardProps) {
   const stageCount = (stage: ApplicationStage | 'all') =>
     applications.filter((a) => matchesStageAndQuery(a, stage)).length
 
-  const visibleColumns =
-    selectedStage === 'all'
+  const visibleColumns = [
+    ...(selectedStage === 'all'
       ? KANBAN_COLUMNS
-      : KANBAN_COLUMNS.filter((col) => col.stage === selectedStage)
-
-  const handleNewApplication = (stage: ApplicationStage) => {
-    navigate({ to: '/app/co-pilot', search: { stage } })
-  }
+      : KANBAN_COLUMNS.filter((col) => col.stage === selectedStage)),
+    ...(showArchive ? [ARCHIVE_COLUMN] : []),
+  ]
 
   const handleDragOver = (e: React.DragEvent, stage: string) => {
     e.preventDefault()
@@ -87,9 +92,13 @@ export default function KanbanBoard({ applications }: KanbanBoardProps) {
     }
   }
 
-  const handleDrop = (e: React.DragEvent, stage: ApplicationStage) => {
+  const handleDrop = (
+    e: React.DragEvent,
+    stage: ApplicationStage | 'archived',
+  ) => {
     e.preventDefault()
     setDragOverStage(null)
+    if (stage === 'archived') return
     const id = e.dataTransfer.getData('applicationId')
     setApplicationId(id)
     if (!id) return
@@ -110,15 +119,19 @@ export default function KanbanBoard({ applications }: KanbanBoardProps) {
             onChange={(e) => setQuery(e.target.value)}
           />
         </div>
-        <div className="flex shrink-0 flex-row items-center gap-3">
+        <div className="flex shrink-0 flex-row items-center gap-2">
           <BoardSummary applications={applications} />
+
           <Select
             value={selectedStage}
             onValueChange={(value) =>
               setSelectedStage(value as ApplicationStage | 'all')
             }
           >
-            <SelectTrigger size="sm" className="gap-1.5">
+            <SelectTrigger
+              size="sm"
+              className="gap-1.5 border-none! text-[13px]!"
+            >
               <ListFilterIcon className="size-3.5" />
               <SelectValue />
             </SelectTrigger>
@@ -128,9 +141,15 @@ export default function KanbanBoard({ applications }: KanbanBoardProps) {
               align="start"
               avoidCollisions={false}
             >
-              <SelectItem value="all">All stages</SelectItem>
+              <SelectItem value="all" className="text-[13px]!">
+                All stages
+              </SelectItem>
               {KANBAN_COLUMNS.map((col) => (
-                <SelectItem key={col.stage} value={col.stage}>
+                <SelectItem
+                  key={col.stage}
+                  value={col.stage}
+                  className="text-[13px]!"
+                >
                   {col.label}
                 </SelectItem>
               ))}
@@ -140,7 +159,10 @@ export default function KanbanBoard({ applications }: KanbanBoardProps) {
             value={sortKey}
             onValueChange={(value) => setSortKey(value as SortKey)}
           >
-            <SelectTrigger size="sm" className="gap-1.5">
+            <SelectTrigger
+              size="sm"
+              className="gap-1.5 border-none! text-[13px]!"
+            >
               <ArrowUpDownIcon className="size-3.5" />
               <SelectValue />
             </SelectTrigger>
@@ -151,19 +173,39 @@ export default function KanbanBoard({ applications }: KanbanBoardProps) {
               avoidCollisions={false}
             >
               {SORT_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
+                <SelectItem
+                  key={option.value}
+                  value={option.value}
+                  className="text-[13px]!"
+                >
                   {option.label}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            aria-pressed={showArchive}
+            onClick={() => setShowArchive((v) => !v)}
+            className={cn(
+              'gap-1.5 rounded-full text-[13px] font-normal',
+              showArchive && 'border-[#64748b] bg-[#64748b] text-white',
+            )}
+          >
+            <ArchiveIcon className="size-3.5" />
+            Show Archive
+          </Button>
         </div>
       </div>
 
       <div className="hidden max-h-[calc(100vh-300px)] min-h-0 flex-1 gap-4 overflow-x-auto pb-6 md:flex">
         {visibleColumns.map((col) => {
+          const isArchive = col.stage === 'archived'
+          const colStages = isArchive ? ARCHIVE_STAGES : [col.stage]
           const colApps = sortApplications(
-            applications.filter((a) => a.stage === col.stage),
+            applications.filter((a) => colStages.includes(a.stage)),
             sortKey,
           )
           const visibleCount = isFiltering
@@ -175,9 +217,11 @@ export default function KanbanBoard({ applications }: KanbanBoardProps) {
             <div
               key={col.stage}
               className="flex min-h-0 w-56 shrink-0 flex-col gap-4.5"
-              onDragOver={(e) => handleDragOver(e, col.stage)}
-              onDragLeave={handleDragLeave}
-              onDrop={(e) => handleDrop(e, col.stage)}
+              onDragOver={
+                isArchive ? undefined : (e) => handleDragOver(e, col.stage)
+              }
+              onDragLeave={isArchive ? undefined : handleDragLeave}
+              onDrop={isArchive ? undefined : (e) => handleDrop(e, col.stage)}
             >
               <div className="sticky flex flex-row items-center justify-between gap-2 border-b pb-2">
                 <div
@@ -197,7 +241,9 @@ export default function KanbanBoard({ applications }: KanbanBoardProps) {
                   isOver && 'border-primary bg-accent/10 border-dashed',
                 )}
               >
-                {col.stage === 'spotted' && <QuickAddField />}
+                {col.stage === 'spotted' && (
+                  <QuickAddField className="sticky top-0" />
+                )}
 
                 {colApps.map((application) => {
                   const visible =
@@ -219,17 +265,6 @@ export default function KanbanBoard({ applications }: KanbanBoardProps) {
                     </div>
                   )
                 })}
-
-                {col.stage !== 'landed' && (
-                  <div
-                    className="group hover:border-primary flex cursor-pointer flex-col items-center justify-center rounded-md border border-dashed px-4 py-2 text-center hover:bg-white"
-                    onClick={() => handleNewApplication(col.stage)}
-                  >
-                    <p className="text-muted group-hover:text-primary font-mono text-[11px] leading-[1.4] tracking-[1.1px] uppercase">
-                      Add
-                    </p>
-                  </div>
-                )}
               </div>
             </div>
           )

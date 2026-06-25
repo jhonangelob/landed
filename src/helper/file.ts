@@ -63,15 +63,6 @@ export const computeMaxBullets = ({
   const extraPerExp =
     numExperiences > 0 ? Math.floor(leftover / numExperiences) : 0
 
-  console.log({
-    numExperiences,
-    numProjects,
-    numEducations,
-    maxBullets,
-    bulletsPerExperience,
-    bulletsPerProject,
-  })
-
   return {
     maxBullets,
     bulletsPerExperience: bulletsPerExperience + extraPerExp,

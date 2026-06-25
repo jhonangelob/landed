@@ -74,7 +74,7 @@ export default function AppHeader() {
           </p>
         </div>
 
-        <div className="hidden flex-row md:flex">
+        <div className="hidden flex-row gap-2 md:flex">
           {NAVIGATION.map((item) => (
             <Link
               to={item.url}

@@ -33,6 +33,15 @@ export const KANBAN_COLUMNS = [
   },
 ]
 
+/** Terminal stages grouped into the single "Archived" column (toggled on). */
+export const ARCHIVE_STAGES: ApplicationStage[] = ['rejected', 'withdrawn']
+
+export const ARCHIVE_COLUMN = {
+  stage: 'archived' as const,
+  label: 'Archived',
+  color: '#64748b',
+}
+
 /** Days a card can sit in a stage before it's considered stale. */
 export const STALE_DAYS: Partial<Record<ApplicationStage, number>> = {
   spotted: 7,

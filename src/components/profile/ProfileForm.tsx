@@ -277,13 +277,14 @@ export default function ProfileForm({
                       )}
                     />
                     {i > 0 && (
-                      <button
+                      <Button
                         type="button"
+                        variant="ghost"
                         onClick={() => form.removeFieldValue('links', i)}
                         className="text-muted-foreground hover:text-destructive shrink-0"
                       >
                         <XIcon className="size-4" />
-                      </button>
+                      </Button>
                     )}
                   </div>
                 ))}
@@ -292,7 +293,7 @@ export default function ProfileForm({
                 type="button"
                 variant="outline"
                 size="sm"
-                className="w-fit text-xs"
+                className="bg-primary hover:bg-primary/80 w-fit border-none text-xs text-white hover:text-white"
                 disabled={field.state.value.length >= PROFILE_LIMITS.links}
                 onClick={() =>
                   form.pushFieldValue('links', { name: '', url: '' })
@@ -320,7 +321,7 @@ export default function ProfileForm({
               <Label htmlFor="summary">Summary</Label>
               <Textarea
                 id="summary"
-                rows={6}
+                rows={4}
                 placeholder="Brief professional summary (50–600 characters)..."
                 value={field.state.value}
                 onChange={(e) => field.handleChange(e.target.value)}
@@ -352,13 +353,14 @@ export default function ProfileForm({
                   className="relative flex flex-col gap-3 rounded-md border p-4"
                 >
                   {i > 0 && (
-                    <button
+                    <Button
                       type="button"
+                      variant="ghost"
                       onClick={() => form.removeFieldValue('experience', i)}
-                      className="text-muted-foreground hover:text-destructive absolute top-3 right-3"
+                      className="text-muted-foreground hover:text-destructive absolute top-0 right-0"
                     >
                       <XIcon className="size-4" />
-                    </button>
+                    </Button>
                   )}
                   <div className="flex flex-col gap-4 md:flex-row">
                     <form.Field
@@ -441,8 +443,9 @@ export default function ProfileForm({
                               )}
                             />
                             {j > 0 && (
-                              <button
+                              <Button
                                 type="button"
+                                variant="ghost"
                                 onClick={() =>
                                   form.removeFieldValue(
                                     `experience[${i}].bullets`,
@@ -452,7 +455,7 @@ export default function ProfileForm({
                                 className="text-muted-foreground hover:text-destructive shrink-0"
                               >
                                 <XIcon className="size-4" />
-                              </button>
+                              </Button>
                             )}
                           </div>
                         ))}
@@ -460,7 +463,7 @@ export default function ProfileForm({
                           type="button"
                           variant="outline"
                           size="sm"
-                          className="w-fit text-xs"
+                          className="bg-primary hover:bg-primary/80 w-fit border-none text-xs text-white hover:text-white"
                           disabled={
                             bulletsField.state.value.length >=
                             PROFILE_LIMITS.bullets
@@ -491,7 +494,7 @@ export default function ProfileForm({
               <Button
                 type="button"
                 variant="outline"
-                className="w-fit text-sm"
+                className="bg-primary hover:bg-primary/80 w-fit border-none text-sm text-white hover:text-white"
                 disabled={field.state.value.length >= PROFILE_LIMITS.experience}
                 onClick={() =>
                   form.pushFieldValue('experience', {
@@ -617,13 +620,13 @@ export default function ProfileForm({
                   className="relative flex flex-col gap-4 rounded-md border p-4"
                 >
                   {i > 0 && (
-                    <button
+                    <Button
                       type="button"
                       onClick={() => form.removeFieldValue('education', i)}
                       className="text-muted-foreground hover:text-destructive absolute top-3 right-3"
                     >
                       <XIcon className="size-4" />
-                    </button>
+                    </Button>
                   )}
                   <div className="grid grid-cols-2 gap-4">
                     <form.Field
@@ -726,7 +729,7 @@ export default function ProfileForm({
               <Button
                 type="button"
                 variant="outline"
-                className="w-fit text-sm"
+                className="bg-primary hover:bg-primary/80 w-fit border-none text-sm text-white hover:text-white"
                 disabled={field.state.value.length >= PROFILE_LIMITS.education}
                 onClick={() =>
                   form.pushFieldValue('education', {
@@ -770,13 +773,13 @@ export default function ProfileForm({
                   key={i}
                   className="relative flex flex-col gap-4 rounded-md border p-4"
                 >
-                  <button
+                  <Button
                     type="button"
                     onClick={() => form.removeFieldValue('certifications', i)}
                     className="text-muted-foreground hover:text-destructive absolute top-3 right-3"
                   >
                     <XIcon className="size-4" />
-                  </button>
+                  </Button>
                   <div className="grid grid-cols-2 gap-4">
                     <form.Field
                       name={`certifications[${i}].name`}
@@ -882,7 +885,7 @@ export default function ProfileForm({
               <Button
                 type="button"
                 variant="outline"
-                className="w-fit text-sm"
+                className="bg-primary hover:bg-primary/80 w-fit border-none text-sm text-white hover:text-white"
                 disabled={
                   field.state.value.length >= PROFILE_LIMITS.certifications
                 }
@@ -929,13 +932,14 @@ export default function ProfileForm({
                   key={i}
                   className="relative flex flex-col gap-3 rounded-md border p-4"
                 >
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
                     onClick={() => form.removeFieldValue('projects', i)}
-                    className="text-muted-foreground hover:text-destructive absolute top-3 right-3"
+                    className="text-muted-foreground hover:text-destructive absolute top-0 right-0"
                   >
                     <XIcon className="size-4" />
-                  </button>
+                  </Button>
                   <div className="flex flex-col gap-4 md:flex-row">
                     <form.Field
                       name={`projects[${i}].name`}
@@ -1044,8 +1048,9 @@ export default function ProfileForm({
                               )}
                             />
                             {j > 0 && (
-                              <button
+                              <Button
                                 type="button"
+                                variant="ghost"
                                 onClick={() =>
                                   form.removeFieldValue(
                                     `projects[${i}].bullets`,
@@ -1055,7 +1060,7 @@ export default function ProfileForm({
                                 className="text-muted-foreground hover:text-destructive shrink-0"
                               >
                                 <XIcon className="size-4" />
-                              </button>
+                              </Button>
                             )}
                           </div>
                         ))}
@@ -1063,7 +1068,7 @@ export default function ProfileForm({
                           type="button"
                           variant="outline"
                           size="sm"
-                          className="w-fit text-xs"
+                          className="bg-primary hover:bg-primary/80 w-fit border-none text-xs text-white hover:text-white"
                           disabled={
                             bulletsField.state.value.length >=
                             PROFILE_LIMITS.bullets
@@ -1094,7 +1099,7 @@ export default function ProfileForm({
               <Button
                 type="button"
                 variant="outline"
-                className="w-fit text-sm"
+                className="bg-primary hover:bg-primary/80 w-fit border-none text-sm text-white hover:text-white"
                 disabled={field.state.value.length >= PROFILE_LIMITS.projects}
                 onClick={() =>
                   form.pushFieldValue('projects', {

@@ -27,11 +27,11 @@ export default function BoardSummary({ applications }: BoardSummaryProps) {
   if (landed > 0) segments.push({ label: `${landed} landed`, color: '#0091ff' })
 
   return (
-    <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-[11px] leading-[1.4] tracking-[0.4px]">
+    <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-[11px] leading-[1.4] tracking-[0.7px]">
       {segments.map((segment, index) => (
         <div key={segment.label} className="flex items-center gap-2.5">
           {index > 0 && <span className="text-muted/40">·</span>}
-          <span className="text-ink-muted flex items-center gap-1.5">
+          <span className="text-ink-strong flex items-center gap-1.5">
             {segment.color && (
               <span
                 className="h-1.5 w-1.5 rounded-full"
